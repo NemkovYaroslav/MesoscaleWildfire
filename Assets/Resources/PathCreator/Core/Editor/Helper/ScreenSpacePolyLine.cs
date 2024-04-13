@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using PathCreation.Utility;
 using Resources.PathCreator.Core.Runtime.Objects;
 using Resources.PathCreator.Core.Runtime.Utility;
 using UnityEditor;
@@ -9,91 +8,86 @@ namespace Resources.PathCreator.Core.Editor.Helper
 {
 	public class ScreenSpacePolyLine
 	{
-		const int accuracyMultiplier = 10;
-		// dont allow vertices to be spaced too far apart, as screenspace-worldspace conversion can then be noticeably off
-		const float intermediaryThreshold = .2f;
+		private const int AccuracyMultiplier = 10;
+		// dont allow vertices to be spaced too far apart, as screen space-world space conversion can then be noticeably off
+		private const float IntermediaryThreshold = 0.2f;
 
-		public readonly List<Vector3> verticesWorld;
+		private readonly List<Vector3> _verticesWorld;
 		// For each point in the polyline, says which bezier segment it belongs to
-		readonly List<int> vertexToPathSegmentMap;
+		private readonly List<int> _vertexToPathSegmentMap;
 		// Stores the index in the vertices list where the start point of each segment is
-		readonly int[] segmentStartIndices;
+		private readonly int[] _segmentStartIndices;
 
-		readonly float pathLengthWorld;
-		readonly float[] cumululativeLengthWorld;
+		private readonly float _pathLengthWorld;
+		private readonly float[] _cumulativeLengthWorld;
 
-		Vector2[] points;
+		private Vector2[] _points;
 
-		Vector3 prevCamPos;
-		Quaternion prevCamRot;
-		bool prevCamIsOrtho;
+		private Vector3 _prevCamPos;
+		private Quaternion _prevCamRot;
+		private bool _prevCamIsOrtho;
 
-		readonly Transform transform;
-		readonly Vector3 transformPosition;
-		readonly Quaternion transformRotation;
-		readonly Vector3 transformScale;
+		private readonly Transform _transform;
+		private readonly Vector3 _transformPosition;
+		private readonly Quaternion _transformRotation;
+		private readonly Vector3 _transformScale;
 
 		public ScreenSpacePolyLine(BezierPath bezierPath, Transform transform, float maxAngleError, float minVertexDst, float accuracy = 1)
 		{
-			this.transform = transform;
-			transformPosition = transform.position;
-			transformRotation = transform.rotation;
-			transformScale = transform.localScale;
+			_transform = transform;
+			_transformPosition = transform.position;
+			_transformRotation = transform.rotation;
+			_transformScale = transform.localScale;
 
 			// Split path in vertices based on angle error
-			verticesWorld = new List<Vector3>();
-			vertexToPathSegmentMap = new List<int>();
-			segmentStartIndices = new int[bezierPath.NumSegments + 1];
+			_verticesWorld = new List<Vector3>();
+			_vertexToPathSegmentMap = new List<int>();
+			_segmentStartIndices = new int[bezierPath.NumSegments + 1];
 
-			verticesWorld.Add(bezierPath[0]);
-			vertexToPathSegmentMap.Add(0);
-			Vector3 prevPointOnPath = bezierPath[0];
-			float dstSinceLastVertex = 0;
-			Vector3 lastAddedPoint = prevPointOnPath;
-			float dstSinceLastIntermediary = 0;
+			_verticesWorld.Add(bezierPath[0]);
+			_vertexToPathSegmentMap.Add(0);
 
-			for (int segmentIndex = 0; segmentIndex < bezierPath.NumSegments; segmentIndex++)
+			for (var segmentIndex = 0; segmentIndex < bezierPath.NumSegments; segmentIndex++)
 			{
-				Vector3[] segmentPoints = bezierPath.GetPointsInSegment(segmentIndex);
-				verticesWorld.Add(segmentPoints[0]);
-				vertexToPathSegmentMap.Add(segmentIndex);
-				segmentStartIndices[segmentIndex] = verticesWorld.Count - 1;
+				var segmentPoints = bezierPath.GetPointsInSegment(segmentIndex);
+				_verticesWorld.Add(segmentPoints[0]);
+				_vertexToPathSegmentMap.Add(segmentIndex);
+				_segmentStartIndices[segmentIndex] = _verticesWorld.Count - 1;
 
-				prevPointOnPath = segmentPoints[0];
-				lastAddedPoint = prevPointOnPath;
-				dstSinceLastVertex = 0;
-				dstSinceLastIntermediary = 0;
+				var prevPointOnPath = segmentPoints[0];
+				var lastAddedPoint = prevPointOnPath;
+				float dstSinceLastVertex = 0;
+				float dstSinceLastIntermediary = 0;
 
-				float estimatedSegmentLength = CubicBezierUtility.EstimateCurveLength(segmentPoints[0], segmentPoints[1], segmentPoints[2], segmentPoints[3]);
-				int divisions = Mathf.CeilToInt(estimatedSegmentLength * accuracy * accuracyMultiplier);
-				float increment = 1f / divisions;
+				var estimatedSegmentLength = CubicBezierUtility.EstimateCurveLength(segmentPoints[0], segmentPoints[1], segmentPoints[2], segmentPoints[3]);
+				var divisions = Mathf.CeilToInt(estimatedSegmentLength * accuracy * AccuracyMultiplier);
+				var increment = 1f / divisions;
 
-				for (float t = increment; t <= 1; t += increment)
+				for (var t = increment; t <= 1; t += increment)
 				{
-					Vector3 pointOnPath = CubicBezierUtility.EvaluateCurve(segmentPoints[0], segmentPoints[1], segmentPoints[2], segmentPoints[3], t);
-					Vector3 nextPointOnPath = CubicBezierUtility.EvaluateCurve(segmentPoints[0], segmentPoints[1], segmentPoints[2], segmentPoints[3], t + increment);
+					var pointOnPath = CubicBezierUtility.EvaluateCurve(segmentPoints[0], segmentPoints[1], segmentPoints[2], segmentPoints[3], t);
+					var nextPointOnPath = CubicBezierUtility.EvaluateCurve(segmentPoints[0], segmentPoints[1], segmentPoints[2], segmentPoints[3], t + increment);
 
 					// angle at current point on path
-					float localAngle = 180 - MathUtility.MinAngle(prevPointOnPath, pointOnPath, nextPointOnPath);
+					var localAngle = 180 - MathUtility.MinAngle(prevPointOnPath, pointOnPath, nextPointOnPath);
 					// angle between the last added vertex, the current point on the path, and the next point on the path
-					float angleFromPrevVertex = 180 - MathUtility.MinAngle(lastAddedPoint, pointOnPath, nextPointOnPath);
-					float angleError = Mathf.Max(localAngle, angleFromPrevVertex);
-
+					var angleFromPrevVertex = 180 - MathUtility.MinAngle(lastAddedPoint, pointOnPath, nextPointOnPath);
+					var angleError = Mathf.Max(localAngle, angleFromPrevVertex);
 
 					if (angleError > maxAngleError && dstSinceLastVertex >= minVertexDst)
 					{
 						dstSinceLastVertex = 0;
 						dstSinceLastIntermediary = 0;
-						verticesWorld.Add(pointOnPath);
-						vertexToPathSegmentMap.Add(segmentIndex);
+						_verticesWorld.Add(pointOnPath);
+						_vertexToPathSegmentMap.Add(segmentIndex);
 						lastAddedPoint = pointOnPath;
 					}
 					else
 					{
-						if (dstSinceLastIntermediary > intermediaryThreshold)
+						if (dstSinceLastIntermediary > IntermediaryThreshold)
 						{
-							verticesWorld.Add(pointOnPath);
-							vertexToPathSegmentMap.Add(segmentIndex);
+							_verticesWorld.Add(pointOnPath);
+							_vertexToPathSegmentMap.Add(segmentIndex);
 							dstSinceLastIntermediary = 0;
 						}
 						else
@@ -106,45 +100,46 @@ namespace Resources.PathCreator.Core.Editor.Helper
 				}
 			}
 
-			segmentStartIndices[bezierPath.NumSegments] = verticesWorld.Count;
+			_segmentStartIndices[bezierPath.NumSegments] = _verticesWorld.Count;
 
 			// ensure final point gets added (unless path is closed loop)
 			if (!bezierPath.IsClosed)
 			{
-				verticesWorld.Add(bezierPath[bezierPath.NumPoints - 1]);
+				_verticesWorld.Add(bezierPath[bezierPath.NumPoints - 1]);
 			}
 			else
 			{
-				verticesWorld.Add(bezierPath[0]);
+				_verticesWorld.Add(bezierPath[0]);
 			}
 
 			// Calculate length
-			cumululativeLengthWorld = new float[verticesWorld.Count];
-			for (int i = 0; i < verticesWorld.Count; i++)
+			_cumulativeLengthWorld = new float[_verticesWorld.Count];
+			for (var i = 0; i < _verticesWorld.Count; i++)
 			{
-				verticesWorld[i] = MathUtility.TransformPoint(verticesWorld[i], transform, bezierPath.Space);
+				_verticesWorld[i] = MathUtility.TransformPoint(_verticesWorld[i], transform, bezierPath.Space);
 				if (i > 0)
 				{
-					pathLengthWorld += (verticesWorld[i - 1] - verticesWorld[i]).magnitude;
-					cumululativeLengthWorld[i] = pathLengthWorld;
+					_pathLengthWorld += (_verticesWorld[i - 1] - _verticesWorld[i]).magnitude;
+					_cumulativeLengthWorld[i] = _pathLengthWorld;
 				}
 			}
-
 		}
 
-		void ComputeScreenSpace()
+		private void ComputeScreenSpace()
 		{
-			if (Camera.current.transform.position != prevCamPos || Camera.current.transform.rotation != prevCamRot || Camera.current.orthographic != prevCamIsOrtho)
+			if (Camera.current.transform.position != _prevCamPos || Camera.current.transform.rotation != _prevCamRot || Camera.current.orthographic != _prevCamIsOrtho)
 			{
-				points = new Vector2[verticesWorld.Count];
-				for (int i = 0; i < verticesWorld.Count; i++)
+				_points = new Vector2[_verticesWorld.Count];
+				for (var i = 0; i < _verticesWorld.Count; i++)
 				{
-					points[i] = HandleUtility.WorldToGUIPoint(verticesWorld[i]);
+					_points[i] = HandleUtility.WorldToGUIPoint(_verticesWorld[i]);
 				}
 
-				prevCamPos = Camera.current.transform.position;
-				prevCamRot = Camera.current.transform.rotation;
-				prevCamIsOrtho = Camera.current.orthographic;
+				var current = Camera.current;
+				var transform = current.transform;
+				_prevCamPos = transform.position;
+				_prevCamRot = transform.rotation;
+				_prevCamIsOrtho = current.orthographic;
 			}
 		}
 
@@ -152,49 +147,48 @@ namespace Resources.PathCreator.Core.Editor.Helper
 		{
 			ComputeScreenSpace();
 
-			Vector2 mousePos = Event.current.mousePosition;
-			float minDst = float.MaxValue;
-			int closestPolyLineSegmentIndex = 0;
-			int closestBezierSegmentIndex = 0;
+			var mousePos = Event.current.mousePosition;
+			var minDst = float.MaxValue;
+			var closestPolyLineSegmentIndex = 0;
+			var closestBezierSegmentIndex = 0;
 
-			for (int i = 0; i < points.Length - 1; i++)
+			for (var i = 0; i < _points.Length - 1; i++)
 			{
-				float dst = HandleUtility.DistancePointToLineSegment(mousePos, points[i], points[i + 1]);
+				var dst = HandleUtility.DistancePointToLineSegment(mousePos, _points[i], _points[i + 1]);
 
 				if (dst < minDst)
 				{
 					minDst = dst;
 					closestPolyLineSegmentIndex = i;
-					closestBezierSegmentIndex = vertexToPathSegmentMap[i];
+					closestBezierSegmentIndex = _vertexToPathSegmentMap[i];
 				}
 			}
 
-			Vector2 closestPointOnLine = MathUtility.ClosestPointOnLineSegment(mousePos, points[closestPolyLineSegmentIndex], points[closestPolyLineSegmentIndex + 1]);
-			float dstToPointOnLine = (points[closestPolyLineSegmentIndex] - closestPointOnLine).magnitude;
+			var closestPointOnLine = MathUtility.ClosestPointOnLineSegment(mousePos, _points[closestPolyLineSegmentIndex], _points[closestPolyLineSegmentIndex + 1]);
+			var dstToPointOnLine = (_points[closestPolyLineSegmentIndex] - closestPointOnLine).magnitude;
 
-			float d = (points[closestPolyLineSegmentIndex] - points[closestPolyLineSegmentIndex + 1]).magnitude;
-			float percentBetweenVertices = (d == 0) ? 0 : dstToPointOnLine / d;
-			Vector3 closestPoint3D = Vector3.Lerp(verticesWorld[closestPolyLineSegmentIndex], verticesWorld[closestPolyLineSegmentIndex + 1], percentBetweenVertices);
+			var d = (_points[closestPolyLineSegmentIndex] - _points[closestPolyLineSegmentIndex + 1]).magnitude;
+			var percentBetweenVertices = (d == 0) ? 0 : dstToPointOnLine / d;
+			var closestPoint3D = Vector3.Lerp(_verticesWorld[closestPolyLineSegmentIndex], _verticesWorld[closestPolyLineSegmentIndex + 1], percentBetweenVertices);
 
-			float distanceAlongPathWorld = cumululativeLengthWorld[closestPolyLineSegmentIndex] + Vector3.Distance(verticesWorld[closestPolyLineSegmentIndex], closestPoint3D);
-			float timeAlongPath = distanceAlongPathWorld / pathLengthWorld;
+			var distanceAlongPathWorld = _cumulativeLengthWorld[closestPolyLineSegmentIndex] + Vector3.Distance(_verticesWorld[closestPolyLineSegmentIndex], closestPoint3D);
+			var timeAlongPath = distanceAlongPathWorld / _pathLengthWorld;
 
 			// Calculate how far between the current bezier segment the closest point on the line is
 
-			int bezierSegmentStartIndex = segmentStartIndices[closestBezierSegmentIndex];
-			int bezierSegmentEndIndex = segmentStartIndices[closestBezierSegmentIndex + 1];
-			float bezierSegmentLength = cumululativeLengthWorld[bezierSegmentEndIndex] - cumululativeLengthWorld[bezierSegmentStartIndex];
-			float distanceAlongBezierSegment = distanceAlongPathWorld - cumululativeLengthWorld[bezierSegmentStartIndex];
-			float timeAlongBezierSegment = distanceAlongBezierSegment / bezierSegmentLength;
+			var bezierSegmentStartIndex = _segmentStartIndices[closestBezierSegmentIndex];
+			var bezierSegmentEndIndex = _segmentStartIndices[closestBezierSegmentIndex + 1];
+			var bezierSegmentLength = _cumulativeLengthWorld[bezierSegmentEndIndex] - _cumulativeLengthWorld[bezierSegmentStartIndex];
+			var distanceAlongBezierSegment = distanceAlongPathWorld - _cumulativeLengthWorld[bezierSegmentStartIndex];
+			var timeAlongBezierSegment = distanceAlongBezierSegment / bezierSegmentLength;
 
 			return new MouseInfo(minDst, closestPoint3D, distanceAlongPathWorld, timeAlongPath, timeAlongBezierSegment, closestBezierSegmentIndex);
 		}
 
 		public bool TransformIsOutOfDate()
 		{
-			return transform.position != transformPosition || transform.rotation != transformRotation || transform.localScale != transformScale;
+			return _transform.position != _transformPosition || _transform.rotation != _transformRotation || _transform.localScale != _transformScale;
 		}
-
 
 		public struct MouseInfo
 		{
@@ -204,7 +198,6 @@ namespace Resources.PathCreator.Core.Editor.Helper
 			public readonly float timeOnPath;
 			public readonly float timeOnBezierSegment;
 			public readonly int closestSegmentIndex;
-
 
 			public MouseInfo(float mouseDstToLine, Vector3 closestWorldPointToMouse, float distanceAlongPathWorld, float timeOnPath, float timeOnBezierSegment, int closestSegmentIndex)
 			{

@@ -18,7 +18,7 @@ namespace Resources.PathCreator.Core.Editor.Helper
                 hitInfo.point : mouseRay.GetPoint(depthFor3DSpace);
 
             // Mouse can only move on XY plane
-            if (space == PathSpace.xy)
+            if (space == PathSpace.XY)
             {
                 var zDir = mouseRay.direction.z;
                 if (zDir != 0)
@@ -28,7 +28,7 @@ namespace Resources.PathCreator.Core.Editor.Helper
                 }
             }
             // Mouse can only move on XZ plane 
-            else if (space == PathSpace.xz)
+            else if (space == PathSpace.XZ)
             {
                 var yDir = mouseRay.direction.y;
                 if (yDir != 0)

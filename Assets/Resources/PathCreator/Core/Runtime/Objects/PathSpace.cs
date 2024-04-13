@@ -1,3 +1,9 @@
-﻿namespace Resources.PathCreator.Core.Runtime.Objects {
-    public enum PathSpace {xyz, xy, xz};
+﻿namespace Resources.PathCreator.Core.Runtime.Objects 
+{
+    public enum PathSpace
+    {
+        XYZ, 
+        XY, 
+        XZ
+    };
 }
