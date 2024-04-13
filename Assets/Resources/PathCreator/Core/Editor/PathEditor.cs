@@ -118,14 +118,12 @@ namespace Resources.PathCreator.Core.Editor
 				Data.arePathOptionsShown = EditorGUILayout.Foldout(Data.arePathOptionsShown, new GUIContent("Bézier Path Options"), true, _boldFoldoutStyle);
 				if (Data.arePathOptionsShown)
 				{
-					BezierPath.Space = (PathSpace)EditorGUILayout.Popup("Space", (int)BezierPath.Space, SpaceNames);
 					BezierPath.ControlPointMode = (BezierPath.ControlMode)EditorGUILayout.EnumPopup(new GUIContent("Control Mode"), BezierPath.ControlPointMode);
 					if (BezierPath.ControlPointMode == BezierPath.ControlMode.Automatic)
 					{
 						BezierPath.AutoControlLength = EditorGUILayout.Slider(new GUIContent("Control Spacing"), BezierPath.AutoControlLength, 0, 1);
 					}
-
-					BezierPath.IsClosed = EditorGUILayout.Toggle("Closed Path", BezierPath.IsClosed);
+					
 					Data.isTransformToolShown = EditorGUILayout.Toggle(new GUIContent("Enable Transforms"), Data.isTransformToolShown);
 
 					Tools.hidden = !Data.isTransformToolShown;
@@ -151,7 +149,7 @@ namespace Resources.PathCreator.Core.Editor
 								_creator.BezierPath.MovePoint(_handleIndexToDisplayAsTransform, newPosition);
 							}
 							// Don't draw the angle field if we aren't selecting an anchor point/not in 3d space
-							if (_handleIndexToDisplayAsTransform % 3 == 0 && _creator.BezierPath.Space == PathSpace.XYZ)
+							if (_handleIndexToDisplayAsTransform % 3 == 0)
 							{
 								var anchorIndex = _handleIndexToDisplayAsTransform / 3;
 								var currentAngle = _creator.BezierPath.GetAnchorNormalAngle(anchorIndex);
@@ -169,17 +167,8 @@ namespace Resources.PathCreator.Core.Editor
 					{
 						if (GUILayout.Button("Centre Transform"))
 						{
-
 							var worldCentre = BezierPath.CalculateBoundsWithTransform(_creator.transform).center;
 							var transformPos = _creator.transform.position;
-							if (BezierPath.Space == PathSpace.XY)
-							{
-								transformPos = new Vector3(transformPos.x, transformPos.y, 0);
-							}
-							else if (BezierPath.Space == PathSpace.XZ)
-							{
-								transformPos = new Vector3(transformPos.x, 0, transformPos.z);
-							}
 							var worldCentreToTransform = transformPos - worldCentre;
 
 							if (worldCentre != _creator.transform.position)
@@ -187,7 +176,7 @@ namespace Resources.PathCreator.Core.Editor
 								//Undo.RecordObject (creator, "Centralize Transform");
 								if (worldCentreToTransform != Vector3.zero)
 								{
-									var localCentreToTransform = MathUtility.InverseTransformVector(worldCentreToTransform, _creator.transform, BezierPath.Space);
+									var localCentreToTransform = MathUtility.InverseTransformVector(worldCentreToTransform, _creator.transform);
 									for (var i = 0; i < BezierPath.NumPoints; i++)
 									{
 										BezierPath.SetPoint(i, BezierPath.GetPoint(i) + localCentreToTransform, true);
@@ -215,16 +204,13 @@ namespace Resources.PathCreator.Core.Editor
 				if (Data.areNormalsShown)
 				{
 					BezierPath.AreNormalsFlipped = EditorGUILayout.Toggle(new GUIContent("Flip Normals"), BezierPath.AreNormalsFlipped);
-					if (BezierPath.Space == PathSpace.XYZ)
-					{
-						BezierPath.GlobalNormalsAngle = EditorGUILayout.Slider(new GUIContent("Global Angle"), BezierPath.GlobalNormalsAngle, 0, 360);
+					BezierPath.GlobalNormalsAngle = EditorGUILayout.Slider(new GUIContent("Global Angle"), BezierPath.GlobalNormalsAngle, 0, 360);
 
-						if (GUILayout.Button("Reset Normals"))
-						{
-							Undo.RecordObject(_creator, "Reset Normals");
-							BezierPath.AreNormalsFlipped = false;
-							BezierPath.ResetNormalAngles();
-						}
+					if (GUILayout.Button("Reset Normals"))
+					{
+						Undo.RecordObject(_creator, "Reset Normals");
+						BezierPath.AreNormalsFlipped = false;
+						BezierPath.ResetNormalAngles();
 					}
 					GUILayout.Space(InspectorSectionSpacing);
 				}
@@ -374,7 +360,7 @@ namespace Resources.PathCreator.Core.Editor
 					var points = BezierPath.GetPointsInSegment(i);
 					for (var j = 0; j < points.Length; j++)
 					{
-						points[j] = MathUtility.TransformPoint(points[j], _creator.transform, BezierPath.Space);
+						points[j] = MathUtility.TransformPoint(points[j], _creator.transform);
 					}
 					Handles.DrawBezier(points[0], points[3], points[1], points[2], bezierCol, null, 2);
 				}
@@ -385,7 +371,7 @@ namespace Resources.PathCreator.Core.Editor
 			for (var i = 0; i < _creator.Path.NumPoints; i++)
 			{
 				var nextIndex = (i + 1) % _creator.Path.NumPoints;
-				if (nextIndex != 0 || BezierPath.IsClosed)
+				if (nextIndex != 0)
 				{
 					Handles.DrawLine(_creator.Path.GetPoint(i), _creator.Path.GetPoint(nextIndex));
 				}
@@ -414,7 +400,7 @@ namespace Resources.PathCreator.Core.Editor
 
 				var handleIndex = (previousMouseOverHandleIndex + i) % BezierPath.NumPoints;
 				var handleRadius = GetHandleDiameter(_globalDisplaySettings.anchorSize * Data.bezierHandleScale, BezierPath[handleIndex]) / 2f;
-				var pos = MathUtility.TransformPoint(BezierPath[handleIndex], _creator.transform, BezierPath.Space);
+				var pos = MathUtility.TransformPoint(BezierPath[handleIndex], _creator.transform);
 				var dst = HandleUtility.DistanceToCircle(pos, handleRadius);
 				if (dst == 0)
 				{
@@ -433,12 +419,12 @@ namespace Resources.PathCreator.Core.Editor
 					if (_selectedSegmentIndex != -1 && _selectedSegmentIndex < BezierPath.NumSegments)
 					{
 						var newPathPoint = _pathMouseInfo.closestWorldPointToMouse;
-						newPathPoint = MathUtility.InverseTransformPoint(newPathPoint, _creator.transform, BezierPath.Space);
+						newPathPoint = MathUtility.InverseTransformPoint(newPathPoint, _creator.transform);
 						Undo.RecordObject(_creator, "Split segment");
 						BezierPath.SplitSegment(newPathPoint, _selectedSegmentIndex, _pathMouseInfo.timeOnBezierSegment);
 					}
 					// If path is not a closed loop, add new point on to the end of the path
-					else if (!BezierPath.IsClosed)
+					else
 					{
 						// If control/command are held down, the point gets pre-pended, so we want to check distance
 						// to the endpoint we are adding to
@@ -446,12 +432,12 @@ namespace Resources.PathCreator.Core.Editor
 						// insert new point at same dst from scene camera as the point that comes before it (for a 3d path)
 						var endPointLocal = BezierPath[pointIdx];
 						var endPointGlobal =
-							MathUtility.TransformPoint(endPointLocal, _creator.transform, BezierPath.Space);
+							MathUtility.TransformPoint(endPointLocal, _creator.transform);
 						var distanceCameraToEndpoint = (Camera.current.transform.position - endPointGlobal).magnitude;
 						var newPointGlobal =
-							MouseUtility.GetMouseWorldPosition(BezierPath.Space, distanceCameraToEndpoint);
+							MouseUtility.GetMouseWorldPosition(distanceCameraToEndpoint);
 						var newPointLocal =
-							MathUtility.InverseTransformPoint(newPointGlobal, _creator.transform, BezierPath.Space);
+							MathUtility.InverseTransformPoint(newPointGlobal, _creator.transform);
 
 						Undo.RecordObject(_creator, "Add segment");
 						if (e.control || e.command)
@@ -462,9 +448,7 @@ namespace Resources.PathCreator.Core.Editor
 						{
 							BezierPath.AddSegmentToEnd(newPointLocal);
 						}
-
 					}
-
 				}
 			}
 
@@ -525,7 +509,7 @@ namespace Resources.PathCreator.Core.Editor
 					var points = BezierPath.GetPointsInSegment(i);
 					for (var j = 0; j < points.Length; j++)
 					{
-						points[j] = MathUtility.TransformPoint(points[j], _creator.transform, BezierPath.Space);
+						points[j] = MathUtility.TransformPoint(points[j], _creator.transform);
 					}
 
 					if (Data.arePerSegmentBoundsShown)
@@ -600,7 +584,7 @@ namespace Resources.PathCreator.Core.Editor
 
 		private void DrawHandle(int i)
 		{
-			var handlePosition = MathUtility.TransformPoint(BezierPath[i], _creator.transform, BezierPath.Space);
+			var handlePosition = MathUtility.TransformPoint(BezierPath[i], _creator.transform);
 
 			var anchorHandleSize = GetHandleDiameter(_globalDisplaySettings.anchorSize * Data.bezierHandleScale, BezierPath[i]);
 			var controlHandleSize = GetHandleDiameter(_globalDisplaySettings.controlSize * Data.bezierHandleScale, BezierPath[i]);
@@ -617,12 +601,12 @@ namespace Resources.PathCreator.Core.Editor
 			}
 			var cap = _capFunctions[(isAnchorPoint) ? _globalDisplaySettings.anchorShape : _globalDisplaySettings.controlShape];
 			PathHandle.HandleInputType handleInputType;
-			handlePosition = PathHandle.DrawHandle(handlePosition, BezierPath.Space, isInteractive, handleSize, cap, handleColours, out handleInputType, i);
+			handlePosition = PathHandle.DrawHandle(handlePosition, isInteractive, handleSize, cap, handleColours, out handleInputType, i);
 
 			if (doTransformHandle)
 			{
 				// Show normals rotate tool 
-				if (Data.areNormalsShown && Tools.current == Tool.Rotate && isAnchorPoint && BezierPath.Space == PathSpace.XYZ)
+				if (Data.areNormalsShown && Tools.current == Tool.Rotate && isAnchorPoint)
 				{
 					Handles.color = _handlesStartCol;
 
@@ -701,7 +685,7 @@ namespace Resources.PathCreator.Core.Editor
 					throw new ArgumentOutOfRangeException();
 			}
 
-			var localHandlePosition = MathUtility.InverseTransformPoint(handlePosition, _creator.transform, BezierPath.Space);
+			var localHandlePosition = MathUtility.InverseTransformPoint(handlePosition, _creator.transform);
 
 			if (BezierPath[i] != localHandlePosition)
 			{
@@ -857,7 +841,7 @@ namespace Resources.PathCreator.Core.Editor
 
 		private PathCreatorData Data => _creator.EditorData;
 
-		private bool EditingNormals => Tools.current == Tool.Rotate && _handleIndexToDisplayAsTransform % 3 == 0 && BezierPath.Space == PathSpace.XYZ;
+		private bool EditingNormals => Tools.current == Tool.Rotate && _handleIndexToDisplayAsTransform % 3 == 0;
 
 		#endregion
 	}

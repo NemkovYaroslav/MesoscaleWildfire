@@ -1,27 +1,24 @@
-﻿using Resources.PathCreator.Core.Runtime.Objects;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Utility 
 {
     public static class MathUtility {
 
         // Transform point from local to world space
-        public static Vector3 TransformPoint (Vector3 p, Transform t, PathSpace space) 
+        public static Vector3 TransformPoint (Vector3 p, Transform t) 
         {
             // path only works correctly for uniform scales, so average out xyz global scale
             var scale = Vector3.Dot (t.lossyScale, Vector3.one) / 3;
             var constrainedPos = t.position;
             var constrainedRot = t.rotation;
-            ConstrainPosRot (ref constrainedPos, ref constrainedRot, space);
             return constrainedRot * p * scale + constrainedPos;
         }
 
         // Transform point from world to local space
-        public static Vector3 InverseTransformPoint (Vector3 p, Transform t, PathSpace space) 
+        public static Vector3 InverseTransformPoint (Vector3 p, Transform t) 
         {
             var constrainedPos = t.position;
             var constrainedRot = t.rotation;
-            ConstrainPosRot (ref constrainedPos, ref constrainedRot, space);
 
             // path only works correctly for uniform scales, so average out xyz global scale
             var scale = Vector3.Dot (t.lossyScale, Vector3.one) / 3;
@@ -31,38 +28,34 @@ namespace Resources.PathCreator.Core.Runtime.Utility
         }
 
         // Transform vector from local to world space (affected by rotation and scale, but not position)
-        public static Vector3 TransformVector (Vector3 p, Transform t, PathSpace space) 
+        public static Vector3 TransformVector (Vector3 p, Transform t) 
         {
             // path only works correctly for uniform scales, so average out xyz global scale
             var scale = Vector3.Dot (t.lossyScale, Vector3.one) / 3;
             var constrainedRot = t.rotation;
-            ConstrainRot (ref constrainedRot, space);
             return constrainedRot * p * scale;
         }
 
         // Transform vector from world to local space (affected by rotation and scale, but not position)
-        public static Vector3 InverseTransformVector (Vector3 p, Transform t, PathSpace space) 
+        public static Vector3 InverseTransformVector (Vector3 p, Transform t) 
         {
             var constrainedRot = t.rotation;
-            ConstrainRot (ref constrainedRot, space);
             // path only works correctly for uniform scales, so average out xyz global scale
             var scale = Vector3.Dot (t.lossyScale, Vector3.one) / 3;
             return Quaternion.Inverse (constrainedRot) * p / scale;
         }
 
         // Transform vector from local to world space (affected by rotation, but not position or scale)
-        public static Vector3 TransformDirection (Vector3 p, Transform t, PathSpace space) 
+        public static Vector3 TransformDirection (Vector3 p, Transform t) 
         {
             var constrainedRot = t.rotation;
-            ConstrainRot (ref constrainedRot, space);
             return constrainedRot * p;
         }
 
         // Transform vector from world to local space (affected by rotation, but not position or scale)
-        public static Vector3 InverseTransformDirection (Vector3 p, Transform t, PathSpace space) 
+        public static Vector3 InverseTransformDirection (Vector3 p, Transform t) 
         {
             var constrainedRot = t.rotation;
-            ConstrainRot (ref constrainedRot, space);
             return Quaternion.Inverse (constrainedRot) * p;
         }
 
@@ -151,54 +144,6 @@ namespace Resources.PathCreator.Core.Runtime.Utility
             }
 
             return signedArea >= 0;
-        }
-
-        static void ConstrainPosRot (ref Vector3 pos, ref Quaternion rot, PathSpace space) 
-        {
-            if (space == PathSpace.XY) 
-            {
-                var eulerAngles = rot.eulerAngles;
-                if (eulerAngles.x != 0 || eulerAngles.y != 0) 
-                {
-                    rot = Quaternion.AngleAxis (eulerAngles.z, Vector3.forward);
-                }
-                pos = new Vector3 (pos.x, pos.y, 0);
-            }
-            else
-            {
-                if (space == PathSpace.XZ)
-                {
-                    var eulerAngles = rot.eulerAngles;
-                    if (eulerAngles.x != 0 || eulerAngles.z != 0) 
-                    {
-                        rot = Quaternion.AngleAxis (eulerAngles.y, Vector3.up);
-                    }
-                    pos = new Vector3 (pos.x, 0, pos.z);
-                } 
-            }
-        }
-
-        static void ConstrainRot (ref Quaternion rot, PathSpace space) 
-        {
-            if (space == PathSpace.XY) 
-            {
-                var eulerAngles = rot.eulerAngles;
-                if (eulerAngles.x != 0 || eulerAngles.y != 0) 
-                {
-                    rot = Quaternion.AngleAxis (eulerAngles.z, Vector3.forward);
-                }
-            }
-            else
-            {
-                if (space == PathSpace.XZ) 
-                {
-                    var eulerAngles = rot.eulerAngles;
-                    if (eulerAngles.x != 0 || eulerAngles.z != 0) 
-                    {
-                        rot = Quaternion.AngleAxis (eulerAngles.y, Vector3.up);
-                    }
-                }
-            }
         }
     }
 }

@@ -79,9 +79,8 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             {
                 bezierPath.OnModified -= BezierPathEdited;
             }
-
-            var space = (defaultIs2D) ? PathSpace.XY : PathSpace.XYZ;
-            bezierPath = new BezierPath (centre, false, space);
+            
+            bezierPath = new BezierPath(centre);
 
             bezierPath.OnModified += BezierPathEdited;
             

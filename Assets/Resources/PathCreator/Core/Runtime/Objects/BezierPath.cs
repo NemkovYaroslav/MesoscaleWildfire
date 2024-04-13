@@ -42,8 +42,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		#region Fields
 
 		[SerializeField, HideInInspector] private List<Vector3> points;
-		[SerializeField, HideInInspector] private bool isClosed;
-		[SerializeField, HideInInspector] private PathSpace space;
 		[SerializeField, HideInInspector] private ControlMode controlMode;
 		[SerializeField, HideInInspector] private float autoControlLength = 0.3f;
 		[SerializeField, HideInInspector] private bool areBoundsUpToDated;
@@ -65,9 +63,9 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         /// <param name="center"> Center point </param>
         /// <param name="isClosed"> Should the end point connect back to the start point? </param>
         /// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-        public BezierPath(Vector3 center, bool isClosed = false, PathSpace space = PathSpace.XYZ)
+        public BezierPath(Vector3 center, bool isClosed = false)
 		{
-			var dir = (space == PathSpace.XZ) ? Vector3.forward : Vector3.up;
+			var dir = Vector3.up;
 			const int width = 2;
 			const float controlHeight = 0.5f;
 			const float controlWidth = 1.0f;
@@ -81,16 +79,13 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 			};
 
 			perAnchorNormalsAngle = new List<float>() { 0, 0 };
-
-			Space = space;
-			IsClosed = isClosed;
 		}
 
 		/// <summary> Creates a path from the supplied 3D points </summary>
 		/// <param name="points"> List or array of points to create the path from. </param>
 		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
 		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Vector3> points, bool isClosed = false, PathSpace space = PathSpace.XYZ)
+		public BezierPath(IEnumerable<Vector3> points, bool isClosed = false)
 		{
 			var pointsArray = points.ToArray();
 
@@ -110,27 +105,25 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 					perAnchorNormalsAngle.Add(0);
 				}
 			}
-
-			Space = space;
-			IsClosed = isClosed;
 		}
 
 		/// <summary> Creates a path from the positions of the supplied 2D points </summary>
 		/// <param name="transforms"> List or array of transforms to create the path from. </param>
 		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
 		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Vector2> transforms, bool isClosed = false, PathSpace space = PathSpace.XY) :
-			this(transforms.Select(p => new Vector3(p.x, p.y)), isClosed, space) 
+		public BezierPath(IEnumerable<Vector2> transforms, bool isClosed = false) :
+			this(transforms.Select(p => new Vector3(p.x, p.y)), isClosed) 
 		{ }
 
 		/// <summary> Creates a path from the positions of the supplied transforms </summary>
 		/// <param name="transforms"> List or array of transforms to create the path from. </param>
 		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
 		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Transform> transforms, bool isClosed = false, PathSpace space = PathSpace.XY) :
-			this(transforms.Select(t => t.position), isClosed, space) 
+		public BezierPath(IEnumerable<Transform> transforms, bool isClosed = false) :
+			this(transforms.Select(t => t.position), isClosed) 
 		{ }
 
+		/*
 		/// <summary> Creates a path from the supplied 2D points </summary>
 		/// <param name="points"> List or array of 2d points to create the path from. </param>
 		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
@@ -138,6 +131,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		public BezierPath(IEnumerable<Vector2> points, PathSpace space = PathSpace.XYZ, bool isClosed = false) :
 			this(points.Select(p => new Vector3(p.x, p.y)), isClosed, space) 
 		{ }
+		*/
 
 		#endregion
 
@@ -168,45 +162,10 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		public int NumPoints => points.Count;
 
 		/// Number of anchor points making up the path
-		public int NumAnchorPoints => (IsClosed) ? points.Count / 3 : (points.Count + 2) / 3;
+		public int NumAnchorPoints => (points.Count + 2) / 3;
 
 		/// Number of bezier curves making up this path
 		public int NumSegments => points.Count / 3;
-
-		/// Path can exist in 3D (xyz), 2D (xy), or Top-Down (xz) space
-		/// In xy or xz space, points will be clamped to that plane (so in a 2D path, for example, points will always be at 0 on z axis)
-		public PathSpace Space
-		{
-			get => space;
-			
-			set
-			{
-				if (value != space)
-				{
-					var previousSpace = space;
-				
-					space = value;
-				
-					UpdateToNewPathSpace(previousSpace);
-				}
-			}
-		}
-
-		/// If closed, path will loop back from end point to start point
-		public bool IsClosed
-		{
-			get => isClosed;
-			
-			set
-			{
-				if (isClosed != value)
-				{
-					isClosed = value;
-				
-					UpdateClosedState();
-				}
-			}
-		}
 
 		/// The control mode determines the behaviour of control points.
 		/// Possible modes are:
@@ -257,8 +216,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		/// Add new anchor point to end of the path
 		public void AddSegmentToEnd(Vector3 anchorPos)
 		{
-			if (isClosed) return;
-
 			var lastAnchorIndex = points.Count - 1;
 			// Set position for new control to be mirror of its counterpart
 			var secondControlForOldLastAnchorOffset = (points[lastAnchorIndex] - points[lastAnchorIndex - 1]);
@@ -287,8 +244,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		/// Add new anchor point to start of the path
 		public void AddSegmentToStart(Vector3 anchorPos)
 		{
-			if (isClosed) return;
-
 			// Set position for new control to be mirror of its counterpart
 			var secondControlForOldFirstAnchorOffset = (points[0] - points[1]);
 			if (controlMode != ControlMode.Mirrored && controlMode != ControlMode.Automatic)
@@ -361,19 +316,15 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		public void DeleteSegment(int anchorIndex)
 		{
 			// Don't delete segment if its the last one remaining (or if only two segments in a closed path)
-			if (NumSegments > 2 || !isClosed && NumSegments > 1)
+			if (NumSegments > 1)
 			{
 				if (anchorIndex == 0)
 				{
-					if (isClosed)
-					{
-						points[^1] = points[2];
-					}
 					points.RemoveRange(0, 3);
 				}
 				else
 				{
-					if (anchorIndex == points.Count - 1 && !isClosed)
+					if (anchorIndex == points.Count - 1)
 					{
 						points.RemoveRange(anchorIndex - 2, 3);
 					}
@@ -404,19 +355,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		/// Move an existing point to a new position
 		public void MovePoint(int i, Vector3 pointPos, bool suppressPathModifiedEvent = false)
 		{
-			switch (space)
-			{
-				case PathSpace.XY:
-					pointPos.z = 0;
-					break;
-				case PathSpace.XZ:
-					pointPos.y = 0;
-					break;
-				case PathSpace.XYZ:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
 			var deltaMove = pointPos - points[i];
 			var isAnchorPoint = i % 3 == 0;
 
@@ -434,11 +372,11 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 					// Move control points with anchor point
 					if (isAnchorPoint)
 					{
-						if (i + 1 < points.Count || isClosed)
+						if (i + 1 < points.Count)
 						{
 							points[LoopIndex(i + 1)] += deltaMove;
 						}
-						if (i - 1 >= 0 || isClosed)
+						if (i - 1 >= 0)
 						{
 							points[LoopIndex(i - 1)] += deltaMove;
 						}
@@ -452,7 +390,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 							var attachedControlIndex = (nextPointIsAnchor) ? i + 2 : i - 2;
 							var anchorIndex = (nextPointIsAnchor) ? i + 1 : i - 1;
 
-							if (attachedControlIndex >= 0 && attachedControlIndex < points.Count || isClosed)
+							if (attachedControlIndex >= 0 && attachedControlIndex < points.Count)
 							{
 								var distanceFromAnchor = 0.0f;
 								switch (controlMode)
@@ -496,7 +434,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 				var p = GetPointsInSegment(i);
 				for (var j = 0; j < p.Length; j++)
 				{
-					p[j] = MathUtility.TransformPoint(p[j], transform, space);
+					p[j] = MathUtility.TransformPoint(p[j], transform);
 				}
 
 				minMax.AddValue(p[0]);
@@ -627,7 +565,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		{
 			for (var i = updatedAnchorIndex - 3; i <= updatedAnchorIndex + 3; i += 3)
 			{
-				if (i >= 0 && i < points.Count || isClosed)
+				if (i >= 0 && i < points.Count)
 				{
 					AutoSetAnchorControlPoints(LoopIndex(i));
 				}
@@ -659,13 +597,13 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 			var dir = Vector3.zero;
 			var neighbourDistances = new float[2];
 
-			if (anchorIndex - 3 >= 0 || isClosed)
+			if (anchorIndex - 3 >= 0)
 			{
 				var offset = points[LoopIndex(anchorIndex - 3)] - anchorPos;
 				dir += offset.normalized;
 				neighbourDistances[0] = offset.magnitude;
 			}
-			if (anchorIndex + 3 >= 0 || isClosed)
+			if (anchorIndex + 3 >= 0)
 			{
 				var offset = points[LoopIndex(anchorIndex + 3)] - anchorPos;
 				dir -= offset.normalized;
@@ -678,7 +616,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 			for (var i = 0; i < 2; i++)
 			{
 				var controlIndex = anchorIndex + i * 2 - 1;
-				if (controlIndex >= 0 && controlIndex < points.Count || isClosed)
+				if (controlIndex >= 0 && controlIndex < points.Count)
 				{
 					points[LoopIndex(controlIndex)] = anchorPos + dir * (neighbourDistances[i] * autoControlLength);
 				}
@@ -688,130 +626,23 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		/// Determines good positions (for a smooth path) for the control points at the start and end of a path
 		private void AutoSetStartAndEndControls()
 		{
-			if (isClosed)
+			// Handle case with 2 anchor points separately, as otherwise minor adjustments cause path to constantly flip
+			if (NumAnchorPoints == 2)
 			{
-				// Handle case with only 2 anchor points separately, as will otherwise result in straight line ()
-				if (NumAnchorPoints == 2)
-				{
-					var dirAnchorAToB = (points[3] - points[0]).normalized;
-					var dstBetweenAnchors = (points[0] - points[3]).magnitude;
-					var perp = Vector3.Cross(dirAnchorAToB, (space == PathSpace.XY) ? Vector3.forward : Vector3.up);
-					points[1] = points[0] + perp * dstBetweenAnchors / 2.0f;
-					points[5] = points[0] - perp * dstBetweenAnchors / 2.0f;
-					points[2] = points[3] + perp * dstBetweenAnchors / 2.0f;
-					points[4] = points[3] - perp * dstBetweenAnchors / 2.0f;
-				}
-				else
-				{
-					AutoSetAnchorControlPoints(0);
-					AutoSetAnchorControlPoints(points.Count - 3);
-				}
+				points[1] = points[0] + (points[3] - points[0]) * 0.25f;
+				points[2] = points[3] + (points[0] - points[3]) * 0.25f;
 			}
 			else
 			{
-				// Handle case with 2 anchor points separately, as otherwise minor adjustments cause path to constantly flip
-				if (NumAnchorPoints == 2)
-				{
-					points[1] = points[0] + (points[3] - points[0]) * 0.25f;
-					points[2] = points[3] + (points[0] - points[3]) * 0.25f;
-				}
-				else
-				{
-					points[1] = (points[0] + points[2]) * 0.5f;
-					points[^2] = (points[^1] + points[^3]) * 0.5f;
-				}
+				points[1] = (points[0] + points[2]) * 0.5f;
+				points[^2] = (points[^1] + points[^3]) * 0.5f;
 			}
-		}
-
-		/// Update point positions for new path space
-		/// (for example, if changing from xy to xz path, y and z axes will be swapped so the path keeps its shape in the new space)
-		private void UpdateToNewPathSpace(PathSpace previousSpace)
-		{
-			// If changing from 3d to 2d space, first find the bounds of the 3d path.
-			// The axis with the smallest bounds will be discarded.
-			if (previousSpace == PathSpace.XYZ)
-			{
-				var boundsSize = PathBounds.size;
-				var minBoundsSize = Mathf.Min(boundsSize.x, boundsSize.y, boundsSize.z);
-
-				var i = 0;
-				for (; i < NumPoints; i++)
-				{
-					switch (space)
-					{
-						case PathSpace.XY:
-						{
-							var x = (Mathf.Approximately(minBoundsSize, boundsSize.x)) ? points[i].z : points[i].x;
-							var y = (Mathf.Approximately(minBoundsSize, boundsSize.y)) ? points[i].z : points[i].y;
-							points[i] = new Vector3(x, y, 0);
-							break;
-						}
-						case PathSpace.XZ:
-						{
-							var x = (Mathf.Approximately(minBoundsSize, boundsSize.x)) ? points[i].y : points[i].x;
-							var z = (Mathf.Approximately(minBoundsSize, boundsSize.z)) ? points[i].y : points[i].z;
-							points[i] = new Vector3(x, 0, z);
-							break;
-						}
-						case PathSpace.XYZ:
-							break;
-						default:
-							throw new ArgumentOutOfRangeException();
-					}
-				}
-			}
-			else
-			{
-				// Nothing needs to change when going to 3d space
-				if (space != PathSpace.XYZ)
-				{
-					for (var i = 0; i < NumPoints; i++)
-					{
-						switch (space)
-						{
-							// from xz to xy
-							case PathSpace.XY:
-								points[i] = new Vector3(points[i].x, points[i].z, 0);
-								break;
-							// from xy to xz
-							case PathSpace.XZ:
-								points[i] = new Vector3(points[i].x, 0, points[i].y);
-								break;
-							case PathSpace.XYZ:
-								break;
-							default:
-								throw new ArgumentOutOfRangeException();
-						}
-					}
-				}
-			}
-
-			NotifyPathModified();
 		}
 
 		/// Add/remove the extra 2 controls required for a closed path
 		private void UpdateClosedState()
 		{
-			if (isClosed)
-			{
-				// Set positions for new controls to mirror their counterparts
-				var lastAnchorSecondControl = points[^1] * 2 - points[^2];
-				var firstAnchorSecondControl = points[0] * 2 - points[1];
-				if (controlMode != ControlMode.Mirrored && controlMode != ControlMode.Automatic)
-				{
-					// Set positions for new controls to be aligned with their counterparts, but with a length of half the distance between start/end anchor
-					var dstBetweenStartAndEndAnchors = (points[^1] - points[0]).magnitude;
-					lastAnchorSecondControl = points[^1] + (points[^1] - points[^2]).normalized * (dstBetweenStartAndEndAnchors * .5f);
-					firstAnchorSecondControl = points[0] + (points[0] - points[1]).normalized * (dstBetweenStartAndEndAnchors * .5f);
-				}
-				points.Add(lastAnchorSecondControl);
-				points.Add(firstAnchorSecondControl);
-			}
-			else
-			{
-				points.RemoveRange(points.Count - 2, 2);
-
-			}
+			points.RemoveRange(points.Count - 2, 2);
 
 			if (controlMode == ControlMode.Automatic)
 			{

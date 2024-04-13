@@ -15,9 +15,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
     public class VertexPath
     {
         #region Fields
-
-        private readonly PathSpace _space;
-        public readonly bool isClosedLoop;
+        
         private readonly Vector3[] _localPoints;
         private readonly Vector3[] _localTangents;
         public readonly Vector3[] localNormals;
@@ -67,8 +65,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         private VertexPath(BezierPath bezierPath, VertexPathUtility.PathSplitData pathSplitData, Transform transform) 
         {
             _transform = transform;
-            _space = bezierPath.Space;
-            isClosedLoop = bezierPath.IsClosed;
             var numVerts = pathSplitData.vertices.Count;
             _length = pathSplitData.cumulativeLength[numVerts - 1];
 
@@ -92,81 +88,53 @@ namespace Resources.PathCreator.Core.Runtime.Objects
                 _times[i] = _cumulativeLengthAtEachVertex[i] / _length;
 
                 // Calculate normals
-                if (_space == PathSpace.XYZ) 
+                if (i == 0) 
                 {
-                    if (i == 0) 
-                    {
-                        localNormals[0] = Vector3.Cross (lastRotationAxis, pathSplitData.tangents[0]).normalized;
-                    } 
-                    else 
-                    {
-                        // First reflection
-                        var offset = (_localPoints[i] - _localPoints[i - 1]);
-                        var sqrDst = offset.sqrMagnitude;
-                        var r = lastRotationAxis - offset * 2 / sqrDst * Vector3.Dot (offset, lastRotationAxis);
-                        var t = _localTangents[i - 1] - offset * 2 / sqrDst * Vector3.Dot (offset, _localTangents[i - 1]);
-
-                        // Second reflection
-                        var v2 = _localTangents[i] - t;
-                        var c2 = Vector3.Dot (v2, v2);
-
-                        var finalRot = r - v2 * 2 / c2 * Vector3.Dot (v2, r);
-                        var n = Vector3.Cross (finalRot, _localTangents[i]).normalized;
-                        localNormals[i] = n;
-                        lastRotationAxis = finalRot;
-                    }
+                    localNormals[0] = Vector3.Cross (lastRotationAxis, pathSplitData.tangents[0]).normalized;
                 } 
                 else 
                 {
-                    localNormals[i] = Vector3.Cross (_localTangents[i], _up) * ((bezierPath.AreNormalsFlipped) ? 1 : -1);
-                }
-            }
+                    // First reflection
+                    var offset = (_localPoints[i] - _localPoints[i - 1]);
+                    var sqrDst = offset.sqrMagnitude;
+                    var r = lastRotationAxis - offset * 2 / sqrDst * Vector3.Dot (offset, lastRotationAxis);
+                    var t = _localTangents[i - 1] - offset * 2 / sqrDst * Vector3.Dot (offset, _localTangents[i - 1]);
 
-            // Apply correction for 3d normals along a closed path
-            if (_space == PathSpace.XYZ && isClosedLoop) 
-            {
-                // Get angle between first and last normal (if zero, they're already lined up, otherwise we need to correct)
-                var normalsAngleErrorAcrossJoin = Vector3.SignedAngle (localNormals[^1], localNormals[0], _localTangents[0]);
-                // Gradually rotate the normals along the path to ensure start and end normals line up correctly
-                if (Mathf.Abs (normalsAngleErrorAcrossJoin) > 0.1f) // don't bother correcting if very nearly correct
-                {
-                    for (var i = 1; i < localNormals.Length; i++) 
-                    {
-                        var t = (i / (localNormals.Length - 1f));
-                        var angle = normalsAngleErrorAcrossJoin * t;
-                        var rot = Quaternion.AngleAxis (angle, _localTangents[i]);
-                        localNormals[i] = rot * localNormals[i] * ((bezierPath.AreNormalsFlipped) ? -1 : 1);
-                    }
+                    // Second reflection
+                    var v2 = _localTangents[i] - t;
+                    var c2 = Vector3.Dot (v2, v2);
+
+                    var finalRot = r - v2 * 2 / c2 * Vector3.Dot (v2, r);
+                    var n = Vector3.Cross (finalRot, _localTangents[i]).normalized;
+                    localNormals[i] = n;
+                    lastRotationAxis = finalRot;
                 }
             }
 
             // Rotate normals to match up with user-defined anchor angles
-            if (_space == PathSpace.XYZ)
+            for (var anchorIndex = 0; anchorIndex < pathSplitData.anchorVertexMap.Count - 1; anchorIndex++) 
             {
-                for (var anchorIndex = 0; anchorIndex < pathSplitData.anchorVertexMap.Count - 1; anchorIndex++) 
+                var nextAnchorIndex = anchorIndex + 1;
+
+                var startAngle = bezierPath.GetAnchorNormalAngle (anchorIndex) + bezierPath.GlobalNormalsAngle;
+                var endAngle = bezierPath.GetAnchorNormalAngle (nextAnchorIndex) + bezierPath.GlobalNormalsAngle;
+                var deltaAngle = Mathf.DeltaAngle (startAngle, endAngle);
+
+                var startVertIndex = pathSplitData.anchorVertexMap[anchorIndex];
+                var endVertIndex = pathSplitData.anchorVertexMap[anchorIndex + 1];
+
+                var num = endVertIndex - startVertIndex;
+                if (anchorIndex == pathSplitData.anchorVertexMap.Count - 2) 
                 {
-                    var nextAnchorIndex = (isClosedLoop) ? (anchorIndex + 1) % bezierPath.NumSegments : anchorIndex + 1;
-
-                    var startAngle = bezierPath.GetAnchorNormalAngle (anchorIndex) + bezierPath.GlobalNormalsAngle;
-                    var endAngle = bezierPath.GetAnchorNormalAngle (nextAnchorIndex) + bezierPath.GlobalNormalsAngle;
-                    var deltaAngle = Mathf.DeltaAngle (startAngle, endAngle);
-
-                    var startVertIndex = pathSplitData.anchorVertexMap[anchorIndex];
-                    var endVertIndex = pathSplitData.anchorVertexMap[anchorIndex + 1];
-
-                    var num = endVertIndex - startVertIndex;
-                    if (anchorIndex == pathSplitData.anchorVertexMap.Count - 2) 
-                    {
-                        num += 1;
-                    }
-                    for (var i = 0; i < num; i++) 
-                    {
-                        var vertIndex = startVertIndex + i;
-                        var t = num == 1 ? 1f : i / (num - 1f);
-                        var angle = startAngle + deltaAngle * t;
-                        var rot = Quaternion.AngleAxis (angle, _localTangents[vertIndex]);
-                        localNormals[vertIndex] = (rot * localNormals[vertIndex]) * ((bezierPath.AreNormalsFlipped) ? -1 : 1);
-                    }
+                    num += 1;
+                }
+                for (var i = 0; i < num; i++) 
+                {
+                    var vertIndex = startVertIndex + i;
+                    var t = num == 1 ? 1f : i / (num - 1f);
+                    var angle = startAngle + deltaAngle * t;
+                    var rot = Quaternion.AngleAxis (angle, _localTangents[vertIndex]);
+                    localNormals[vertIndex] = (rot * localNormals[vertIndex]) * ((bezierPath.AreNormalsFlipped) ? -1 : 1);
                 }
             }
         }
@@ -183,17 +151,17 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 
         public Vector3 GetTangent(int index) 
         {
-            return MathUtility.TransformDirection(_localTangents[index], _transform, _space);
+            return MathUtility.TransformDirection(_localTangents[index], _transform);
         }
 
         public Vector3 GetNormal(int index) 
         {
-            return MathUtility.TransformDirection(localNormals[index], _transform, _space);
+            return MathUtility.TransformDirection(localNormals[index], _transform);
         }
 
         public Vector3 GetPoint(int index) 
         {
-            return MathUtility.TransformPoint(_localPoints[index], _transform, _space);
+            return MathUtility.TransformPoint(_localPoints[index], _transform);
         }
 
         /// Gets point on path based on distance travelled.
@@ -237,7 +205,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         {
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             var dir = Vector3.Lerp(_localTangents[data.previousIndex], _localTangents[data.nextIndex], data.percentBetweenIndices);
-            return MathUtility.TransformDirection(dir, _transform, _space);
+            return MathUtility.TransformDirection(dir, _transform);
         }
 
         /// Gets normal vector on path based on 'time' (where 0 is start, and 1 is end of path).
@@ -245,7 +213,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         {
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             var normal = Vector3.Lerp(localNormals[data.previousIndex], localNormals[data.nextIndex], data.percentBetweenIndices);
-            return MathUtility.TransformDirection(normal, _transform, _space);
+            return MathUtility.TransformDirection(normal, _transform);
         }
 
         /// Gets a rotation that will orient an object in the direction of the path at this point, with local up point along the path's normal
@@ -254,7 +222,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             var direction = Vector3.Lerp(_localTangents[data.previousIndex], _localTangents[data.nextIndex], data.percentBetweenIndices);
             var normal = Vector3.Lerp(localNormals[data.previousIndex], localNormals[data.nextIndex], data.percentBetweenIndices);
-            return Quaternion.LookRotation(MathUtility.TransformDirection (direction, _transform, _space), MathUtility.TransformDirection (normal, _transform, _space));
+            return Quaternion.LookRotation(MathUtility.TransformDirection (direction, _transform), MathUtility.TransformDirection (normal, _transform));
         }
 
         /// Finds the closest point on the path from any point in the world
@@ -263,19 +231,19 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             // Transform the provided worldPoint into VertexPath local-space.
             // This allows to do math on the localPoint's, thus avoiding the need to
             // transform each local vertex path point into world space via GetPoint.
-            var localPoint = MathUtility.InverseTransformPoint(worldPoint, _transform, _space);
+            var localPoint = MathUtility.InverseTransformPoint(worldPoint, _transform);
 
             var data = CalculateClosestPointOnPathData(localPoint);
             var localResult = Vector3.Lerp(_localPoints[data.previousIndex], _localPoints[data.nextIndex], data.percentBetweenIndices);
 
             // Transform local result into world space
-            return MathUtility.TransformPoint(localResult, _transform, _space);
+            return MathUtility.TransformPoint(localResult, _transform);
         }
 
         /// Finds the 'time' (0=start of path, 1=end of path) along the path that is closest to the given point
         public float GetClosestTimeOnPath(Vector3 worldPoint) 
         {
-            var localPoint = MathUtility.InverseTransformPoint(worldPoint, _transform, _space);
+            var localPoint = MathUtility.InverseTransformPoint(worldPoint, _transform);
             var data = CalculateClosestPointOnPathData(localPoint);
             return Mathf.Lerp(_times[data.previousIndex], _times[data.nextIndex], data.percentBetweenIndices);
         }
@@ -283,7 +251,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         /// Finds the distance along the path that is closest to the given point
         public float GetClosestDistanceAlongPath(Vector3 worldPoint) 
         {
-            var localPoint = MathUtility.InverseTransformPoint(worldPoint, _transform, _space);
+            var localPoint = MathUtility.InverseTransformPoint(worldPoint, _transform);
             var data = CalculateClosestPointOnPathData(localPoint);
             return Mathf.Lerp(_cumulativeLengthAtEachVertex[data.previousIndex], _cumulativeLengthAtEachVertex[data.nextIndex], data.percentBetweenIndices);
         }
@@ -360,14 +328,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
                 var nextI = i + 1;
                 if (nextI >= _localPoints.Length) 
                 {
-                    if (isClosedLoop) 
-                    {
-                        nextI %= _localPoints.Length;
-                    } 
-                    else 
-                    {
-                        break;
-                    }
+                    break;
                 }
 
                 var closestPointOnSegment = MathUtility.ClosestPointOnLineSegment(localPoint, _localPoints[i], _localPoints[nextI]);

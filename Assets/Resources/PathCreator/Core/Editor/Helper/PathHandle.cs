@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,7 +37,7 @@ namespace Resources.PathCreator.Core.Editor.Helper
 			_dstMouseToDragPointStart = float.MaxValue;
 		}
 
-		public static Vector3 DrawHandle(Vector3 position, PathSpace space, bool isInteractive, float handleDiameter, Handles.CapFunction capFunc, HandleColours colours, out HandleInputType inputType, int handleIndex)
+		public static Vector3 DrawHandle(Vector3 position, bool isInteractive, float handleDiameter, Handles.CapFunction capFunc, HandleColours colours, out HandleInputType inputType, int handleIndex)
 		{
 			var id = GetID(handleIndex);
 			var screenPosition = Handles.matrix.MultiplyPoint(position);
@@ -114,15 +113,7 @@ namespace Resources.PathCreator.Core.Editor.Helper
 							                + (Vector3)(_handleDragMouseEnd - _handleDragMouseStart);
 							inputType = HandleInputType.LmbDrag;
 							// Handle can move freely in 3d space
-							if (space == PathSpace.XYZ)
-							{
-								position = Handles.matrix.inverse.MultiplyPoint(Camera.current.ScreenToWorldPoint(position2));
-							}
-							// Handle is clamped to xy or xz plane
-							else
-							{
-								position = MouseUtility.GetMouseWorldPosition(space);
-							}
+							position = Handles.matrix.inverse.MultiplyPoint(Camera.current.ScreenToWorldPoint(position2));
 
 							GUI.changed = true;
 							Event.current.Use();

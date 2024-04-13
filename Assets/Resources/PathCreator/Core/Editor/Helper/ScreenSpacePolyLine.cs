@@ -103,20 +103,13 @@ namespace Resources.PathCreator.Core.Editor.Helper
 			_segmentStartIndices[bezierPath.NumSegments] = _verticesWorld.Count;
 
 			// ensure final point gets added (unless path is closed loop)
-			if (!bezierPath.IsClosed)
-			{
-				_verticesWorld.Add(bezierPath[bezierPath.NumPoints - 1]);
-			}
-			else
-			{
-				_verticesWorld.Add(bezierPath[0]);
-			}
+			_verticesWorld.Add(bezierPath[bezierPath.NumPoints - 1]);
 
 			// Calculate length
 			_cumulativeLengthWorld = new float[_verticesWorld.Count];
 			for (var i = 0; i < _verticesWorld.Count; i++)
 			{
-				_verticesWorld[i] = MathUtility.TransformPoint(_verticesWorld[i], transform, bezierPath.Space);
+				_verticesWorld[i] = MathUtility.TransformPoint(_verticesWorld[i], transform);
 				if (i > 0)
 				{
 					_pathLengthWorld += (_verticesWorld[i - 1] - _verticesWorld[i]).magnitude;

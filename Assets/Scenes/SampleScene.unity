@@ -170,12 +170,10 @@ MonoBehaviour:
   editorData:
     bezierPath:
       points:
-      - {x: -2, y: 0, z: 0}
-      - {x: -1, y: 0.5, z: 0}
-      - {x: 1, y: -0.5, z: 0}
-      - {x: 2, y: 0, z: 0}
-      isClosed: 0
-      space: 0
+      - {x: 0, y: 0, z: 0}
+      - {x: 1, y: 0, z: 0}
+      - {x: -1, y: 3, z: -1}
+      - {x: 0, y: 3, z: -1}
       controlMode: 0
       autoControlLength: 0.3
       areBoundsUpToDated: 0
@@ -190,7 +188,7 @@ MonoBehaviour:
     isVertexPathUpToDated: 0
     vertexPathMaxAngleError: 0.3
     vertexPathMinVertexSpacing: 0.01
-    isTransformToolShown: 1
+    isTransformToolShown: 0
     arePathBoundsShown: 0
     arePerSegmentBoundsShown: 0
     areAnchorPointsDisplayed: 1
@@ -200,14 +198,14 @@ MonoBehaviour:
     isConstantHandleSizeKept: 0
     areNormalsShownInVertexMode: 0
     isBezierPathShownInVertexMode: 0
-    areDisplayOptionsShown: 0
+    areDisplayOptionsShown: 1
     arePathOptionsShown: 1
     areVertexPathDisplayOptionsShown: 0
     areVertexPathOptionsShown: 1
     areNormalsShown: 0
     areNormalsHelpInfoShown: 0
     tabIndex: 0
-  isInitialized: 0
+  isInitialized: 1
 --- !u!1 &651253774
 GameObject:
   m_ObjectHideFlags: 0

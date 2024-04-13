@@ -118,14 +118,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
                 var nextI = i + 1;
                 if (nextI >= Path.NumPoints) 
                 {
-                    if (Path.isClosedLoop) 
-                    {
-                        nextI %= Path.NumPoints;
-                    } 
-                    else 
-                    {
-                        break;
-                    }
+                    break;
                 }
                 Gizmos.DrawLine (Path.GetPoint (i), Path.GetPoint (nextI));
             }
