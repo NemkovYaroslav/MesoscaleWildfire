@@ -23,7 +23,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         /// Percentage along the path at each vertex (0 being start of path, and 1 being the end)
         private readonly float[] _times;
         /// Total distance between the vertices of the polyline
-        private readonly float _length;
+        public readonly float length;
         /// Total distance from the first vertex up to each vertex in the polyline
         private readonly float[] _cumulativeLengthAtEachVertex;
         /// Bounding box of the path
@@ -66,7 +66,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         {
             _transform = transform;
             var numVerts = pathSplitData.vertices.Count;
-            _length = pathSplitData.cumulativeLength[numVerts - 1];
+            length = pathSplitData.cumulativeLength[numVerts - 1];
 
             _localPoints = new Vector3[numVerts];
             localNormals = new Vector3[numVerts];
@@ -85,7 +85,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
                 _localPoints[i] = pathSplitData.vertices[i];
                 _localTangents[i] = pathSplitData.tangents[i];
                 _cumulativeLengthAtEachVertex[i] = pathSplitData.cumulativeLength[i];
-                _times[i] = _cumulativeLengthAtEachVertex[i] / _length;
+                _times[i] = _cumulativeLengthAtEachVertex[i] / length;
 
                 // Calculate normals
                 if (i == 0) 
@@ -167,7 +167,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         /// Gets point on path based on distance travelled.
         public Vector3 GetPointAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
-            var t = dst / _length;
+            var t = dst / length;
             Debug.Log("current t: " + t);
             return GetPointAtTime(t, endOfPathInstruction);
         }
@@ -175,33 +175,33 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         /// Gets forward direction on path based on distance travelled.
         public Vector3 GetDirectionAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
-            var t = dst / _length;
+            var t = dst / length;
             return GetDirection(t, endOfPathInstruction);
         }
 
         /// Gets normal vector on path based on distance travelled.
         public Vector3 GetNormalAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
-            var t = dst / _length;
+            var t = dst / length;
             return GetNormal(t, endOfPathInstruction);
         }
 
         /// Gets a rotation that will orient an object in the direction of the path at this point, with local up point along the path's normal
         public Quaternion GetRotationAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
-            var t = dst / _length;
+            var t = dst / length;
             return GetRotation(t, endOfPathInstruction);
         }
 
         /// Gets point on path based on 'time' (where 0 is start, and 1 is end of path).
-        private Vector3 GetPointAtTime(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetPointAtTime(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             return Vector3.Lerp(GetPoint(data.previousIndex), GetPoint(data.nextIndex), data.percentBetweenIndices);
         }
 
         /// Gets forward direction on path based on 'time' (where 0 is start, and 1 is end of path).
-        private Vector3 GetDirection(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetDirection(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             var dir = Vector3.Lerp(_localTangents[data.previousIndex], _localTangents[data.nextIndex], data.percentBetweenIndices);
@@ -209,7 +209,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         }
 
         /// Gets normal vector on path based on 'time' (where 0 is start, and 1 is end of path).
-        private Vector3 GetNormal(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetNormal(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             var normal = Vector3.Lerp(localNormals[data.previousIndex], localNormals[data.nextIndex], data.percentBetweenIndices);
