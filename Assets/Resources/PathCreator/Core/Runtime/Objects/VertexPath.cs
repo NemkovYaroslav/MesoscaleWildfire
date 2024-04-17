@@ -26,10 +26,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         public readonly float length;
         /// Total distance from the first vertex up to each vertex in the polyline
         private readonly float[] _cumulativeLengthAtEachVertex;
-        /// Bounding box of the path
-        private readonly Bounds _bounds;
-        /// Equal to (0,0,-1) for 2D paths, and (0,1,0) for XZ paths
-        private readonly Vector3 _up;
 
         // Default values and constants:
         private const int Accuracy = 10; // A scalar for how many times bezier path is divided when determining vertex positions
@@ -50,15 +46,9 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             this (bezierPath, VertexPathUtility.SplitBezierPathByAngleError (bezierPath, maxAngleError, minVertexDst, VertexPath.Accuracy), transform) 
         { }
 
-        ///  <summary> Splits bezier path into array of vertices along the path.</summary>
-        /// <param name="maxAngleError">How much can the angle of the path change before a vertex is added. This allows fewer vertices to be generated in straighter sections.</param>
-        /// <param name="minVertexDst">Vertices won't be added closer together than this distance, regardless of angle error.</param>
-        /// <param name="accuracy">Higher value means the change in angle is checked more frequently.</param>
-        ///  <param name="bezierPath">?????????</param>
-        ///  <param name="transform">?????????</param>
-        ///  <param name="vertexSpacing">???????</param>
+        /// Splits bezier path into array of vertices along the path
         public VertexPath(BezierPath bezierPath, Transform transform, float vertexSpacing):
-            this (bezierPath, VertexPathUtility.SplitBezierPathEvenly (bezierPath, Mathf.Max (vertexSpacing, MinVertexSpacing), VertexPath.Accuracy), transform) 
+            this(bezierPath, VertexPathUtility.SplitBezierPathEvenly(bezierPath, Mathf.Max (vertexSpacing, MinVertexSpacing), VertexPath.Accuracy), transform) 
         { }
 
         /// Internal constructor
@@ -73,11 +63,11 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             _localTangents = new Vector3[numVerts];
             _cumulativeLengthAtEachVertex = new float[numVerts];
             _times = new float[numVerts];
-            _bounds = new Bounds ((pathSplitData.minMax.Min + pathSplitData.minMax.Max) / 2, pathSplitData.minMax.Max - pathSplitData.minMax.Min);
+            var bounds = new Bounds ((pathSplitData.minMax.Min + pathSplitData.minMax.Max) / 2, pathSplitData.minMax.Max - pathSplitData.minMax.Min);
 
             // Figure out up direction for path
-            _up = (_bounds.size.z > _bounds.size.y) ? Vector3.up : -Vector3.forward;
-            var lastRotationAxis = _up;
+            var up = (bounds.size.z > bounds.size.y) ? Vector3.up : -Vector3.forward;
+            var lastRotationAxis = up;
 
             // Loop through the data and assign to arrays.
             for (var i = 0; i < _localPoints.Length; i++) 
@@ -217,7 +207,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         }
 
         /// Gets a rotation that will orient an object in the direction of the path at this point, with local up point along the path's normal
-        private Quaternion GetRotation(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Quaternion GetRotation(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
         {
             var data = CalculatePercentOnPathData(t, endOfPathInstruction);
             var direction = Vector3.Lerp(_localTangents[data.previousIndex], _localTangents[data.nextIndex], data.percentBetweenIndices);
@@ -271,15 +261,15 @@ namespace Resources.PathCreator.Core.Runtime.Objects
                     // If t is negative, make it the equivalent value between 0 and 1
                     if (t < 0) 
                     {
-                        t += Mathf.CeilToInt (Mathf.Abs (t));
+                        t += Mathf.CeilToInt(Mathf.Abs(t));
                     }
                     t %= 1;
                     break;
                 case EndOfPathInstruction.Reverse:
-                    t = Mathf.PingPong (t, 1);
+                    t = Mathf.PingPong(t, 1);
                     break;
                 case EndOfPathInstruction.Stop:
-                    t = Mathf.Clamp01 (t);
+                    t = Mathf.Clamp01(t);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(endOfPathInstruction), endOfPathInstruction, null);
@@ -311,7 +301,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
                 }
             }
 
-            var abPercent = Mathf.InverseLerp (_times[prevIndex], _times[nextIndex], t);
+            var abPercent = Mathf.InverseLerp(_times[prevIndex], _times[nextIndex], t);
             return new TimeOnPathData (prevIndex, nextIndex, abPercent);
         }
 

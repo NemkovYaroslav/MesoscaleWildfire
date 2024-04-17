@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEngine;
 
@@ -15,7 +16,8 @@ namespace Resources.PathCreator.Core.Runtime.Render
         #region Fields
 
         public Objects.PathCreator pathCreator;
-        public bool isAutoUpdated = true;
+        
+        public bool isPathAutoUpdated = true;
 
         #endregion
         
@@ -26,7 +28,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
         
         protected abstract void PathUpdated();
         
-        public void TriggerUpdate() 
+        public void TriggerUpdate()
         {
             PathUpdated();
         }

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Resources.PathCreator.Core.Runtime.Placer;
+using UnityEditor;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Render
@@ -30,7 +31,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
                         Subscribe();
                     }
 
-                    if (_pathTool.isAutoUpdated)
+                    if (_pathTool.isPathAutoUpdated)
                     {
                         TriggerUpdate();
                     }
@@ -45,6 +46,22 @@ namespace Resources.PathCreator.Core.Runtime.Render
                     SceneView.RepaintAll();
                 }
             }
+            
+            if (GUILayout.Button("Add Module"))
+            {
+                if (TryFindPathCreator())
+                {
+                    _pathTool.gameObject.GetComponent<ModuleGenerator>().AddModuleOnBranch();
+                }
+            }
+            
+            if (GUILayout.Button("Remove Modules"))
+            {
+                if (TryFindPathCreator())
+                {
+                    _pathTool.gameObject.GetComponent<ModuleGenerator>().ClearModules();
+                }
+            }
         }
 
         private void TriggerUpdate() 
@@ -57,7 +74,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
 
         private void OnPathModified()
         {
-            if (_pathTool.isAutoUpdated)
+            if (_pathTool.isPathAutoUpdated)
             {
                 TriggerUpdate();
             }
