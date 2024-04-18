@@ -132,6 +132,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 645043717}
+  - component: {fileID: 645043719}
+  - component: {fileID: 645043718}
   m_Layer: 0
   m_Name: Tree
   m_TagString: Untagged
@@ -151,10 +153,76 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 892783394}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &645043718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645043715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84199e30774d7b243be9a1e2f6562c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathCreator: {fileID: 645043719}
+  isPathAutoUpdated: 1
+  branch: {fileID: 645043715}
+  module: {fileID: 2151554802388444667, guid: d28e0d50e5c8e5d458aed93fc689b404, type: 3}
+--- !u!114 &645043719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645043715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c86d7a445a344fa816f5593fa74ad64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  editorData:
+    bezierPath:
+      points:
+      - {x: 0, y: 0, z: 0}
+      - {x: 0.5, y: 0.5, z: 0}
+      - {x: -0.5, y: 1.5, z: 0}
+      - {x: 0, y: 2, z: 0}
+      controlMode: 1
+      autoControlLength: 0.3
+      areBoundsUpToDated: 0
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 0, y: 0, z: 0}
+      perAnchorNormalsAngle:
+      - 0
+      - 0
+      globalNormalsAngle: 0
+      areNormalsFlipped: 0
+    isVertexPathUpToDated: 1
+    vertexPathMaxAngleError: 0.3
+    vertexPathMinVertexSpacing: 0.01
+    isTransformToolShown: 1
+    arePathBoundsShown: 0
+    arePerSegmentBoundsShown: 0
+    areAnchorPointsDisplayed: 1
+    areControlPointsDisplayed: 1
+    bezierHandleScale: 1
+    areGlobalDisplaySettingsFoldedOut: 0
+    isConstantHandleSizeKept: 0
+    areNormalsShownInVertexMode: 0
+    isBezierPathShownInVertexMode: 0
+    areDisplayOptionsShown: 0
+    arePathOptionsShown: 1
+    areVertexPathDisplayOptionsShown: 0
+    areVertexPathOptionsShown: 1
+    areNormalsShown: 0
+    areNormalsHelpInfoShown: 0
+    tabIndex: 0
+  isInitialized: 1
 --- !u!1 &651253774
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,106 +360,6 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!1 &892783392
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 892783394}
-  - component: {fileID: 892783393}
-  - component: {fileID: 892783395}
-  m_Layer: 0
-  m_Name: br_0
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &892783393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892783392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c86d7a445a344fa816f5593fa74ad64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  editorData:
-    bezierPath:
-      points:
-      - {x: 0, y: 0, z: 0}
-      - {x: 0.30464882, y: 0.6093035, z: -0.4275428}
-      - {x: -0.39219713, y: 1.5939207, z: 0.25606674}
-      - {x: 0, y: 2, z: 0}
-      controlMode: 1
-      autoControlLength: 0.3
-      areBoundsUpToDated: 0
-      bounds:
-        m_Center: {x: 0, y: 0, z: 0}
-        m_Extent: {x: 0, y: 0, z: 0}
-      perAnchorNormalsAngle:
-      - 0
-      - 0
-      globalNormalsAngle: 0
-      areNormalsFlipped: 0
-    isVertexPathUpToDated: 0
-    vertexPathMaxAngleError: 0.3
-    vertexPathMinVertexSpacing: 0.01
-    isTransformToolShown: 0
-    arePathBoundsShown: 0
-    arePerSegmentBoundsShown: 0
-    areAnchorPointsDisplayed: 1
-    areControlPointsDisplayed: 1
-    bezierHandleScale: 1
-    areGlobalDisplaySettingsFoldedOut: 0
-    isConstantHandleSizeKept: 0
-    areNormalsShownInVertexMode: 0
-    isBezierPathShownInVertexMode: 0
-    areDisplayOptionsShown: 0
-    arePathOptionsShown: 1
-    areVertexPathDisplayOptionsShown: 0
-    areVertexPathOptionsShown: 1
-    areNormalsShown: 0
-    areNormalsHelpInfoShown: 0
-    tabIndex: 0
-  isInitialized: 1
---- !u!4 &892783394
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892783392}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 645043717}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &892783395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892783392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84199e30774d7b243be9a1e2f6562c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathCreator: {fileID: 892783393}
-  isPathAutoUpdated: 1
-  branch: {fileID: 892783392}
-  module: {fileID: 966693548034874963, guid: 70375078c4727e34c8c3cd1ba4e65a48, type: 3}
 --- !u!1 &1214481648
 GameObject:
   m_ObjectHideFlags: 0

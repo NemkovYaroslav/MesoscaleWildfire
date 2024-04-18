@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Resources.PathCreator.Core.Runtime.Objects;
 using Resources.PathCreator.Core.Runtime.Render;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
@@ -18,10 +17,10 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         public readonly LinkedList<ModulePlacer> modules;
 
         #endregion
-
+        
 
         #region External Methods
-
+        
         private ModuleGenerator()
         {
             modules = new LinkedList<ModulePlacer>();
@@ -34,7 +33,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
             var obj = Instantiate(module, pos, rot, branch.transform);
-            obj.name = "m_" + t;
+            
+            obj.tag = "Module";
 
             var placer = obj.AddComponent<ModulePlacer>();
             placer.t = t;
@@ -51,7 +51,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                     var obj = InstantiateModule(0.0f);
                     if (obj.TryGetComponent(out ModulePlacer placer))
                     {
-                        Debug.Log(0.0f);
                         modules.AddFirst(placer);
                     }
                 }
@@ -62,7 +61,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         var obj = InstantiateModule(1.0f);
                         if (obj.TryGetComponent(out ModulePlacer placer))
                         {
-                            Debug.Log(1.0f);
                             modules.AddLast(placer);
                         }
                     }
@@ -92,7 +90,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                             var obj = InstantiateModule(average);
                             if (obj.TryGetComponent(out ModulePlacer placer))
                             {
-                                Debug.Log(average);
                                 modules.AddAfter(previous, placer);
                             }
                         } 
@@ -116,25 +113,14 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             {
                 var path = pathCreator.Path;
                 
-                if (modules.Count > 0)
+                foreach (Transform child in transform)
                 {
-                    Debug.Log("-------");
-                    
-                    var node = modules.First;
-                    while (node != null)
+                    if (child.gameObject.TryGetComponent(out ModulePlacer placer))
                     {
-                        Debug.Log(node.Value.gameObject);
-                        
-                        var t = node.Value.t;
-                        
+                        var t = placer.t;
                         var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
                         var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
-                        node.Value.transform.SetPositionAndRotation(pos, rot);
-                        node.Value.name = "m_" + t;
-
-                        node = node.Next;
-                        
-                        Debug.Log("-------");
+                        child.SetPositionAndRotation(pos, rot);
                     }
                 }
             }

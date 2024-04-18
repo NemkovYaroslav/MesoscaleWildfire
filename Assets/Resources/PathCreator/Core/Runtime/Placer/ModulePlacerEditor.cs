@@ -31,16 +31,14 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 
                 if (check.changed)
                 {
-                    if (_modulePlacer.transform.parent.TryGetComponent(out ModuleGenerator moduleGenerator))
+                    var parent = _modulePlacer.transform.parent;
+                    if (parent.TryGetComponent(out ModuleGenerator moduleGenerator))
                     {
                         var path = moduleGenerator.pathCreator.Path;
-
                         var t = _modulePlacer.t;
-                        
                         var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
                         var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
                         _modulePlacer.transform.SetPositionAndRotation(pos, rot);
-                        _modulePlacer.name = "m_" + t;
 
                         var modules = moduleGenerator.modules;
                         modules.Remove(_modulePlacer);
@@ -53,6 +51,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                                 modules.AddAfter(node, _modulePlacer);
                                 break;
                             }
+                            
                             node = node.Next;
                         }
                     }

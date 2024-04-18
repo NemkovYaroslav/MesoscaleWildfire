@@ -65,17 +65,15 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         /// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
         public BezierPath(Vector3 center, bool isClosed = false)
 		{
-			var dir = Vector3.up;
-			const int width = 2;
+			const int height = 2;
 			const float controlHeight = 0.5f;
-			const float controlWidth = 1.0f;
 			
 			points = new List<Vector3> 
 			{
-				center + Vector3.left * width,
-				center + Vector3.left * controlWidth + dir * controlHeight,
-				center + Vector3.right * controlWidth - dir * controlHeight,
-				center + Vector3.right * width
+				center,
+				center + Vector3.up * controlHeight + Vector3.right * controlHeight,
+				center + Vector3.up * (height - controlHeight) + Vector3.left * controlHeight,
+				center + Vector3.up * height
 			};
 
 			perAnchorNormalsAngle = new List<float>() { 0, 0 };
