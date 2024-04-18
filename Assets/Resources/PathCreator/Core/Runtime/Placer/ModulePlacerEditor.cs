@@ -40,6 +40,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
                         _modulePlacer.transform.SetPositionAndRotation(pos, rot);
 
+                        _modulePlacer.gameObject.name = "m_" + t;
+
                         var modules = moduleGenerator.modules;
                         modules.Remove(_modulePlacer);
                         

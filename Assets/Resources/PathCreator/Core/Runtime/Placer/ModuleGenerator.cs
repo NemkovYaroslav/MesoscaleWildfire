@@ -34,6 +34,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
             var obj = Instantiate(module, pos, rot, branch.transform);
             
+            obj.name = "m_" + t;
+            
             obj.tag = "Module";
 
             var placer = obj.AddComponent<ModulePlacer>();
@@ -121,6 +123,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
                         var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
                         child.SetPositionAndRotation(pos, rot);
+                        
+                        child.gameObject.name = "m_" + t;
                     }
                 }
             }
