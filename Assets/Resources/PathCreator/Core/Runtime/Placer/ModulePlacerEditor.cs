@@ -1,5 +1,6 @@
 ﻿using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEditor;
+using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
@@ -41,7 +42,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                             var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
                             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
                             _modulePlacer.transform.SetPositionAndRotation(pos, rot);
-                            _modulePlacer.gameObject.name = "m_" + t;
+                            var numberNaming = Mathf.RoundToInt(t * 1000.0f);
+                            _modulePlacer.gameObject.name = numberNaming.ToString();
                             moduleGenerator.SortModules();
                         }
                     }

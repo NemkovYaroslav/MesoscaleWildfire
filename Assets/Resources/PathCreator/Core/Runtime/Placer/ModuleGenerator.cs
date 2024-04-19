@@ -9,7 +9,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
     public class ModuleGenerator : PathSceneTool 
     {
         #region External Methods
-
+        
         private void OnDrawGizmos()
         {
             foreach (Transform child in transform)
@@ -48,7 +48,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             var path = pathCreator.Path;
             var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
-            var obj = new GameObject("Module_" + t, typeof(ModulePlacer), typeof(ModuleData));
+            var numberNaming = Mathf.RoundToInt(t * 1000.0f);
+            var obj = new GameObject(numberNaming.ToString(), typeof(ModulePlacer), typeof(ModuleData));
             obj.transform.SetPositionAndRotation(pos, rot);
             obj.transform.SetParent(transform);
             obj.GetComponent<ModulePlacer>().t = t;
@@ -98,6 +99,74 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                     }
                 }
             }
+        }
+
+        private static void TraverseHierarchy(Transform parent)
+        {
+            foreach (Transform child in parent)
+            {
+                /*
+                var parentRigidbody = child.parent.AddComponent<Rigidbody>();
+                if (!child.parent.TryGetComponent(out ModulePlacer modulePlacer))
+                {
+                    parentRigidbody.useGravity = false;
+                    parentRigidbody.isKinematic = true;
+                    parentRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+                }
+                */
+                
+                Debug.Log("child: " + child.gameObject.name);
+                
+                TraverseHierarchy(child);
+            }
+        }
+
+        public void GenerateTreePrefab()
+        {
+            TraverseHierarchy(transform);
+
+            /*
+            if (TryGetComponent(out ModulePlacer modulePlacer))
+            {
+                if (transform.childCount > 0)
+                {
+                    var duplicatedModule = transform.GetChild(0).gameObject;
+                    DestroyImmediate(duplicatedModule);
+                }
+            }
+            */
+
+            /*
+            var rigidBody = gameObject.AddComponent<Rigidbody>();
+            if (!TryGetComponent(out ModulePlacer modulePlacer))
+            {
+                rigidBody.useGravity = false;
+                rigidBody.isKinematic = true;
+                rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+            }
+            */
+
+            /*
+            for (var i = 0; i < transform.childCount - 1; i += 2)
+            {
+                var current = transform.GetChild(i).gameObject;
+                var next = transform.GetChild(i + 1).gameObject;
+
+                var currentRigidbody = current.AddComponent<Rigidbody>();
+                var currentFixedJoint = current.AddComponent<FixedJoint>();
+                var nextRigidbody = next.AddComponent<Rigidbody>();
+                var nextFixedJoint = next.AddComponent<FixedJoint>();
+
+                if (currentRigidbody.transform.GetSiblingIndex() == 0)
+                {
+                    if (currentRigidbody.transform.parent.TryGetComponent(out Rigidbody parentRigidbody))
+                    {
+                        currentFixedJoint.connectedBody = parentRigidbody;
+                    }
+                }
+                nextFixedJoint.connectedBody = currentRigidbody;
+            }
+            */
         }
 
         public void ClearModules(Transform parent)

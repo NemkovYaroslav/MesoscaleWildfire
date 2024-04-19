@@ -32,20 +32,34 @@ namespace Resources.PathCreator.Core.Runtime.Render
                     }
                 }
             }
-            
-            if (GUILayout.Button("Add Module"))
+
+            if (_pathTool.gameObject.TryGetComponent(out ModuleGenerator moduleGenerator))
             {
-                if (TryFindPathCreator())
+                if (GUILayout.Button("Add Module"))
                 {
-                    _pathTool.gameObject.GetComponent<ModuleGenerator>().PlaceModuleOnBranch();
+                    if (TryFindPathCreator())
+                    {
+                        moduleGenerator.PlaceModuleOnBranch();
+                    }
                 }
-            }
             
-            if (GUILayout.Button("Remove Modules"))
-            {
-                if (TryFindPathCreator())
+                if (GUILayout.Button("Remove Modules"))
                 {
-                    _pathTool.gameObject.GetComponent<ModuleGenerator>().ClearModules(_pathTool.transform);
+                    if (TryFindPathCreator())
+                    {
+                        moduleGenerator.ClearModules(_pathTool.transform);
+                    }
+                }
+                
+                if (!moduleGenerator.gameObject.TryGetComponent(out ModulePlacer modulePlacer))
+                {
+                    if (GUILayout.Button("Generate Tree Prefab"))
+                    {
+                        if (TryFindPathCreator())
+                        {
+                            moduleGenerator.GenerateTreePrefab();
+                        }
+                    }
                 }
             }
         }
