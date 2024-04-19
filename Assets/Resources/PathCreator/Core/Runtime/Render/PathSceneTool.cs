@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEngine;
 
@@ -15,9 +14,9 @@ namespace Resources.PathCreator.Core.Runtime.Render
 
         #region Fields
 
-        public Objects.PathCreator pathCreator;
+        [HideInInspector] public Objects.PathCreator pathCreator;
         
-        public bool isPathAutoUpdated = true;
+        [HideInInspector] public bool isPathAutoUpdated = true;
 
         #endregion
         

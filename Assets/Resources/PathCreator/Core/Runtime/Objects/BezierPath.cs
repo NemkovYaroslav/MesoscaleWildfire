@@ -42,7 +42,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		#region Fields
 
 		[SerializeField, HideInInspector] private List<Vector3> points;
-		[SerializeField, HideInInspector] private ControlMode controlMode;
+		[SerializeField, HideInInspector] private ControlMode controlMode = ControlMode.Mirrored;
 		[SerializeField, HideInInspector] private float autoControlLength = 0.3f;
 		[SerializeField, HideInInspector] private bool areBoundsUpToDated;
 		[SerializeField, HideInInspector] private Bounds bounds;

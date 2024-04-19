@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using Resources.PathCreator.Core.Runtime.Objects;
 using Resources.PathCreator.Core.Runtime.Render;
 using UnityEngine;
@@ -8,105 +8,107 @@ namespace Resources.PathCreator.Core.Runtime.Placer
     [RequireComponent(typeof(Objects.PathCreator))]
     public class ModuleGenerator : PathSceneTool 
     {
-        #region Fields
-        
-        public GameObject branch;
-        
-        public GameObject module;
-        
-        public readonly LinkedList<ModulePlacer> modules;
-
-        #endregion
-        
-
         #region External Methods
-        
-        private ModuleGenerator()
+
+        private void OnDrawGizmos()
         {
-            modules = new LinkedList<ModulePlacer>();
+            foreach (Transform child in transform)
+            {
+                UnityEditor.Handles.color = Color.red;
+                if (child.gameObject.TryGetComponent(out ModulePlacer placer))
+                {
+                    var center = child.position;
+                    var normal = child.rotation * Vector3.forward;
+                    if (child.gameObject.TryGetComponent(out ModuleData data))
+                    {
+                        var radius = data.Radius;
+                        UnityEditor.Handles.DrawSolidDisc(center, normal, radius);
+                        UnityEditor.Handles.color = Color.blue;
+                        UnityEditor.Handles.DrawLine(center, center + normal.normalized * 0.2f);
+                    }
+                }
+            }
         }
 
-        private GameObject InstantiateModule(float t)
+        public void SortModules()
+        {
+            if (transform.childCount > 2)
+            {
+                var placers = transform.GetComponentsInChildren<ModulePlacer>();
+                var orderedPlacers = placers.OrderBy(property => property.t).ToArray();
+                foreach (var placer in orderedPlacers)
+                {
+                    placer.transform.SetAsLastSibling();
+                }
+            }
+        }
+        
+        private void InstantiateModule(float t)
         {
             var path = pathCreator.Path;
-            
             var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
-            var obj = Instantiate(module, pos, rot, branch.transform);
-            
-            obj.name = "m_" + t;
-            
-            obj.tag = "Module";
-
-            var placer = obj.AddComponent<ModulePlacer>();
-            placer.t = t;
-            
-            return obj;
+            var obj = new GameObject("Module_" + t, typeof(ModulePlacer), typeof(ModuleData));
+            obj.transform.SetPositionAndRotation(pos, rot);
+            obj.transform.SetParent(transform);
+            obj.GetComponent<ModulePlacer>().t = t;
         }
 
-        public void AddModuleOnBranch()
+        public void PlaceModuleOnBranch()
         {
-            if (pathCreator != null && module != null && branch != null)
+            if (pathCreator != null)
             {
-                if (modules.Count == 0)
+                if (transform.childCount < 1)
                 {
-                    var obj = InstantiateModule(0.0f);
-                    if (obj.TryGetComponent(out ModulePlacer placer))
-                    {
-                        modules.AddFirst(placer);
-                    }
+                    InstantiateModule(0.0f);
                 }
                 else
                 {
-                    if (modules.Count == 1)
+                    if (transform.childCount < 2)
                     {
-                        var obj = InstantiateModule(1.0f);
-                        if (obj.TryGetComponent(out ModulePlacer placer))
-                        {
-                            modules.AddLast(placer);
-                        }
+                        InstantiateModule(1.0f);
                     }
                     else
                     {
-                        if (modules.Count > 1)
+                        var maxDifferenceT = float.MinValue;
+                        var averageT = 0.0f;
+
+                        for (var i = 0; i < transform.childCount - 1; i++)
                         {
-                            var maxDifference = float.MinValue;
-                            var average = 0.0f;
-                            var previous = modules.First;
-                        
-                            var node = modules.First;
-                            while (node != null && node.Next != null)
+                            var first = transform.GetChild(i);
+                            var second = transform.GetChild(i + 1);
+
+                            if (first.TryGetComponent(out ModulePlacer firstPlacer) && second.TryGetComponent(out ModulePlacer secondPlacer))
                             {
-                                var current = node.Value.t;
-                                var next = node.Next.Value.t;
-                                var difference = next - current;
-                                if (difference > maxDifference)
+                                var firstT = firstPlacer.t;
+                                var secondT = secondPlacer.t;
+
+                                var differenceT = secondT - firstT;
+                                if (differenceT > maxDifferenceT)
                                 {
-                                    maxDifference = difference;
-                                    average = (current + next) / 2.0f;
-                                    previous = node;
+                                    maxDifferenceT = differenceT;
+                                    averageT = (firstT + secondT) / 2.0f;
                                 }
-                                node = node.Next;
                             }
+                        }
+
+                        InstantiateModule(averageT);
                         
-                            var obj = InstantiateModule(average);
-                            if (obj.TryGetComponent(out ModulePlacer placer))
-                            {
-                                modules.AddAfter(previous, placer);
-                            }
-                        } 
+                        SortModules();
                     }
                 }
             }
         }
 
-        public void ClearModules()
+        public void ClearModules(Transform parent)
         {
-            while (transform.childCount > 0)
+            if (parent.TryGetComponent(out ModuleGenerator moduleGenerator))
             {
-                DestroyImmediate(transform.GetChild(0).gameObject);
+                while (parent.childCount > 0)
+                {
+                    DestroyImmediate(parent.GetChild(0).gameObject);
+                }
             }
-            modules.Clear();
         }
         
         protected override void PathUpdated()
@@ -123,8 +125,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
                         var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
                         child.SetPositionAndRotation(pos, rot);
-                        
-                        child.gameObject.name = "m_" + t;
                     }
                 }
             }

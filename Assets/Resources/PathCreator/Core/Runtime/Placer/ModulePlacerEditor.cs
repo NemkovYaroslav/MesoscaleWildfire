@@ -31,30 +31,18 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 
                 if (check.changed)
                 {
-                    var parent = _modulePlacer.transform.parent;
-                    if (parent.TryGetComponent(out ModuleGenerator moduleGenerator))
+                    if (_modulePlacer.transform.parent != null)
                     {
-                        var path = moduleGenerator.pathCreator.Path;
-                        var t = _modulePlacer.t;
-                        var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
-                        var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
-                        _modulePlacer.transform.SetPositionAndRotation(pos, rot);
-
-                        _modulePlacer.gameObject.name = "m_" + t;
-
-                        var modules = moduleGenerator.modules;
-                        modules.Remove(_modulePlacer);
-                        
-                        var node = modules.First;
-                        while (node != null && node.Next != null)
+                        var parent = _modulePlacer.transform.parent;
+                        if (parent.TryGetComponent(out ModuleGenerator moduleGenerator))
                         {
-                            if (node.Value.t < t && node.Next.Value.t > t)
-                            {
-                                modules.AddAfter(node, _modulePlacer);
-                                break;
-                            }
-                            
-                            node = node.Next;
+                            var path = moduleGenerator.pathCreator.Path;
+                            var t = _modulePlacer.t;
+                            var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
+                            var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
+                            _modulePlacer.transform.SetPositionAndRotation(pos, rot);
+                            _modulePlacer.gameObject.name = "m_" + t;
+                            moduleGenerator.SortModules();
                         }
                     }
                 }

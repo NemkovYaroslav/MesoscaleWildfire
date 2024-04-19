@@ -1,9 +1,12 @@
+
 using System.Collections.Generic;
+using System.IO;
 using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Render
 {
+    [RequireComponent(typeof(Objects.PathCreator))]
     public class CylinderMeshCreator : PathSceneTool
     {
         #region Fields

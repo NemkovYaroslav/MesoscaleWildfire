@@ -30,20 +30,6 @@ namespace Resources.PathCreator.Core.Runtime.Render
                         TryFindPathCreator();
                         Subscribe();
                     }
-
-                    if (_pathTool.isPathAutoUpdated)
-                    {
-                        TriggerUpdate();
-                    }
-                }
-            }
-
-            if (GUILayout.Button("Manual Update"))
-            {
-                if (TryFindPathCreator())
-                {
-                    TriggerUpdate();
-                    SceneView.RepaintAll();
                 }
             }
             
@@ -51,7 +37,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
             {
                 if (TryFindPathCreator())
                 {
-                    _pathTool.gameObject.GetComponent<ModuleGenerator>().AddModuleOnBranch();
+                    _pathTool.gameObject.GetComponent<ModuleGenerator>().PlaceModuleOnBranch();
                 }
             }
             
@@ -59,7 +45,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
             {
                 if (TryFindPathCreator())
                 {
-                    _pathTool.gameObject.GetComponent<ModuleGenerator>().ClearModules();
+                    _pathTool.gameObject.GetComponent<ModuleGenerator>().ClearModules(_pathTool.transform);
                 }
             }
         }

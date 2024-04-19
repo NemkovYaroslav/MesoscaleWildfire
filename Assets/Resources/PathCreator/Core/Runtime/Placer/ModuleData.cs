@@ -2,8 +2,10 @@
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
-    public class Module : MonoBehaviour
+    public class ModuleData : MonoBehaviour
     {
-        [Range(0.0f, 1.0f)] public float radius = 1.0f;
+        [SerializeField] [Range(0.0f, 1.0f)] private float radius = 0.1f;
+        
+        public float Radius => radius;
     }
 }
