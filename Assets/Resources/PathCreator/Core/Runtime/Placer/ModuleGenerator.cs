@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using Resources.PathCreator.Core.Runtime.Objects;
 using Resources.PathCreator.Core.Runtime.Render;
@@ -5,7 +6,6 @@ using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
-    [RequireComponent(typeof(Objects.PathCreator))]
     public class ModuleGenerator : PathSceneTool 
     {
         #region External Methods
@@ -36,9 +36,20 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             {
                 var placers = transform.GetComponentsInChildren<ModulePlacer>();
                 var orderedPlacers = placers.OrderBy(property => property.t).ToArray();
-                foreach (var placer in orderedPlacers)
+                for (var i = 0; i < orderedPlacers.Length; i++)
                 {
-                    placer.transform.SetAsLastSibling();
+                    var placer = orderedPlacers[i];
+                    foreach (Transform child in transform)
+                    {
+                        if (child.TryGetComponent(out ModulePlacer modulePlacer))
+                        {
+                            if (modulePlacer == placer)
+                            {
+                                child.SetSiblingIndex(i);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -48,11 +59,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             var path = pathCreator.Path;
             var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
-            var numberNaming = Mathf.RoundToInt(t * 1000.0f);
-            var obj = new GameObject(numberNaming.ToString(), typeof(ModulePlacer), typeof(ModuleData));
+            //var numberNaming = Mathf.RoundToInt(t * 1000.0f);
+            //var obj = new GameObject(numberNaming.ToString(), typeof(ModulePlacer), typeof(ModuleData));
+            var obj = new GameObject(t.ToString(CultureInfo.CurrentCulture), typeof(ModulePlacer), typeof(ModuleData));
             obj.transform.SetPositionAndRotation(pos, rot);
             obj.transform.SetParent(transform);
             obj.GetComponent<ModulePlacer>().t = t;
+            obj.GetComponent<ModuleData>().Radius = (1 - t) / 10.0f;
         }
 
         public void PlaceModuleOnBranch()
@@ -101,75 +114,54 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             }
         }
 
-        private static void TraverseHierarchy(Transform parent)
+        /*
+        private void AddFixedJoints(Transform parent)
         {
-            foreach (Transform child in parent)
+            for (var i = 0; i < parent.childCount - 1; i++)
             {
-                /*
-                var parentRigidbody = child.parent.AddComponent<Rigidbody>();
-                if (!child.parent.TryGetComponent(out ModulePlacer modulePlacer))
-                {
-                    parentRigidbody.useGravity = false;
-                    parentRigidbody.isKinematic = true;
-                    parentRigidbody.constraints = RigidbodyConstraints.FreezeAll;
-                }
-                */
+                var current = parent.GetChild(i);
+                var next = parent.GetChild(i + 1);
                 
-                Debug.Log("child: " + child.gameObject.name);
-                
-                TraverseHierarchy(child);
-            }
-        }
-
-        public void GenerateTreePrefab()
-        {
-            TraverseHierarchy(transform);
-
-            /*
-            if (TryGetComponent(out ModulePlacer modulePlacer))
-            {
-                if (transform.childCount > 0)
+                if (current.GetSiblingIndex() == 0)
                 {
-                    var duplicatedModule = transform.GetChild(0).gameObject;
-                    DestroyImmediate(duplicatedModule);
-                }
-            }
-            */
-
-            /*
-            var rigidBody = gameObject.AddComponent<Rigidbody>();
-            if (!TryGetComponent(out ModulePlacer modulePlacer))
-            {
-                rigidBody.useGravity = false;
-                rigidBody.isKinematic = true;
-                rigidBody.constraints = RigidbodyConstraints.FreezeAll;
-            }
-            */
-
-            /*
-            for (var i = 0; i < transform.childCount - 1; i += 2)
-            {
-                var current = transform.GetChild(i).gameObject;
-                var next = transform.GetChild(i + 1).gameObject;
-
-                var currentRigidbody = current.AddComponent<Rigidbody>();
-                var currentFixedJoint = current.AddComponent<FixedJoint>();
-                var nextRigidbody = next.AddComponent<Rigidbody>();
-                var nextFixedJoint = next.AddComponent<FixedJoint>();
-
-                if (currentRigidbody.transform.GetSiblingIndex() == 0)
-                {
-                    if (currentRigidbody.transform.parent.TryGetComponent(out Rigidbody parentRigidbody))
+                    if (current.parent.TryGetComponent(out ModulePlacer modulePlacer))
                     {
-                        currentFixedJoint.connectedBody = parentRigidbody;
+                        var nextFixedJoint = next.AddComponent<FixedJoint>();
+                        if (parent.TryGetComponent(out Rigidbody parentRigidbody))
+                        {
+                            nextFixedJoint.connectedBody = parentRigidbody;
+                        }
+                    }
+                    else
+                    {
+                        var currentFixedJoint = current.AddComponent<FixedJoint>();
+                        if (current.parent.TryGetComponent(out Rigidbody parentRigidbody))
+                        {
+                            currentFixedJoint.connectedBody = parentRigidbody;
+                        }
+                        
+                        var nextFixedJoint = next.AddComponent<FixedJoint>();
+                        if (current.TryGetComponent(out Rigidbody currentRigidbody))
+                        {
+                            nextFixedJoint.connectedBody = currentRigidbody;
+                        }
                     }
                 }
-                nextFixedJoint.connectedBody = currentRigidbody;
+                else
+                {
+                    var nextFixedJoint = next.AddComponent<FixedJoint>();
+                    if (current.TryGetComponent(out Rigidbody currentRigidbody))
+                    {
+                        nextFixedJoint.connectedBody = currentRigidbody;
+                    }
+                }
+                
+                AddFixedJoints(current);
             }
-            */
         }
+        */
 
-        public void ClearModules(Transform parent)
+        public static void ClearModules(Transform parent)
         {
             if (parent.TryGetComponent(out ModuleGenerator moduleGenerator))
             {
@@ -182,6 +174,17 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         protected override void PathUpdated()
         {
+            /*
+            // must be redone
+            if (TryGetComponent(out ModulePlacer modulePlacer))
+            {
+                if (modulePlacer.t is 0 or 1)
+                {
+                    DestroyImmediate(this);
+                }
+            }
+            */
+            
             if (pathCreator != null)
             {
                 var path = pathCreator.Path;

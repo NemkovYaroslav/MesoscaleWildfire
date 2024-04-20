@@ -47,18 +47,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
                 {
                     if (TryFindPathCreator())
                     {
-                        moduleGenerator.ClearModules(_pathTool.transform);
-                    }
-                }
-                
-                if (!moduleGenerator.gameObject.TryGetComponent(out ModulePlacer modulePlacer))
-                {
-                    if (GUILayout.Button("Generate Tree Prefab"))
-                    {
-                        if (TryFindPathCreator())
-                        {
-                            moduleGenerator.GenerateTreePrefab();
-                        }
+                        ModuleGenerator.ClearModules(_pathTool.transform);
                     }
                 }
             }
