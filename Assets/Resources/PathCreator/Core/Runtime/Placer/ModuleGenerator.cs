@@ -59,13 +59,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             var path = pathCreator.Path;
             var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
             var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
-            //var numberNaming = Mathf.RoundToInt(t * 1000.0f);
-            //var obj = new GameObject(numberNaming.ToString(), typeof(ModulePlacer), typeof(ModuleData));
             var obj = new GameObject(t.ToString(CultureInfo.CurrentCulture), typeof(ModulePlacer), typeof(ModuleData));
             obj.transform.SetPositionAndRotation(pos, rot);
             obj.transform.SetParent(transform);
+            
             obj.GetComponent<ModulePlacer>().t = t;
-            obj.GetComponent<ModuleData>().Radius = (1 - t) / 10.0f;
+
+            obj.GetComponent<ModuleData>().Radius = ((1 - t) / 10.0f) + 0.1f;
         }
 
         public void PlaceModuleOnBranch()
@@ -113,53 +113,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 }
             }
         }
-
-        /*
-        private void AddFixedJoints(Transform parent)
-        {
-            for (var i = 0; i < parent.childCount - 1; i++)
-            {
-                var current = parent.GetChild(i);
-                var next = parent.GetChild(i + 1);
-                
-                if (current.GetSiblingIndex() == 0)
-                {
-                    if (current.parent.TryGetComponent(out ModulePlacer modulePlacer))
-                    {
-                        var nextFixedJoint = next.AddComponent<FixedJoint>();
-                        if (parent.TryGetComponent(out Rigidbody parentRigidbody))
-                        {
-                            nextFixedJoint.connectedBody = parentRigidbody;
-                        }
-                    }
-                    else
-                    {
-                        var currentFixedJoint = current.AddComponent<FixedJoint>();
-                        if (current.parent.TryGetComponent(out Rigidbody parentRigidbody))
-                        {
-                            currentFixedJoint.connectedBody = parentRigidbody;
-                        }
-                        
-                        var nextFixedJoint = next.AddComponent<FixedJoint>();
-                        if (current.TryGetComponent(out Rigidbody currentRigidbody))
-                        {
-                            nextFixedJoint.connectedBody = currentRigidbody;
-                        }
-                    }
-                }
-                else
-                {
-                    var nextFixedJoint = next.AddComponent<FixedJoint>();
-                    if (current.TryGetComponent(out Rigidbody currentRigidbody))
-                    {
-                        nextFixedJoint.connectedBody = currentRigidbody;
-                    }
-                }
-                
-                AddFixedJoints(current);
-            }
-        }
-        */
 
         public static void ClearModules(Transform parent)
         {

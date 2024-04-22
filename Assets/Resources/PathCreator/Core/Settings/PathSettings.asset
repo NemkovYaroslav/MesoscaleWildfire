@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anchorSize: 10
   controlSize: 7
-  visibleBehindObjects: 1
-  visibleWhenNotSelected: 1
-  hideAutoControls: 1
+  isVisibleBehindObjects: 1
+  isVisibleWhenNotSelected: 1
+  isAutoControlsHided: 1
   anchorShape: 0
   controlShape: 0
   anchor: {r: 0.95, g: 0.25, b: 0.25, a: 0.85}
