@@ -34,7 +34,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer.Wind
                                 ///*
                                 var position = rb.position;
                                 var direction = windForce.normalized;
-                                Debug.DrawLine(position - direction, position, Color.green, 0.1f);
+                                //Debug.DrawLine(position - direction, position, Color.green, 0.1f);
                                 //*/
                             }
                             /*

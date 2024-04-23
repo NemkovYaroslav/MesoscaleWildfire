@@ -1,67 +1,83 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
     public class ModuleRenderer : MonoBehaviour
     {
-        [SerializeField] private Material materialToInstantiate;
+        [SerializeField] private float range = 5.0f;
         
-        [SerializeField] private Mesh meshToInstantiate;
-
-        private ComputeBuffer _modulesBuffer;
-
-        private List<List<Matrix4x4>> _batches = new List<List<Matrix4x4>>();
+        [SerializeField] private Material material;
         
-        private void OnDrawGizmos()
+        private ComputeBuffer _meshPropertiesBuffer;
+        
+        [SerializeField] private Mesh mesh;
 
+        private Bounds _bounds;
+
+        [SerializeField] private Transform treeTransform;
+
+        private int _modulesCount;
+        private static readonly int Properties = Shader.PropertyToID("properties");
+
+        private struct MeshProperties
         {
-            UnityEditor.Handles.color = Color.yellow;
-            var joints = transform.GetComponentsInChildren<FixedJoint>();
-            foreach (var joint in joints)
+            public Matrix4x4 mat;
+
+            public static int Size()
             {
-                var current = joint.gameObject;
-                var previous = joint.connectedBody.gameObject;
-                UnityEditor.Handles.DrawLine(current.transform.position, previous.transform.position);
+                return sizeof(float) * 4 * 4;
             }
         }
 
+        private void Setup()
+        {
+            _bounds = new Bounds(transform.position, Vector3.one * range);
+            InitializeBuffers();
+        }
+
+        private void InitializeBuffers()
+        {
+            var capsules = treeTransform.GetComponentsInChildren<CapsuleCollider>();
+
+            _modulesCount = capsules.Length;
+            
+            var properties = new MeshProperties[capsules.Length];
+            for (var i = 0; i < _modulesCount; i++)
+            {
+                var position = capsules[i].transform.position + capsules[i].transform.TransformVector(capsules[i].center);
+
+                var rotation = capsules[i].transform.rotation * Quaternion.LookRotation(Vector3.up);
+                
+                var scale = new Vector3(capsules[i].radius * 2.0f, capsules[i].height / 2.0f, capsules[i].radius * 2.0f);
+
+                var props = new MeshProperties
+                {
+                    mat = Matrix4x4.TRS(position, rotation, scale)
+                };
+                properties[i] = props;
+            }
+            
+            _meshPropertiesBuffer = new ComputeBuffer(_modulesCount, MeshProperties.Size());
+            _meshPropertiesBuffer.SetData(properties);
+            material.SetBuffer(Properties, _meshPropertiesBuffer);
+        }
+        
         private void Start()
         {
-            _batches.Add(new List<Matrix4x4>());
-            var addedMatrices = 0;
-            var colliders = gameObject.GetComponentsInChildren<CapsuleCollider>();
-            foreach (var capsule in colliders)
-            {
-                if (addedMatrices < 1000)
-                {
-                    var capsuleTransform = capsule.gameObject.transform;
-                    var position = capsuleTransform.position + capsuleTransform.TransformVector(capsule.center);
-                    var rotation = capsuleTransform.rotation;
-                    var radius = capsule.radius;
-                    var scale = new Vector3(radius * 2.0f, capsule.height / 2.0f, radius * 2.0f);
-                    _batches[^1].Add(Matrix4x4.TRS(position, rotation, scale));
-                    addedMatrices++;
-                }
-                else
-                {
-                    _batches.Add(new List<Matrix4x4>());
-                    addedMatrices = 0;
-                }
-            }
+            Setup();
         }
 
-        private void RenderBatches()
-        {
-            foreach (var batch in _batches)
-            {
-                Graphics.DrawMeshInstanced(meshToInstantiate, 0, materialToInstantiate, batch);
-            }
-        }
-        
         private void Update()
         {
-            RenderBatches();
+            Graphics.DrawMeshInstancedProcedural(mesh, 0, material, _bounds, _modulesCount);
+        }
+        
+        private void OnDisable() {
+            if (_meshPropertiesBuffer != null) 
+            {
+                _meshPropertiesBuffer.Release();
+            }
+            _meshPropertiesBuffer = null;
         }
     }
 }
