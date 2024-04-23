@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
@@ -8,58 +11,45 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         [SerializeField] private Material material;
         
-        private ComputeBuffer _meshPropertiesBuffer;
+        private ComputeBuffer _transformsBuffer;
         
         [SerializeField] private Mesh mesh;
 
         private Bounds _bounds;
 
-        [SerializeField] private Transform treeTransform;
+        private int _size;
 
-        private int _modulesCount;
-        private static readonly int Properties = Shader.PropertyToID("properties");
-
-        private struct MeshProperties
-        {
-            public Matrix4x4 mat;
-
-            public static int Size()
-            {
-                return sizeof(float) * 4 * 4;
-            }
-        }
+        private List<GameObject> _modules;
+        
+        private static readonly int Transforms = Shader.PropertyToID("transforms");
 
         private void Setup()
         {
             _bounds = new Bounds(transform.position, Vector3.one * range);
-            InitializeBuffers();
+
+            _size = sizeof(float) * 16;
+            
+            _modules = GameObject.FindGameObjectsWithTag("Module").ToList();
         }
 
-        private void InitializeBuffers()
+        private void CalculateTransforms()
         {
-            var capsules = treeTransform.GetComponentsInChildren<CapsuleCollider>();
-
-            _modulesCount = capsules.Length;
-            
-            var properties = new MeshProperties[capsules.Length];
-            for (var i = 0; i < _modulesCount; i++)
+            var properties = new Matrix4x4[_modules.Count];
+            for (var i = 0; i < _modules.Count; i++)
             {
-                var position = capsules[i].transform.position + capsules[i].transform.TransformVector(capsules[i].center);
+                var capsule = _modules[i].GetComponent<CapsuleCollider>();
 
-                var rotation = capsules[i].transform.rotation * Quaternion.LookRotation(Vector3.up);
-                
-                var scale = new Vector3(capsules[i].radius * 2.0f, capsules[i].height / 2.0f, capsules[i].radius * 2.0f);
+                var capsuleTransform = capsule.transform;
+                var position = capsuleTransform.position + capsuleTransform.TransformVector(capsule.center);
+                var rotation = capsuleTransform.rotation * Quaternion.LookRotation(Vector3.up);
+                var scale = new Vector3(capsule.radius * 2.0f, capsule.height / 2.0f, capsule.radius * 2.0f);
 
-                var props = new MeshProperties
-                {
-                    mat = Matrix4x4.TRS(position, rotation, scale)
-                };
-                properties[i] = props;
+                properties[i] = Matrix4x4.TRS(position, rotation, scale);
             }
             
-            _meshPropertiesBuffer = new ComputeBuffer(_modulesCount, MeshProperties.Size());
-            _meshPropertiesBuffer.SetData(properties);
-            material.SetBuffer(Properties, _meshPropertiesBuffer);
+            _transformsBuffer = new ComputeBuffer(_modules.Count, _size);
+            _transformsBuffer.SetData(properties);
+            material.SetBuffer(Transforms, _transformsBuffer);
         }
         
         private void Start()
@@ -69,15 +59,17 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         private void Update()
         {
-            Graphics.DrawMeshInstancedProcedural(mesh, 0, material, _bounds, _modulesCount);
+            CalculateTransforms();
+            Graphics.DrawMeshInstancedProcedural(mesh, 0, material, _bounds, _modules.Count);
         }
         
-        private void OnDisable() {
-            if (_meshPropertiesBuffer != null) 
+        private void OnDestroy() 
+        {
+            if (_transformsBuffer != null) 
             {
-                _meshPropertiesBuffer.Release();
+                _transformsBuffer.Release();
             }
-            _meshPropertiesBuffer = null;
+            _transformsBuffer = null;
         }
     }
 }

@@ -2,7 +2,7 @@ Shader "Unlit/TreeRenderShader"
 {
     SubShader
     {
-        Tags { "RenderType" = "Opaque" }
+        Tags { "RenderType" = "Opaque" "Queue" = "Geometry" }
 
         Pass
         {
@@ -15,33 +15,25 @@ Shader "Unlit/TreeRenderShader"
             
             struct vert_input
             {
-                float4 vertex : POSITION;
-                float4 color : COLOR;
+                float4 position : POSITION;
                 float3 normal : NORMAL;
             };
             
             struct frag_input
             {
-                float4 vertex : SV_POSITION;
+                float4 position : SV_POSITION;
                 float4 color : COLOR;
             };
 
-            struct mesh_properties
-            {
-                float4x4 mat;
-            };
-
-            StructuredBuffer<mesh_properties> properties;
+            StructuredBuffer<float4x4> transforms;
 
             frag_input vert (const vert_input v, const uint instance_id : SV_InstanceID)
             {
                 frag_input o;
-                
-                const float4 pos = mul(properties[instance_id].mat, v.vertex);
-                const float3 norm = normalize(mul(properties[instance_id].mat, v.normal));
-                o.vertex = UnityObjectToClipPos(pos);
+                const float4 pos = mul(transforms[instance_id], v.position);
+                const float3 norm = normalize(mul(transforms[instance_id], v.normal));
+                o.position = UnityObjectToClipPos(pos);
                 o.color = float4(norm, 1);
-
                 return o;
             }
 

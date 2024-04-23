@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer.Wind
@@ -13,38 +14,20 @@ namespace Resources.PathCreator.Core.Runtime.Placer.Wind
     
         private void Start()
         {
-            _trees = GameObject.FindGameObjectsWithTag("Module");
+            _trees = GameObject.FindGameObjectsWithTag("Tree");
         }
     
         private void FixedUpdate()
         {
             foreach (var tree in _trees)
             {
-                foreach (Transform branch in tree.transform)
+                var rigidbodies = tree.GetComponentsInChildren<Rigidbody>();
+                foreach (var body in rigidbodies)
                 {
-                    if (branch.gameObject.TryGetComponent(out Rigidbody rb))
+                    foreach (var wind in winds)
                     {
-                        foreach (var wind in winds)
-                        {
-                            var windForce = wind.GetWindForceAtPosition(rb.position) * masterWindStrength;
-                            if (branch.TryGetComponent(out FixedJoint joint))
-                            {
-                                rb.AddForce(windForce, ForceMode.Force);
-                        
-                                ///*
-                                var position = rb.position;
-                                var direction = windForce.normalized;
-                                //Debug.DrawLine(position - direction, position, Color.green, 0.1f);
-                                //*/
-                            }
-                            /*
-                            else
-                            {
-                                rb.drag = 1000.0f;
-                                rb.angularDrag = 1000.0f;
-                            }
-                            */
-                        }
+                        var windForce = wind.GetWindForceAtPosition(body.position) * masterWindStrength;
+                        body.AddForce(windForce, ForceMode.Force);
                     }
                 }
             }
