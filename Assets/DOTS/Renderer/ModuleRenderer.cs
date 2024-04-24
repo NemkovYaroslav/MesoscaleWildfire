@@ -32,6 +32,15 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             _modules = GameObject.FindGameObjectsWithTag("Module").ToList();
         }
 
+        private void CleanupComputeBuffer()
+        {
+            if (_transformsBuffer != null) 
+            {
+                _transformsBuffer.Release();
+            }
+            _transformsBuffer = null;
+        }
+
         private void CalculateTransforms()
         {
             var properties = new Matrix4x4[_modules.Count];
@@ -46,6 +55,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
                 properties[i] = Matrix4x4.TRS(position, rotation, scale);
             }
+
+            CleanupComputeBuffer();
             
             _transformsBuffer = new ComputeBuffer(_modules.Count, _size);
             _transformsBuffer.SetData(properties);
@@ -60,16 +71,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         private void Update()
         {
             CalculateTransforms();
+            
             Graphics.DrawMeshInstancedProcedural(mesh, 0, material, _bounds, _modules.Count);
         }
         
-        private void OnDestroy() 
+        private void OnDestroy()
         {
-            if (_transformsBuffer != null) 
-            {
-                _transformsBuffer.Release();
-            }
-            _transformsBuffer = null;
+            CleanupComputeBuffer();
         }
     }
 }
