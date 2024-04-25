@@ -1,0 +1,136 @@
+#pragma kernel kernel_init
+#pragma kernel kernel_module_influence
+#pragma kernel kernel_user_input
+#pragma kernel kernel_diffusion
+
+RWTexture3D<float4> color_energy_texture;
+RWTexture3D<float4> texel_energy_texture;
+
+int texture_resolution;
+
+float3 pointer_position;
+
+float source_intensity;
+float diffusion_intensity;
+
+float delta_time;
+
+RWStructuredBuffer<float4> modules_buffer;
+
+#define TOP_OFFSET    int3( 0, 1, 0)
+#define BOTTOM_OFFSET int3( 0,-1, 0)
+#define RIGHT_OFFSET  int3( 1, 0, 0)
+#define LEFT_OFFSET   int3(-1, 0, 0)
+#define FRONT_OFFSET  int3( 0, 0, 1)
+#define BACK_OFFSET   int3( 0, 0,-1)
+
+float get_obstacle(int3 id)
+{
+    float obstacle = 1;
+    const float padding = texture_resolution * 0.001f;
+    const float volume_size = texture_resolution - padding;
+    if (id.x < padding || id.y < padding || id.z < padding || id.x > volume_size || id.y > volume_size || id.z > volume_size)
+    {
+        obstacle = 0;
+    }
+    return obstacle;
+}
+
+[numthreads(8,8,8)]
+void kernel_init (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    color_energy_texture[pixel_id] = 0;
+    texel_energy_texture[pixel_id] = 0;
+}
+
+[numthreads(10,1,1)]
+void kernel_module_influence (uint3 id : SV_DispatchThreadID)
+{
+    float4 module_info = modules_buffer[id.x];
+    float3 position = module_info.xyz;
+
+    position += float3(0.5f, 0.5f, 0.5f);
+    position *= texture_resolution;
+
+    position -= (1.0f / (float)texture_resolution) * (texture_resolution * 0.5f);
+
+    const float obstacle_value = get_obstacle(position).x;
+    const float energy = source_intensity * obstacle_value;
+    
+    float4 density_value = color_energy_texture[position];
+    density_value.a = clamp(density_value.a + energy, 0, 1);
+    density_value.rgb = float3(1, 1, 0);
+    color_energy_texture[position] = density_value;
+
+    texel_energy_texture[position] = float4(position.x, position.y, position.z, density_value.a);
+}
+
+[numthreads(8,8,8)]
+void kernel_user_input (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    float3 pointer_u_v = pointer_position;
+    
+    pointer_u_v += float3(0.5f, 0.5f, 0.5f);
+    pointer_u_v *= texture_resolution;
+
+    pointer_u_v -= (1.0f / (float)texture_resolution) * (texture_resolution * 0.5f);
+    
+    float4 density_value       = color_energy_texture[pixel_id];
+    const float obstacle_value = get_obstacle(pixel_id).x;
+    
+    if (distance(pointer_u_v, pixel_id) < 1)
+    {
+        const float value = source_intensity * obstacle_value;
+        density_value.a   = clamp(density_value.a + value, 0, 1);
+        density_value.rgb = float3(1,1,0);
+
+        color_energy_texture[pixel_id] = density_value;
+    }
+}
+
+[numthreads(8,8,8)]
+void kernel_diffusion (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+
+    const float obstacle_value        = get_obstacle(pixel_id);
+    const float top_obstacle_value    = get_obstacle(top_pixel_id);
+    const float bottom_obstacle_value = get_obstacle(bottom_pixel_id);
+    const float right_obstacle_value  = get_obstacle(right_pixel_id);
+    const float left_obstacle_value   = get_obstacle(left_pixel_id);
+    const float front_obstacle_value  = get_obstacle(front_pixel_id);
+    const float back_obstacle_value   = get_obstacle(back_pixel_id);
+    
+    const float4 density_value        = color_energy_texture[pixel_id];
+    const float4 top_density_value    = color_energy_texture[top_pixel_id]    * top_obstacle_value;
+    const float4 bottom_density_value = color_energy_texture[bottom_pixel_id] * bottom_obstacle_value;
+    const float4 right_density_value  = color_energy_texture[right_pixel_id]  * right_obstacle_value;
+    const float4 left_density_value   = color_energy_texture[left_pixel_id]   * left_obstacle_value;
+    const float4 front_density_value  = color_energy_texture[front_pixel_id]  * front_obstacle_value;
+    const float4 back_density_value   = color_energy_texture[back_pixel_id]   * back_obstacle_value;
+    
+    const float k = delta_time * diffusion_intensity * texture_resolution;
+    float4 new_density_value =
+        (
+            density_value
+            + k
+            * (top_density_value + bottom_density_value + right_density_value + left_density_value + front_density_value + back_density_value)
+        )
+        / (1 + 6.0 * k);
+    
+    new_density_value *= obstacle_value;
+
+    color_energy_texture[pixel_id] = new_density_value;
+    
+    texel_energy_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
+}
