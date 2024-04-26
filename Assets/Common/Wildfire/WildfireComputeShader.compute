@@ -57,7 +57,7 @@ void kernel_module_influence (uint3 id : SV_DispatchThreadID)
     position -= (1.0f / (float)texture_resolution) * (texture_resolution * 0.5f);
 
     const float obstacle_value = get_obstacle(position).x;
-    const float energy = source_intensity * obstacle_value;
+    const float energy = module_info.a * obstacle_value;
     
     float4 density_value = color_energy_texture[position];
     density_value.a = clamp(density_value.a + energy, 0, 1);

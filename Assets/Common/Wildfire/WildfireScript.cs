@@ -29,6 +29,7 @@ namespace Common.Wildfire
         
         private Vector3 _currentTorchPosition;
         
+        private GameObject[] _modules;
         private ComputeBuffer _modulePositionEnergyBuffer;
         
         private int _kernelInit;
@@ -115,6 +116,8 @@ namespace Common.Wildfire
             renderMaterial.SetTexture(MainTex, _colorEnergyTexture);
             
             ShaderDispatch(_kernelInit);
+
+            _modules = GameObject.FindGameObjectsWithTag("Module");
             
             // transfer energy data from shader
             _energyTexture3D = 
@@ -181,11 +184,32 @@ namespace Common.Wildfire
 
         private void TransferEnergyFromTexture3DToModules()
         {
-            var torchTexturePosition = TransformPositionFromWorldSpaceToTextureSpace(torch.transform.position);
-            
-            var torchColor = _energyTexture3D.GetPixel((int)torchTexturePosition.x, (int)torchTexturePosition.y, (int)torchTexturePosition.z);
-            var moduleMaterial = torch.GetComponent<MeshRenderer>().material;
-            moduleMaterial.SetColor(BaseColor, new Color(torchColor.a * 10, torchColor.a * 10, torchColor.a * 10, 1));
+            for (var i = 0; i < _modules.Length; i++)
+            {
+                var moduleTexturePosition = TransformPositionFromWorldSpaceToTextureSpace(_modules[i].transform.position);
+                
+                var energyContent = _energyTexture3D.GetPixel((int)moduleTexturePosition.x, (int)moduleTexturePosition.y, (int)moduleTexturePosition.z);
+                
+                if (_modules[i].TryGetComponent(out ModuleStats ms))
+                {
+                    if (!ms.isBurning)
+                    {
+                        ms.woodHeatCapacity -= energyContent.a;
+                        if (ms.woodHeatCapacity < 0)
+                        {
+                            ms.isBurning = true;
+                        }
+                    }
+                    else
+                    {
+                        ms.woodStrength -= energyContent.a;
+                        if (ms.woodStrength < 0 && ms.fixedJoint != null)
+                        {
+                            ms.fixedJoint.breakForce = 1;
+                        }
+                    }
+                }
+            }
         }
         
         private void CleanupComputeBuffer()
@@ -197,26 +221,34 @@ namespace Common.Wildfire
             _modulePositionEnergyBuffer = null;
         }
         
-        private void RecalculateModulesPositions()
+        private void UpdateModulesData()
         {
-            var modules = GameObject.FindGameObjectsWithTag("Module");
-            if (modules.Length > 0)
+            if (_modules.Length > 0)
             {
-                var modulePositions = new Vector4[modules.Length];
-                for (var i = 0; i < modules.Length; i++)
+                var modulePositions = new Vector4[_modules.Length];
+                for (var i = 0; i < _modules.Length; i++)
                 {
-                    var localAreaModulePosition = transform.InverseTransformPoint(modules[i].transform.position);
-                    modulePositions[i] = new Vector4(localAreaModulePosition.x, localAreaModulePosition.y, localAreaModulePosition.z, 0.1f);
+                    if (_modules[i].TryGetComponent(out ModuleStats ms))
+                    {
+                        if (ms.isBurning)
+                        {
+                            var localAreaModulePosition = transform.InverseTransformPoint(_modules[i].transform.position);
+                            modulePositions[i] = new Vector4(localAreaModulePosition.x, localAreaModulePosition.y, localAreaModulePosition.z, 0.01f);
+                        }
+                    }
                 }
 
-                CleanupComputeBuffer();
+                if (modulePositions.Length > 0)
+                {
+                    CleanupComputeBuffer();
             
-                const int stride = sizeof(float) * 4;
-                _modulePositionEnergyBuffer = new ComputeBuffer(modulePositions.Length, stride);
-                _modulePositionEnergyBuffer.SetData(modulePositions);
-                computeShader.SetBuffer(_kernelModuleInfluence, ModulesBuffer, _modulePositionEnergyBuffer);
-            
-                computeShader.Dispatch(_kernelModuleInfluence, modulePositions.Length / 10, 1, 1);
+                    const int stride = sizeof(float) * 4;
+                    _modulePositionEnergyBuffer = new ComputeBuffer(modulePositions.Length, stride);
+                    _modulePositionEnergyBuffer.SetData(modulePositions);
+                
+                    computeShader.SetBuffer(_kernelModuleInfluence, ModulesBuffer, _modulePositionEnergyBuffer);
+                    computeShader.Dispatch(_kernelModuleInfluence, modulePositions.Length / 10, 1, 1);
+                }
             }
         }
 
@@ -226,7 +258,7 @@ namespace Common.Wildfire
             computeShader.SetFloat(ShaderSourceIntensity, sourceIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             
-            RecalculateModulesPositions();
+            UpdateModulesData();
             
             _currentTorchPosition = transform.InverseTransformPoint(torch.transform.position);
             computeShader.SetVector(ShaderPointerPosition, _currentTorchPosition);
