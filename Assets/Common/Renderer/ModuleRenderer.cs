@@ -18,7 +18,7 @@ namespace Common.Renderer
 
         private int _size;
 
-        private List<GameObject> _modules;
+        //private List<GameObject> _modules;
         
         private static readonly int Transforms = Shader.PropertyToID("transforms");
 
@@ -28,7 +28,7 @@ namespace Common.Renderer
 
             _size = sizeof(float) * 16;
             
-            _modules = GameObject.FindGameObjectsWithTag("Module").ToList();
+            //_modules = GameObject.FindGameObjectsWithTag("Module").ToList();
         }
 
         private void CleanupComputeBuffer()
@@ -42,10 +42,11 @@ namespace Common.Renderer
 
         private void CalculateTransforms()
         {
-            var properties = new Matrix4x4[_modules.Count];
-            for (var i = 0; i < _modules.Count; i++)
+            var modules = GameObject.FindGameObjectsWithTag("Module");
+            var properties = new Matrix4x4[modules.Length];
+            for (var i = 0; i < modules.Length; i++)
             {
-                var capsule = _modules[i].GetComponent<CapsuleCollider>();
+                var capsule = modules[i].GetComponent<CapsuleCollider>();
 
                 var capsuleTransform = capsule.transform;
                 var position = capsuleTransform.position + capsuleTransform.TransformVector(capsule.center);
@@ -57,9 +58,11 @@ namespace Common.Renderer
 
             CleanupComputeBuffer();
             
-            _transformsBuffer = new ComputeBuffer(_modules.Count, _size);
+            _transformsBuffer = new ComputeBuffer(modules.Length, _size);
             _transformsBuffer.SetData(properties);
             material.SetBuffer(Transforms, _transformsBuffer);
+            
+            Graphics.DrawMeshInstancedProcedural(mesh, 0, material, _bounds, modules.Length);
         }
         
         private void Start()
@@ -70,8 +73,6 @@ namespace Common.Renderer
         private void Update()
         {
             CalculateTransforms();
-            
-            Graphics.DrawMeshInstancedProcedural(mesh, 0, material, _bounds, _modules.Count);
         }
         
         private void OnDestroy()
