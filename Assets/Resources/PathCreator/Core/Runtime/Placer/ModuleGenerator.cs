@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Linq;
-using Resources.PathCreator.Core.Runtime.Objects;
 using Resources.PathCreator.Core.Runtime.Render;
 using UnityEngine;
 
@@ -57,8 +56,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         private void InstantiateModule(float t)
         {
             var path = pathCreator.Path;
-            var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
-            var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
+            var pos = path.GetPointAtTime(t);
+            var rot = path.GetRotation(t);
             var obj = new GameObject(t.ToString(CultureInfo.CurrentCulture), typeof(ModulePlacer), typeof(ModuleData));
             obj.transform.SetPositionAndRotation(pos, rot);
             obj.transform.SetParent(transform);
@@ -147,8 +146,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                     if (child.gameObject.TryGetComponent(out ModulePlacer placer))
                     {
                         var t = placer.t;
-                        var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
-                        var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
+                        var pos = path.GetPointAtTime(t);
+                        var rot = path.GetRotation(t);
                         child.SetPositionAndRotation(pos, rot);
                     }
                 }

@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEditor;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
@@ -39,8 +38,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         {
                             var path = moduleGenerator.pathCreator.Path;
                             var t = _modulePlacer.t;
-                            var pos = path.GetPointAtTime(t, EndOfPathInstruction.Stop);
-                            var rot = path.GetRotation(t, EndOfPathInstruction.Stop);
+                            var pos = path.GetPointAtTime(t);
+                            var rot = path.GetRotation(t);
                             _modulePlacer.transform.SetPositionAndRotation(pos, rot);
                             _modulePlacer.gameObject.name = t.ToString(CultureInfo.CurrentCulture);
 

@@ -15,8 +15,6 @@ namespace Resources.PathCreator.Core.Runtime.Render
         #region Fields
 
         [HideInInspector] public Objects.PathCreator pathCreator;
-        
-        [HideInInspector] public bool isPathAutoUpdated = true;
 
         #endregion
         

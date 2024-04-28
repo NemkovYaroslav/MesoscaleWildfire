@@ -1,14 +1,13 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Resources.PathCreator.Core.Runtime.Placer.Wind
+namespace Common.Wind
 {
     public class WindGenerator : MonoBehaviour
     {
         [Header("Wind Options")]
         [SerializeField] [Range(0.0f, 100.0f)] private float masterWindStrength = 10.0f;
     
-        [SerializeField] private Wind[] winds;
+        [SerializeField] private Resources.PathCreator.Core.Runtime.Placer.Wind.Wind[] winds;
 
         private GameObject[] _trees;
     

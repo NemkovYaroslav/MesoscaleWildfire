@@ -1,7 +1,4 @@
-
 using System.Collections.Generic;
-using System.IO;
-using Resources.PathCreator.Core.Runtime.Objects;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Render
@@ -44,14 +41,13 @@ namespace Resources.PathCreator.Core.Runtime.Render
             var triangles = new List<int> ();
 
             var numCircles = Mathf.Max(2, Mathf.RoundToInt(Path.length * resolutionV) + 1);
-            const EndOfPathInstruction pathInstruction = EndOfPathInstruction.Stop;
 
             for (var s = 0; s < numCircles; s++) 
             {
                 var segmentPercent = s / (numCircles - 1f);
-                var centerPos = Path.GetPointAtTime(segmentPercent, pathInstruction);
-                var norm = Path.GetNormal(segmentPercent, pathInstruction);
-                var forward = Path.GetDirection(segmentPercent, pathInstruction);
+                var centerPos = Path.GetPointAtTime(segmentPercent);
+                var norm = Path.GetNormal(segmentPercent);
+                var forward = Path.GetDirection(segmentPercent);
                 var tangentOrWhatEver = Vector3.Cross(norm, forward);
 
                 for (var currentRes = 0; currentRes < resolutionU; currentRes++) 

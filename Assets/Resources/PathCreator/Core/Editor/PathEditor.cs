@@ -23,8 +23,6 @@ namespace Resources.PathCreator.Core.Editor
 		private const float ScreenPolylineMinVertexDst = 0.01f;
 
 		// Help messages:
-		private const string HelpInfo = "Shift-click to add or insert new points. Control-click to delete points. For more detailed infomation, please refer to the documentation.";
-		private static readonly string[] SpaceNames = { "3D (xyz)", "2D (xy)", "Top-down (xz)" };
 		private static readonly string[] TabNames = { "Bézier Path", "Vertex Path" };
 		private const string ConstantSizeTooltip = "If true, anchor and control points will keep a constant size when zooming in the editor.";
 
@@ -192,8 +190,7 @@ namespace Resources.PathCreator.Core.Editor
 					if (GUILayout.Button("Reset Path"))
 					{
 						Undo.RecordObject(_creator, "Reset Path");
-						var in2DEditorMode = EditorSettings.defaultBehaviorMode == EditorBehaviorMode.Mode2D;
-						Data.ResetBezierPath(_creator.transform.position, in2DEditorMode);
+						Data.ResetBezierPath(_creator.transform.position);
 						EditorApplication.QueuePlayerLoopUpdate();
 					}
 
@@ -707,7 +704,7 @@ namespace Resources.PathCreator.Core.Editor
 		{
 			_creator = (Runtime.Objects.PathCreator)target;
 			var in2DEditorMode = EditorSettings.defaultBehaviorMode == EditorBehaviorMode.Mode2D;
-			_creator.InitializeEditorData(in2DEditorMode);
+			_creator.InitializeEditorData();
 
 			Data.OnBezierCreated -= ResetState;
 			Data.OnBezierCreated += ResetState;
@@ -840,8 +837,6 @@ namespace Resources.PathCreator.Core.Editor
 		private BezierPath BezierPath => Data.BezierPath;
 
 		private PathCreatorData Data => _creator.EditorData;
-
-		private bool EditingNormals => Tools.current == Tool.Rotate && _handleIndexToDisplayAsTransform % 3 == 0;
 
 		#endregion
 	}

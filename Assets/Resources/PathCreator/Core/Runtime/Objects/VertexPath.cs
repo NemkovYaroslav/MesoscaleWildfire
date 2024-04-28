@@ -1,5 +1,4 @@
-﻿using System;
-using Resources.PathCreator.Core.Runtime.Utility;
+﻿using Resources.PathCreator.Core.Runtime.Utility;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Objects 
@@ -155,61 +154,61 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         }
 
         /// Gets point on path based on distance travelled.
-        public Vector3 GetPointAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetPointAtDistance(float dst) 
         {
             var t = dst / length;
             Debug.Log("current t: " + t);
-            return GetPointAtTime(t, endOfPathInstruction);
+            return GetPointAtTime(t);
         }
 
         /// Gets forward direction on path based on distance travelled.
-        public Vector3 GetDirectionAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetDirectionAtDistance(float dst) 
         {
             var t = dst / length;
-            return GetDirection(t, endOfPathInstruction);
+            return GetDirection(t);
         }
 
         /// Gets normal vector on path based on distance travelled.
-        public Vector3 GetNormalAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetNormalAtDistance(float dst) 
         {
             var t = dst / length;
-            return GetNormal(t, endOfPathInstruction);
+            return GetNormal(t);
         }
 
         /// Gets a rotation that will orient an object in the direction of the path at this point, with local up point along the path's normal
-        public Quaternion GetRotationAtDistance(float dst, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Quaternion GetRotationAtDistance(float dst) 
         {
             var t = dst / length;
-            return GetRotation(t, endOfPathInstruction);
+            return GetRotation(t);
         }
 
         /// Gets point on path based on 'time' (where 0 is start, and 1 is end of path).
-        public Vector3 GetPointAtTime(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetPointAtTime(float t) 
         {
-            var data = CalculatePercentOnPathData(t, endOfPathInstruction);
+            var data = CalculatePercentOnPathData(t);
             return Vector3.Lerp(GetPoint(data.previousIndex), GetPoint(data.nextIndex), data.percentBetweenIndices);
         }
 
         /// Gets forward direction on path based on 'time' (where 0 is start, and 1 is end of path).
-        public Vector3 GetDirection(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetDirection(float t) 
         {
-            var data = CalculatePercentOnPathData(t, endOfPathInstruction);
+            var data = CalculatePercentOnPathData(t);
             var dir = Vector3.Lerp(_localTangents[data.previousIndex], _localTangents[data.nextIndex], data.percentBetweenIndices);
             return MathUtility.TransformDirection(dir, _transform);
         }
 
         /// Gets normal vector on path based on 'time' (where 0 is start, and 1 is end of path).
-        public Vector3 GetNormal(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Vector3 GetNormal(float t) 
         {
-            var data = CalculatePercentOnPathData(t, endOfPathInstruction);
+            var data = CalculatePercentOnPathData(t);
             var normal = Vector3.Lerp(localNormals[data.previousIndex], localNormals[data.nextIndex], data.percentBetweenIndices);
             return MathUtility.TransformDirection(normal, _transform);
         }
 
         /// Gets a rotation that will orient an object in the direction of the path at this point, with local up point along the path's normal
-        public Quaternion GetRotation(float t, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Loop) 
+        public Quaternion GetRotation(float t) 
         {
-            var data = CalculatePercentOnPathData(t, endOfPathInstruction);
+            var data = CalculatePercentOnPathData(t);
             var direction = Vector3.Lerp(_localTangents[data.previousIndex], _localTangents[data.nextIndex], data.percentBetweenIndices);
             var normal = Vector3.Lerp(localNormals[data.previousIndex], localNormals[data.nextIndex], data.percentBetweenIndices);
             return Quaternion.LookRotation(MathUtility.TransformDirection (direction, _transform), MathUtility.TransformDirection (normal, _transform));
@@ -252,28 +251,9 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 
         /// For a given value 't' between 0 and 1, calculate the indices of the two vertices before and after t.
         /// Also calculate how far t is between those two vertices as a percentage between 0 and 1.
-        private TimeOnPathData CalculatePercentOnPathData(float t, EndOfPathInstruction endOfPathInstruction) 
+        private TimeOnPathData CalculatePercentOnPathData(float t) 
         {
-            // Constrain t based on the end of path instruction
-            switch (endOfPathInstruction) 
-            {
-                case EndOfPathInstruction.Loop:
-                    // If t is negative, make it the equivalent value between 0 and 1
-                    if (t < 0) 
-                    {
-                        t += Mathf.CeilToInt(Mathf.Abs(t));
-                    }
-                    t %= 1;
-                    break;
-                case EndOfPathInstruction.Reverse:
-                    t = Mathf.PingPong(t, 1);
-                    break;
-                case EndOfPathInstruction.Stop:
-                    t = Mathf.Clamp01(t);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(endOfPathInstruction), endOfPathInstruction, null);
-            }
+            t = Mathf.Clamp01(t);
 
             var prevIndex = 0;
             var nextIndex = NumPoints - 1;

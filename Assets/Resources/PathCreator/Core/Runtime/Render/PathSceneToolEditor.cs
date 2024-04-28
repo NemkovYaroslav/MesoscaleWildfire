@@ -32,7 +32,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
                     }
                 }
             }
-
+            
             if (_pathTool.gameObject.TryGetComponent(out ModuleGenerator moduleGenerator))
             {
                 if (GUILayout.Button("Add Module"))
@@ -63,10 +63,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
 
         private void OnPathModified()
         {
-            if (_pathTool.isPathAutoUpdated)
-            {
-                TriggerUpdate();
-            }
+            TriggerUpdate();
         }
 
         private void OnEnable()
