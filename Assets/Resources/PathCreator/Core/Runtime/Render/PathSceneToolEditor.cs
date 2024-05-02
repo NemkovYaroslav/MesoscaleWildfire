@@ -1,5 +1,4 @@
-﻿using Resources.PathCreator.Core.Runtime.Placer;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Render
@@ -7,16 +6,10 @@ namespace Resources.PathCreator.Core.Runtime.Render
     [CustomEditor(typeof(PathSceneTool), true)]
     public sealed class PathSceneToolEditor : Editor
     {
-        #region Fields
-
         private PathSceneTool _pathTool;
+        
         private bool _isSubscribed;
-
-        #endregion
-
-
-        #region External Methods
-
+        
         public override void OnInspectorGUI()
         {
             using (var check = new EditorGUI.ChangeCheckScope())
@@ -32,25 +25,6 @@ namespace Resources.PathCreator.Core.Runtime.Render
                     }
                 }
             }
-            
-            if (_pathTool.gameObject.TryGetComponent(out ModuleGenerator moduleGenerator))
-            {
-                if (GUILayout.Button("Add Module"))
-                {
-                    if (TryFindPathCreator())
-                    {
-                        moduleGenerator.PlaceModuleOnBranch();
-                    }
-                }
-            
-                if (GUILayout.Button("Remove Modules"))
-                {
-                    if (TryFindPathCreator())
-                    {
-                        ModuleGenerator.ClearModules(_pathTool.transform);
-                    }
-                }
-            }
         }
 
         private void TriggerUpdate() 
@@ -60,7 +34,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
                 _pathTool.TriggerUpdate();
             }
         }
-
+        
         private void OnPathModified()
         {
             TriggerUpdate();
@@ -92,6 +66,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
             if (_pathTool.pathCreator != null)
             {
                 _isSubscribed = true;
+                
                 _pathTool.pathCreator.OnPathUpdated -= OnPathModified;
                 _pathTool.pathCreator.OnPathUpdated += OnPathModified;
             }
@@ -99,21 +74,14 @@ namespace Resources.PathCreator.Core.Runtime.Render
 
         private bool TryFindPathCreator()
         {
-            // Try find a path creator in the scene, if one is not already assigned
             if (_pathTool.pathCreator == null)
             {
                 if (_pathTool.GetComponent<Objects.PathCreator>() != null)
                 {
                     _pathTool.pathCreator = _pathTool.GetComponent<Objects.PathCreator>();
                 }
-                else if (FindObjectOfType<Objects.PathCreator>())
-                {
-                    _pathTool.pathCreator = FindObjectOfType<Objects.PathCreator>();
-                }
             }
             return _pathTool.pathCreator != null;
         }
-
-        #endregion
     }
 }

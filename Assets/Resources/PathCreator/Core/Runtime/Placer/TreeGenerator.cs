@@ -6,8 +6,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
     {
         #region Fields
 
-        private ModuleGenerator _moduleGenerator;
-
         private bool _isTreeCleaned = true;
 
         #endregion
@@ -29,11 +27,10 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                     UnityEditor.Handles.DrawLine(currentPosition, nextPosition);
                     
                     var currentNormal = joint.gameObject.transform.rotation * Vector3.forward;
-                    if (joint.gameObject.TryGetComponent(out ModuleData moduleData))
+                    if (joint.gameObject.TryGetComponent(out ModulePrototypeData moduleData))
                     {
-                        var currentRadius = moduleData.Radius;
                         UnityEditor.Handles.color = Color.red;
-                        UnityEditor.Handles.DrawSolidDisc(currentPosition, currentNormal, currentRadius);
+                        UnityEditor.Handles.DrawSolidDisc(currentPosition, currentNormal, moduleData.radius);
                         UnityEditor.Handles.color = Color.blue;
                         UnityEditor.Handles.DrawLine(currentPosition, currentPosition + currentNormal.normalized * 0.1f);
                     }
@@ -44,11 +41,11 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         public void GenerateTreeStructure()
         {
             // clear ModulePlacer component and excess game objects
-            var modulePlacers = transform.GetComponentsInChildren<ModulePlacer>();
+            var modulePlacers = transform.GetComponentsInChildren<ModulePrototypeData>();
             foreach (var modulePlacer in modulePlacers)
             {
                 var modulePlacerGameObject = modulePlacer.gameObject;
-                if (modulePlacer.t == 0 && modulePlacerGameObject.transform.parent != transform)
+                if (modulePlacer.step == 0 && modulePlacerGameObject.transform.parent != transform)
                 {
                     DestroyImmediate(modulePlacerGameObject);
                 }
@@ -66,11 +63,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             }
 
             // cleat ModuleGenerator component
-            var moduleGenerators = transform.GetComponentsInChildren<ModuleGenerator>();
+            var moduleGenerators = transform.GetComponentsInChildren<ModulePrototypesGenerator>();
             foreach (var moduleGenerator in moduleGenerators)
             {
                 DestroyImmediate(moduleGenerator);
             }
+            
+            // --------- //
 
             // add fixed joints to modules
             var transformsData = transform.GetComponentsInChildren<Transform>();
@@ -151,12 +150,12 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 var previousGameObject = joint.connectedBody.gameObject;
 
                 var distance = Vector3.Distance(currentGameObject.transform.position, previousGameObject.transform.position);
-                if (previousGameObject.TryGetComponent(out ModuleData data))
+                if (previousGameObject.TryGetComponent(out ModulePrototypeData data))
                 { 
                     var currentCollider = currentGameObject.AddComponent<CapsuleCollider>();
-                    if (currentGameObject.TryGetComponent(out ModuleData moduleData))
+                    if (currentGameObject.TryGetComponent(out ModulePrototypeData moduleData))
                     {
-                        currentCollider.radius = moduleData.Radius;
+                        currentCollider.radius = moduleData.radius;
                     }
                     currentCollider.height = distance;
                     currentCollider.direction = 2;
@@ -166,12 +165,12 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 // calculate mass
                 if (currentGameObject.TryGetComponent(out Rigidbody currentRigidbody))
                 {
-                    if (currentGameObject.TryGetComponent(out ModuleData currentData))
+                    if (currentGameObject.TryGetComponent(out ModulePrototypeData currentData))
                     {
-                        if (previousGameObject.TryGetComponent(out ModuleData previousData))
+                        if (previousGameObject.TryGetComponent(out ModulePrototypeData previousData))
                         {
-                            var currentRadius = currentData.Radius;
-                            var previousRadius = previousData.Radius;
+                            var currentRadius = currentData.radius;
+                            var previousRadius = previousData.radius;
                             var currentVolume 
                                 = (Mathf.PI / 3.0f) 
                                   * distance 
@@ -184,7 +183,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             }
             
             // delete excess components
-            var modulesData = transform.GetComponentsInChildren<ModuleData>();
+            var modulesData = transform.GetComponentsInChildren<ModulePrototypeData>();
             foreach (var moduleData in modulesData)
             {
                 moduleData.gameObject.tag = "Module";
