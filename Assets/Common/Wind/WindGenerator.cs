@@ -27,6 +27,12 @@ namespace Common.Wind
                     {
                         var windForce = wind.GetWindForceAtPosition(body.position) * masterWindStrength;
                         body.AddForce(windForce, ForceMode.Force);
+                        
+                        /*
+                        var position = body.position;
+                        var direction = windForce.normalized;
+                        Debug.DrawLine(position - direction, position, Color.magenta, 0.1f);
+                        */
                     }
                 }
             }

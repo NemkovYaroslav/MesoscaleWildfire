@@ -14,23 +14,57 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         [HideInInspector] public float finalSpawnRadius = 0.0f;
         [HideInInspector] public float constSpawnRadius = 0.1f;
 
-        [SerializeField] private Mesh debugMesh;
+        [HideInInspector] public bool isPreviewModeEnabled;
+        [HideInInspector] public Mesh previewMesh;
         
         private void OnDrawGizmos()
         {
-            var children = GetComponentsInChildren<Transform>();
-            foreach (var child in children)
+            var children = GetComponentInChildren<Transform>();
+            
+            if (isPreviewModeEnabled && previewMesh != null)
             {
-                if (child.gameObject.TryGetComponent(out ModulePrototypeData modulePrototypeData))
+                if (children.childCount >= 2)
                 {
-                    UnityEditor.Handles.color = Color.red;
-                    var position = child.position;
-                    //var rotation = child.rotation;
-                    //var scale = new Vector3(capsule.radius * 2.0f, capsule.height / 2.0f, capsule.radius * 2.0f);
-                    var normal = child.forward.normalized;
-                    UnityEditor.Handles.DrawSolidDisc(position, normal, modulePrototypeData.radius);
+                    // draw branch preview
+                    for (var i = 1; i < children.childCount; i++)
+                    {
+                        var currentPrototype = children.GetChild(i).gameObject;
+                        var previousPrototype = children.GetChild(i - 1).gameObject;
+
+                        var currentPrototypePosition = currentPrototype.transform.position;
+                        var previousPrototypePosition = previousPrototype.transform.position;
+
+                        var distance = Vector3.Distance(previousPrototypePosition, currentPrototypePosition);
+
+                        var direction = (currentPrototypePosition - previousPrototypePosition).normalized;
+
+                        var modulePosition = currentPrototypePosition - direction * distance / 2.0f;
+                        var moduleRotation = Quaternion.LookRotation(direction) * Quaternion.LookRotation(Vector3.up);
+
+                        var currentPrototypeRadius = currentPrototype.GetComponent<ModulePrototypeData>().radius;
+                        var previousPrototypeRadius = previousPrototype.GetComponent<ModulePrototypeData>().radius;
                     
-                    //Gizmos.DrawWireMesh(debugMesh, -1, position, rotation, scale);
+                        var moduleRadius = (previousPrototypeRadius + currentPrototypeRadius) / 2.0f;
+                    
+                        var moduleScale = new Vector3(moduleRadius * 2.0f, distance / 2.0f, moduleRadius * 2.0f);
+                
+                        Gizmos.DrawMesh(previewMesh, modulePosition, moduleRotation, moduleScale);
+                    } 
+                }
+            }
+            else
+            {
+                // draw prototypes radii
+                UnityEditor.Handles.color = Color.red;
+                foreach (Transform child in children)
+                {
+                    var prototype = child.gameObject;
+
+                    var prototypePosition = prototype.transform.position;
+                    var prototypeRotation = prototype.transform.forward;
+                    var prototypeRadius = prototype.GetComponent<ModulePrototypeData>().radius;
+                    
+                    UnityEditor.Handles.DrawSolidDisc(prototypePosition, prototypeRotation, prototypeRadius);
                 }
             }
         }
@@ -174,6 +208,36 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 }
             }
         }
+        
+        public void UpdateModulePrototypeRadiiData()
+        {
+            var children = transform.GetComponentInChildren<Transform>();
+            foreach (Transform child in children)
+            {
+                var prototype = child.gameObject;
+                
+                var prototypeData = prototype.GetComponent<ModulePrototypeData>();
+
+                var prototypeStep = prototypeData.step;
+
+                if (areRadiiAutoCalculated)
+                {
+                    prototypeData.radius = Mathf.Lerp(startSpawnRadius, finalSpawnRadius, prototypeStep);
+                }
+                else
+                {
+                    prototypeData.radius = constSpawnRadius;
+                }
+            }
+        }
+
+        private void Awake()
+        {
+            pathCreator = GetComponent<Objects.PathCreator>();
+    
+            pathCreator.OnPathUpdated -= UpdateModulePrototypesPlacement;
+            pathCreator.OnPathUpdated += UpdateModulePrototypesPlacement;
+        }
 
         private void Reset()
         {
@@ -188,6 +252,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             areRadiiAutoCalculated = true;
             startSpawnRadius = 0.1f;
             finalSpawnRadius = 0.0f;
+
+            isPreviewModeEnabled = false;
         }
         
         public void ClearModulePrototypes()

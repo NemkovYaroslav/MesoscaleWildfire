@@ -11,12 +11,10 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         public override void OnInspectorGUI()
         {
+            DrawDefaultInspector();
+            
             using (var check = new EditorGUI.ChangeCheckScope())
             {
-                DrawDefaultInspector();
-
-                //Tools.hidden = true;
-                
                 if (check.changed)
                 {
                     if (_modulePrototypePlaceData.transform.parent != null)

@@ -10,13 +10,21 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         public override void OnInspectorGUI()
         {
-            if (GUILayout.Button("Generate Modules On Path"))
+            var newWoodDensity = EditorGUILayout.FloatField("Wood Density", _modulesGenerator.woodDensity);
+            if (!Mathf.Approximately(_modulesGenerator.woodDensity, newWoodDensity))
             {
-                _modulesGenerator.GenerateModulesOnPath();
+                _modulesGenerator.woodDensity = newWoodDensity;
+            }
+            
+            EditorGUILayout.Separator();
+            
+            if (GUILayout.Button("Generate Modules"))
+            {
+                _modulesGenerator.GenerateModules();
             }
         }
         
-        private void Reset()
+        private void Awake()
         {
             if (_modulesGenerator == null)
             {

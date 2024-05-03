@@ -10,7 +10,15 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
+            _modulePrototypesGenerator.isPreviewModeEnabled = 
+                EditorGUILayout.Toggle(new GUIContent("Enable Preview Mode"), _modulePrototypesGenerator.isPreviewModeEnabled);
+            if (_modulePrototypesGenerator.isPreviewModeEnabled)
+            {
+                _modulePrototypesGenerator.previewMesh = 
+                    (Mesh)EditorGUILayout.ObjectField("Preview Mesh", _modulePrototypesGenerator.previewMesh, typeof(Mesh), false);
+            }
+            
+            EditorGUILayout.Separator();
             
             _modulePrototypesGenerator.areRadiiAutoCalculated =
                 EditorGUILayout.Toggle(new GUIContent("Auto Calculate Radii"), _modulePrototypesGenerator.areRadiiAutoCalculated);
@@ -38,6 +46,11 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 }
             }
             
+            if (GUILayout.Button("Recalculate Prototypes Radii"))
+            {
+                _modulePrototypesGenerator.UpdateModulePrototypeRadiiData();
+            }
+            
             EditorGUILayout.Separator();
             
             if (GUILayout.Button("Add Module Prototype"))
@@ -51,7 +64,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             }
         }
 
-        private void Awake()
+        private void Reset()
         {
             if (_modulePrototypesGenerator == null)
             {
