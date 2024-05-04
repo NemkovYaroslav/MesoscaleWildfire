@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Unlit/TreeRenderShader"
 {
     SubShader
@@ -31,10 +33,11 @@ Shader "Unlit/TreeRenderShader"
             {
                 frag_input o;
                 
-                const float4 pos = mul(transforms[instance_id], v.position);
-                const float3 norm = normalize(mul(transforms[instance_id], v.normal));
-                o.position = UnityObjectToClipPos(pos);
-                o.color = float4(norm, 1);
+                const float4 position = mul(transforms[instance_id], v.position);
+                const float3 normal = normalize(mul(transforms[instance_id], v.normal));
+                
+                o.position = UnityObjectToClipPos(position);
+                o.color = float4(normal, 1);
 
                 //o.position = UnityObjectToClipPos(v.position);
                 //o.color = float4(v.normal, 1);

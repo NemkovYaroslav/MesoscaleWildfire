@@ -135,7 +135,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         }
 
                         // add component to root
-                        rootPrototype.AddComponent<Tree>();
+                        //rootPrototype.AddComponent<Tree>();
                         
                         // add tag to root
                         rootPrototype.tag = "Tree";
@@ -209,7 +209,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 else
                 {
                     // add new module component
-                    modulePrototypeData.gameObject.AddComponent<Module>();
+                    //modulePrototypeData.gameObject.AddComponent<Module>();
                     
                     // destroy excess component
                     DestroyImmediate(modulePrototypeData);
