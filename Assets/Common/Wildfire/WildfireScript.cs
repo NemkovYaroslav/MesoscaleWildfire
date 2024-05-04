@@ -1,4 +1,3 @@
-using System;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -29,7 +28,7 @@ namespace Common.Wildfire
         
         private Vector3 _currentTorchPosition;
         
-        private GameObject[] _modules;
+        //private GameObject[] _modules;
         private ComputeBuffer _modulePositionEnergyBuffer;
         
         private int _kernelInit;
@@ -40,13 +39,11 @@ namespace Common.Wildfire
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         
-        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-        
         private static readonly int ShaderTextureResolution  = Shader.PropertyToID("texture_resolution");
         private static readonly int ShaderSourceIntensity    = Shader.PropertyToID("source_intensity");
         private static readonly int ShaderDiffusionIntensity = Shader.PropertyToID("diffusion_intensity");
         private static readonly int ShaderDeltaTime          = Shader.PropertyToID("delta_time");
-        private static readonly int ShaderPointerPosition    = Shader.PropertyToID("pointer_position");
+        private static readonly int ShaderTorchPosition    = Shader.PropertyToID("torch_position");
         
         private static readonly int ShaderColorEnergyTexture = Shader.PropertyToID("color_energy_texture");
         private static readonly int ShaderTexelEnergyTexture = Shader.PropertyToID("texel_energy_texture");
@@ -54,7 +51,7 @@ namespace Common.Wildfire
         private NativeArray<Vector4> _transferNativeArray;
         private AsyncGPUReadbackRequest _request;
         
-        private static readonly int ModulesBuffer = Shader.PropertyToID("modules_buffer");
+        //private static readonly int ModulesBuffer = Shader.PropertyToID("modules_buffer");
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
@@ -117,9 +114,9 @@ namespace Common.Wildfire
             
             ShaderDispatch(_kernelInit);
 
-            _modules = GameObject.FindGameObjectsWithTag("Module");
+            //_modules = GameObject.FindGameObjectsWithTag("Module");
             
-            // transfer energy data from shader
+            /*
             _energyTexture3D = 
                 new Texture3D(
                     textureResolution,
@@ -145,8 +142,10 @@ namespace Common.Wildfire
                     0,
                     AsyncGPUReadbackCallback
                 );
+            */
         }
         
+        /*
         private static event Action<AsyncGPUReadbackRequest> AsyncGPUReadbackCallback;
         
         private void TransferDataFromRenderTargetToTexture3D(AsyncGPUReadbackRequest request)
@@ -251,6 +250,7 @@ namespace Common.Wildfire
                 }
             }
         }
+        */
 
         private void FixedUpdate()
         {
@@ -258,10 +258,10 @@ namespace Common.Wildfire
             computeShader.SetFloat(ShaderSourceIntensity, sourceIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             
-            UpdateModulesData();
+            //UpdateModulesData();
             
             _currentTorchPosition = transform.InverseTransformPoint(torch.transform.position);
-            computeShader.SetVector(ShaderPointerPosition, _currentTorchPosition);
+            computeShader.SetVector(ShaderTorchPosition, _currentTorchPosition);
             
             if (Input.GetMouseButton(0))
             {
@@ -274,9 +274,11 @@ namespace Common.Wildfire
             }
         }
         
+        /*
         private void OnDestroy()
         {
             AsyncGPUReadbackCallback -= TransferDataFromRenderTargetToTexture3D;
         }
+        */
     }
 }

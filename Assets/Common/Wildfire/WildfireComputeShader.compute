@@ -8,7 +8,7 @@ RWTexture3D<float4> texel_energy_texture;
 
 int texture_resolution;
 
-float3 pointer_position;
+float3 torch_position;
 
 float source_intensity;
 float diffusion_intensity;
@@ -71,20 +71,21 @@ void kernel_module_influence (uint3 id : SV_DispatchThreadID)
 void kernel_user_input (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
-    float3 pointer_u_v = pointer_position;
     
-    pointer_u_v += float3(0.5f, 0.5f, 0.5f);
-    pointer_u_v *= texture_resolution;
+    float3 torch_u_v = torch_position;
+    
+    torch_u_v += float3(0.5f, 0.5f, 0.5f);
+    torch_u_v *= texture_resolution;
 
-    pointer_u_v -= (1.0f / (float)texture_resolution) * (texture_resolution * 0.5f);
+    torch_u_v -= 1.0f / (float)texture_resolution / 2.0f * texture_resolution;
     
-    float4 density_value       = color_energy_texture[pixel_id];
+    float4 density_value = color_energy_texture[pixel_id];
     const float obstacle_value = get_obstacle(pixel_id).x;
     
-    if (distance(pointer_u_v, pixel_id) < 1)
+    if (distance(torch_u_v, pixel_id) < 1)
     {
         const float value = source_intensity * obstacle_value;
-        density_value.a   = clamp(density_value.a + value, 0, 1);
+        density_value.a = clamp(density_value.a + value, 0, 1);
         density_value.rgb = float3(1,1,0);
 
         color_energy_texture[pixel_id] = density_value;
