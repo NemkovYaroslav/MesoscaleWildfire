@@ -9,7 +9,7 @@ namespace Common.Wildfire
     {
         [Header("Common Settings")]
         public ComputeShader computeShader;
-        [SerializeField] private int textureResolution;
+        [SerializeField] private Vector3Int textureResolution;
         [SerializeField] private Material renderMaterial;
         
         [Header("Torch Settings")]
@@ -29,13 +29,13 @@ namespace Common.Wildfire
         private Vector3 _currentTorchPosition;
         
         //private GameObject[] _modules;
-        private ComputeBuffer _modulePositionEnergyBuffer;
+        //private ComputeBuffer _modulePositionEnergyBuffer;
         
         private int _kernelInit;
         private int _kernelUserInput;
         private int _kernelDiffusion;
 
-        private int _kernelModuleInfluence;
+        //private int _kernelModuleInfluence;
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         
@@ -48,26 +48,23 @@ namespace Common.Wildfire
         private static readonly int ShaderColorEnergyTexture = Shader.PropertyToID("color_energy_texture");
         private static readonly int ShaderTexelEnergyTexture = Shader.PropertyToID("texel_energy_texture");
 
-        private NativeArray<Vector4> _transferNativeArray;
-        private AsyncGPUReadbackRequest _request;
+        //private NativeArray<Vector4> _transferNativeArray;
+        //private AsyncGPUReadbackRequest _request;
         
         //private static readonly int ModulesBuffer = Shader.PropertyToID("modules_buffer");
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
-            var dataTexture = new RenderTexture(
-                textureResolution,
-                textureResolution,
-                format,
-                0
-            )
-            {
-                volumeDepth       = textureResolution,
-                dimension         = TextureDimension.Tex3D,
-                filterMode        = FilterMode.Point,
-                wrapMode          = TextureWrapMode.Clamp,
-                enableRandomWrite = true
-            };
+            var dataTexture 
+                = new RenderTexture(textureResolution.x, textureResolution.y, format, 0)
+                {
+                    volumeDepth       = textureResolution.z,
+                    dimension         = TextureDimension.Tex3D,
+                    filterMode        = FilterMode.Point,
+                    wrapMode          = TextureWrapMode.Clamp,
+                    enableRandomWrite = true
+                };
+            
             dataTexture.Create();
 
             return dataTexture;
@@ -75,13 +72,11 @@ namespace Common.Wildfire
         
         private void ShaderDispatch(int kernel)
         {
-            var dispatchResolution = Mathf.CeilToInt(textureResolution / 8.0f);
-            
             computeShader.Dispatch(
                 kernel,
-                dispatchResolution,
-                dispatchResolution,
-                dispatchResolution
+                textureResolution.x / 8,
+                textureResolution.y / 8,
+                textureResolution.z / 8
             );
         }
         
@@ -93,7 +88,8 @@ namespace Common.Wildfire
 
         private void Start()
         {
-            computeShader.SetInt(ShaderTextureResolution, textureResolution);
+            var resolution = new Vector4(textureResolution.x, textureResolution.y, textureResolution.z, 0.0f);
+            computeShader.SetVector(ShaderTextureResolution, resolution);
             
             _colorEnergyTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
             _texelEnergyTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
@@ -102,13 +98,13 @@ namespace Common.Wildfire
             _kernelUserInput = computeShader.FindKernel("kernel_user_input");
             _kernelDiffusion = computeShader.FindKernel("kernel_diffusion");
             
-            _kernelModuleInfluence = computeShader.FindKernel("kernel_module_influence");
+            //_kernelModuleInfluence = computeShader.FindKernel("kernel_module_influence");
             
             ShaderSetTexturesData(_kernelInit);
             ShaderSetTexturesData(_kernelUserInput);
             ShaderSetTexturesData(_kernelDiffusion);
             
-            ShaderSetTexturesData(_kernelModuleInfluence);
+            //ShaderSetTexturesData(_kernelModuleInfluence);
             
             renderMaterial.SetTexture(MainTex, _colorEnergyTexture);
             

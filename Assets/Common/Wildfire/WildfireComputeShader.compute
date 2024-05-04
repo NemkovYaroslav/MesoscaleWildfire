@@ -1,21 +1,19 @@
 #pragma kernel kernel_init
-#pragma kernel kernel_module_influence
+//#pragma kernel kernel_module_influence
 #pragma kernel kernel_user_input
 #pragma kernel kernel_diffusion
 
 RWTexture3D<float4> color_energy_texture;
 RWTexture3D<float4> texel_energy_texture;
 
-int texture_resolution;
-
+float3 texture_resolution;
 float3 torch_position;
 
 float source_intensity;
 float diffusion_intensity;
-
 float delta_time;
 
-RWStructuredBuffer<float4> modules_buffer;
+//RWStructuredBuffer<float4> modules_buffer;
 
 #define TOP_OFFSET    int3( 0, 1, 0)
 #define BOTTOM_OFFSET int3( 0,-1, 0)
@@ -24,12 +22,12 @@ RWStructuredBuffer<float4> modules_buffer;
 #define FRONT_OFFSET  int3( 0, 0, 1)
 #define BACK_OFFSET   int3( 0, 0,-1)
 
-float get_obstacle(int3 id)
+float get_obstacle(const int3 id)
 {
     float obstacle = 1;
-    const float padding = texture_resolution * 0.001f;
-    const float volume_size = texture_resolution - padding;
-    if (id.x < padding || id.y < padding || id.z < padding || id.x > volume_size || id.y > volume_size || id.z > volume_size)
+    const float3 padding = texture_resolution * 0.001f;
+    const float3 volume_size = texture_resolution - padding;
+    if (id.x < padding.x || id.y < padding.y || id.z < padding.z || id.x > volume_size.x || id.y > volume_size.y || id.z > volume_size.z)
     {
         obstacle = 0;
     }
@@ -45,6 +43,7 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
     texel_energy_texture[pixel_id] = 0;
 }
 
+/*
 [numthreads(10,1,1)]
 void kernel_module_influence (uint3 id : SV_DispatchThreadID)
 {
@@ -66,18 +65,20 @@ void kernel_module_influence (uint3 id : SV_DispatchThreadID)
 
     texel_energy_texture[position] = float4(position.x, position.y, position.z, density_value.a);
 }
+*/
 
 [numthreads(8,8,8)]
 void kernel_user_input (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
-    
+
+    // move to texture coordinates
     float3 torch_u_v = torch_position;
-    
     torch_u_v += float3(0.5f, 0.5f, 0.5f);
     torch_u_v *= texture_resolution;
 
-    torch_u_v -= 1.0f / (float)texture_resolution / 2.0f * texture_resolution;
+    // back step to middle cell
+    torch_u_v -= 0.5f;
     
     float4 density_value = color_energy_texture[pixel_id];
     const float obstacle_value = get_obstacle(pixel_id).x;
@@ -86,7 +87,7 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
     {
         const float value = source_intensity * obstacle_value;
         density_value.a = clamp(density_value.a + value, 0, 1);
-        density_value.rgb = float3(1,1,0);
+        density_value.rgb = float3(1, 1, 0);
 
         color_energy_texture[pixel_id] = density_value;
     }
@@ -120,7 +121,7 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
     const float4 front_density_value  = color_energy_texture[front_pixel_id]  * front_obstacle_value;
     const float4 back_density_value   = color_energy_texture[back_pixel_id]   * back_obstacle_value;
     
-    const float k = delta_time * diffusion_intensity * texture_resolution;
+    const float k = delta_time * diffusion_intensity * texture_resolution.x;
     float4 new_density_value =
         (
             density_value
