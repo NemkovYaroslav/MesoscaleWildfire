@@ -53,7 +53,7 @@ Shader "Unlit/VolumeShader"
                 // Calculate vector from camera to vertex in world space
                 float3 worldVertex = mul(unity_ObjectToWorld, v.vertex).xyz;
                 o.vectorToSurface = worldVertex - _WorldSpaceCameraPos;
-
+                
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 return o;
             }

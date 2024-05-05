@@ -1,6 +1,10 @@
+using System;
+using Common.Renderer;
+using Resources.PathCreator.Core.Runtime.Placer;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Jobs;
 using UnityEngine.Rendering;
 
 namespace Common.Wildfire
@@ -9,7 +13,7 @@ namespace Common.Wildfire
     {
         [Header("Common Settings")]
         public ComputeShader computeShader;
-        [SerializeField] private Vector3Int textureResolution;
+        [SerializeField] private Vector3 textureResolution;
         [SerializeField] private Material renderMaterial;
         
         [Header("Torch Settings")]
@@ -21,15 +25,12 @@ namespace Common.Wildfire
         [SerializeField] private int solverIterations;
         
         private RenderTexture _colorEnergyTexture;
-        
         private RenderTexture _texelEnergyTexture;
-        
         private Texture3D _energyTexture3D;
         
-        private Vector3 _currentTorchPosition;
-        
-        //private GameObject[] _modules;
         //private ComputeBuffer _modulePositionEnergyBuffer;
+
+        private Module[] _modules;
         
         private int _kernelInit;
         private int _kernelUserInput;
@@ -48,17 +49,23 @@ namespace Common.Wildfire
         private static readonly int ShaderColorEnergyTexture = Shader.PropertyToID("color_energy_texture");
         private static readonly int ShaderTexelEnergyTexture = Shader.PropertyToID("texel_energy_texture");
 
-        //private NativeArray<Vector4> _transferNativeArray;
-        //private AsyncGPUReadbackRequest _request;
+        // transfer data from gpu to cpu
+        private NativeArray<Vector4> _transferNativeArray;
+        private AsyncGPUReadbackRequest _request;
+
+        private NativeArray<Vector4> _texturePositions;
+        private Matrix4x4 _wildfireZoneTransform;
+
+        private ModuleRenderer _moduleRenderer;
         
         //private static readonly int ModulesBuffer = Shader.PropertyToID("modules_buffer");
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
             var dataTexture 
-                = new RenderTexture(textureResolution.x, textureResolution.y, format, 0)
+                = new RenderTexture((int)textureResolution.x, (int)textureResolution.y, format, 0)
                 {
-                    volumeDepth       = textureResolution.z,
+                    volumeDepth       = (int)textureResolution.z,
                     dimension         = TextureDimension.Tex3D,
                     filterMode        = FilterMode.Point,
                     wrapMode          = TextureWrapMode.Clamp,
@@ -74,9 +81,9 @@ namespace Common.Wildfire
         {
             computeShader.Dispatch(
                 kernel,
-                textureResolution.x / 8,
-                textureResolution.y / 8,
-                textureResolution.z / 8
+                (int)textureResolution.x / 8,
+                (int)textureResolution.y / 8,
+                (int)textureResolution.z / 8
             );
         }
         
@@ -88,8 +95,7 @@ namespace Common.Wildfire
 
         private void Start()
         {
-            var resolution = new Vector4(textureResolution.x, textureResolution.y, textureResolution.z, 0.0f);
-            computeShader.SetVector(ShaderTextureResolution, resolution);
+            computeShader.SetVector(ShaderTextureResolution, textureResolution);
             
             _colorEnergyTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
             _texelEnergyTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
@@ -97,7 +103,6 @@ namespace Common.Wildfire
             _kernelInit      = computeShader.FindKernel("kernel_init");
             _kernelUserInput = computeShader.FindKernel("kernel_user_input");
             _kernelDiffusion = computeShader.FindKernel("kernel_diffusion");
-            
             //_kernelModuleInfluence = computeShader.FindKernel("kernel_module_influence");
             
             ShaderSetTexturesData(_kernelInit);
@@ -110,25 +115,32 @@ namespace Common.Wildfire
             
             ShaderDispatch(_kernelInit);
 
-            //_modules = GameObject.FindGameObjectsWithTag("Module");
+            _moduleRenderer = GameObject.Find("ModuleRenderer").gameObject.GetComponent<ModuleRenderer>();
             
-            /*
+            _modules = new Module[_moduleRenderer.modulesCount];
+            for (var i = 0; i < _moduleRenderer.modulesCount; i++)
+            {
+                _modules[i] = _moduleRenderer.transformAccessArray[i].gameObject.GetComponent<Module>();
+            }
+            
+            // transfer data from gpu to cpu
             _energyTexture3D = 
                 new Texture3D(
-                    textureResolution,
-                    textureResolution,
-                    textureResolution,
+                    (int)textureResolution.x,
+                    (int)textureResolution.y,
+                    (int)textureResolution.z,
                     GraphicsFormat.R32G32B32A32_SFloat,
                     TextureCreationFlags.None
                 );
-
+            
             _transferNativeArray 
                 = new NativeArray<Vector4>(
-                    textureResolution * textureResolution * textureResolution,
-                    Allocator.Persistent,
-                    NativeArrayOptions.UninitializedMemory
+                    (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
+                    Allocator.Persistent
                 );
 
+            _wildfireZoneTransform = transform.worldToLocalMatrix;
+            
             AsyncGPUReadbackCallback += TransferDataFromRenderTargetToTexture3D;
 
             _request 
@@ -138,54 +150,105 @@ namespace Common.Wildfire
                     0,
                     AsyncGPUReadbackCallback
                 );
-            */
         }
         
-        /*
+        
         private static event Action<AsyncGPUReadbackRequest> AsyncGPUReadbackCallback;
         
         private void TransferDataFromRenderTargetToTexture3D(AsyncGPUReadbackRequest request)
         {
-            if (_request is { done: false, hasError: true }) return;
-            
-            if (!_energyTexture3D) return;
-                    
-            _energyTexture3D.SetPixelData(_transferNativeArray, 0);
-            _energyTexture3D.Apply(false, false);
-            
-            TransferEnergyFromTexture3DToModules();
-            
-            _request 
-                = AsyncGPUReadback.RequestIntoNativeArray(
-                    ref _transferNativeArray,
-                    _texelEnergyTexture,
-                    0,
-                    AsyncGPUReadbackCallback
-                );
+            if (request.done && !request.hasError)
+            {
+                ParallelReading();
+
+                if (_texelEnergyTexture != null)
+                {
+                    _request
+                        = AsyncGPUReadback.RequestIntoNativeArray(
+                            ref _transferNativeArray,
+                            _texelEnergyTexture,
+                            0,
+                            AsyncGPUReadbackCallback
+                        );
+                }
+            }
         }
 
+        private void ParallelReading()
+        {
+            if (_moduleRenderer != null)
+            {
+                if (_moduleRenderer.transformAccessArray.length > 0)
+                {
+                    if (_energyTexture3D != null)
+                    {
+                        _energyTexture3D.SetPixelData(_transferNativeArray, 0);
+                        _energyTexture3D.Apply(false, false);
+                        
+                        _texturePositions 
+                            = new NativeArray<Vector4>(
+                                _moduleRenderer.modulesCount,
+                                Allocator.TempJob
+                            );
+                    
+                        var job = new ModuleWildfireJob()
+                        {
+                            textureResolution = textureResolution,
+                            
+                            wildfireZoneTransform = _wildfireZoneTransform,
+                            
+                            texturePositions = _texturePositions
+                        };
+                        var handle = job.Schedule(_moduleRenderer.transformAccessArray);
+                        handle.Complete();
+
+                        for (var i = 0; i < _moduleRenderer.modulesCount; i++)
+                        {
+                            var temperature 
+                                = _energyTexture3D.GetPixel(
+                                    (int)_texturePositions[i].x,
+                                    (int)_texturePositions[i].y,
+                                    (int)_texturePositions[i].z
+                                ).a;
+                            _modules[i].temperature = temperature;
+                        }
+
+                        _texturePositions.Dispose();
+                    }
+                }
+            }
+        }
+
+        /*
         private Vector3 TransformPositionFromWorldSpaceToTextureSpace(Vector3 position)
         {
-            var localAreaSpace = transform.InverseTransformPoint(position);
+            var textureSpace = transform.InverseTransformPoint(position);
             
-            localAreaSpace += new Vector3(0.5f, 0.5f, 0.5f);
-            localAreaSpace *= textureResolution;
+            textureSpace += new Vector3(0.5f, 0.5f, 0.5f);
             
-            var offset = (1.0f / textureResolution) * (textureResolution * 0.5f);
-            localAreaSpace -= new Vector3(offset, offset, offset);
+            textureSpace.x *= textureResolution.x;
+            textureSpace.y *= textureResolution.y;
+            textureSpace.z *= textureResolution.z;
+            
+            textureSpace -= new Vector3(0.5f, 0.5f, 0.5f);
 
-            return localAreaSpace;
+            return textureSpace;
         }
 
         private void TransferEnergyFromTexture3DToModules()
         {
-            for (var i = 0; i < _modules.Length; i++)
+            foreach (var module in _modules)
             {
-                var moduleTexturePosition = TransformPositionFromWorldSpaceToTextureSpace(_modules[i].transform.position);
+                var moduleTexturePosition 
+                    = TransformPositionFromWorldSpaceToTextureSpace(module.transform.position);
                 
-                var energyContent = _energyTexture3D.GetPixel((int)moduleTexturePosition.x, (int)moduleTexturePosition.y, (int)moduleTexturePosition.z);
+                var energyContent
+                    = _energyTexture3D.GetPixel((int)moduleTexturePosition.x, (int)moduleTexturePosition.y, (int)moduleTexturePosition.z);
                 
-                if (_modules[i].TryGetComponent(out ModuleStats ms))
+                //Debug.Log("pos: " + moduleTexturePosition + " energy: " + energyContent);
+                
+                
+                if (module.TryGetComponent(out ModuleStats ms))
                 {
                     if (!ms.isBurning)
                     {
@@ -206,7 +269,9 @@ namespace Common.Wildfire
                 }
             }
         }
-        
+        */
+
+        /*
         private void CleanupComputeBuffer()
         {
             if (_modulePositionEnergyBuffer != null) 
@@ -253,11 +318,9 @@ namespace Common.Wildfire
             computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
             computeShader.SetFloat(ShaderSourceIntensity, sourceIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
-            
-            //UpdateModulesData();
-            
-            _currentTorchPosition = transform.InverseTransformPoint(torch.transform.position);
-            computeShader.SetVector(ShaderTorchPosition, _currentTorchPosition);
+
+            var torchPosition = transform.InverseTransformPoint(torch.transform.position);
+            computeShader.SetVector(ShaderTorchPosition, torchPosition);
             
             if (Input.GetMouseButton(0))
             {
@@ -270,11 +333,9 @@ namespace Common.Wildfire
             }
         }
         
-        /*
         private void OnDestroy()
         {
             AsyncGPUReadbackCallback -= TransferDataFromRenderTargetToTexture3D;
         }
-        */
     }
 }

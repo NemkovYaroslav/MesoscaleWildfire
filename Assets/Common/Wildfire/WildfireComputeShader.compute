@@ -79,6 +79,9 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
 
     // back step to middle cell
     torch_u_v -= 0.5f;
+
+    //float3 torch_u_v = float3(0.5f, 0.5f, 0.5f) * texture_resolution;
+    //torch_u_v -= 0.5f;
     
     float4 density_value = color_energy_texture[pixel_id];
     const float obstacle_value = get_obstacle(pixel_id).x;

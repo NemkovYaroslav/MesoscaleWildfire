@@ -20,9 +20,9 @@ namespace Common.Renderer
         
         private static readonly int Transforms = Shader.PropertyToID("transforms");
 
-        private int _modulesCount;
+        public int modulesCount;
         
-        private TransformAccessArray _transformAccessArray;
+        public TransformAccessArray transformAccessArray;
         private NativeArray<Vector3> _centers;
         private NativeArray<float> _heights;
         private NativeArray<float> _radii;
@@ -33,32 +33,32 @@ namespace Common.Renderer
         private void Start()
         {
             var modules = GameObject.FindGameObjectsWithTag("Module");
-            _modulesCount = modules.Length;
+            modulesCount = modules.Length;
             
-            _colliders = new CapsuleCollider[_modulesCount];
-            for (var i = 0; i < _modulesCount; i++)
+            _colliders = new CapsuleCollider[modulesCount];
+            for (var i = 0; i < modulesCount; i++)
             {
                 _colliders[i] = modules[i].GetComponent<CapsuleCollider>();
             }
             
             
             // job
-            var transforms = new Transform[_modulesCount];
-            for (var i = 0; i < _modulesCount; i++)
+            var transforms = new Transform[modulesCount];
+            for (var i = 0; i < modulesCount; i++)
             {
                 transforms[i] = modules[i].GetComponent<Transform>();
             }
-            _transformAccessArray = new TransformAccessArray(transforms);
+            transformAccessArray = new TransformAccessArray(transforms);
             
-            _centers = new NativeArray<Vector3>(_modulesCount, Allocator.Persistent);
-            _heights = new NativeArray<float>(_modulesCount, Allocator.Persistent);
-            for (var i = 0; i < _modulesCount; i++)
+            _centers = new NativeArray<Vector3>(modulesCount, Allocator.Persistent);
+            _heights = new NativeArray<float>(modulesCount, Allocator.Persistent);
+            for (var i = 0; i < modulesCount; i++)
             {
                 _centers[i] = _colliders[i].center;
                 _heights[i] = _colliders[i].height;
             }
             
-            _matrices = new NativeArray<Matrix4x4>(_modulesCount, Allocator.Persistent);
+            _matrices = new NativeArray<Matrix4x4>(modulesCount, Allocator.Persistent);
             
             _size = sizeof(float) * 16;
             
@@ -81,8 +81,8 @@ namespace Common.Renderer
 
         private void CalculateTransforms()
         {
-            _radii = new NativeArray<float>(_modulesCount, Allocator.TempJob);
-            for (var i = 0; i < _modulesCount; i++)
+            _radii = new NativeArray<float>(modulesCount, Allocator.TempJob);
+            for (var i = 0; i < modulesCount; i++)
             {
                 _radii[i] = _colliders[i].radius;
             }
@@ -95,18 +95,18 @@ namespace Common.Renderer
                 
                 matrices = _matrices
             };
-            var handle = job.Schedule(_transformAccessArray);
+            var handle = job.Schedule(transformAccessArray);
             handle.Complete();
             
             _radii.Dispose();
 
             CleanupComputeBuffer();
             
-            _transformsBuffer = new ComputeBuffer(_modulesCount, _size);
+            _transformsBuffer = new ComputeBuffer(modulesCount, _size);
             _transformsBuffer.SetData(_matrices);
             
             _renderParams.matProps.SetBuffer(Transforms, _transformsBuffer);
-            Graphics.RenderMeshPrimitives(_renderParams, mesh, 0, _modulesCount);
+            Graphics.RenderMeshPrimitives(_renderParams, mesh, 0, modulesCount);
         }
 
         private void Update()
@@ -118,7 +118,7 @@ namespace Common.Renderer
         {
             CleanupComputeBuffer();
 
-            _transformAccessArray.Dispose();
+            transformAccessArray.Dispose();
             
             _centers.Dispose();
             _heights.Dispose();
