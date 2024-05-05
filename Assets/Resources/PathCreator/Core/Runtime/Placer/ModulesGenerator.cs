@@ -138,7 +138,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         //rootPrototype.AddComponent<Tree>();
                         
                         // add tag to root
-                        rootPrototype.tag = "Tree";
+                        //rootPrototype.tag = "Tree";
                     }
                 }
             }
@@ -169,7 +169,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         {
                             var currentPrototypeJoint = currentPrototype.AddComponent<FixedJoint>();
                             currentPrototypeJoint.connectedBody = previousPrototypeRigidbody;
-                            //currentPrototypeJoint.connectedMassScale = 0.75f;
+                            currentPrototypeJoint.connectedMassScale = 0.75f;
                         }
                     }
                 }
@@ -209,7 +209,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 else
                 {
                     // add new module component
-                    //modulePrototypeData.gameObject.AddComponent<Module>();
+                    modulePrototypeData.gameObject.AddComponent<Module>();
                     
                     // destroy excess component
                     DestroyImmediate(modulePrototypeData);

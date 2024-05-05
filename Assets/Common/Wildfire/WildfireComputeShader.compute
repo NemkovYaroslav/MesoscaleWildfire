@@ -71,28 +71,23 @@ void kernel_module_influence (uint3 id : SV_DispatchThreadID)
 void kernel_user_input (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
-
-    // move to texture coordinates
+    
     float3 torch_u_v = torch_position;
-    torch_u_v += float3(0.5f, 0.5f, 0.5f);
+    torch_u_v += 0.5f;
     torch_u_v *= texture_resolution;
-
-    // back step to middle cell
     torch_u_v -= 0.5f;
 
-    //float3 torch_u_v = float3(0.5f, 0.5f, 0.5f) * texture_resolution;
-    //torch_u_v -= 0.5f;
-    
     float4 density_value = color_energy_texture[pixel_id];
-    const float obstacle_value = get_obstacle(pixel_id).x;
-    
-    if (distance(torch_u_v, pixel_id) < 1)
+    if (distance(torch_u_v, pixel_id) <= 1)
     {
-        const float value = source_intensity * obstacle_value;
-        density_value.a = clamp(density_value.a + value, 0, 1);
-        density_value.rgb = float3(1, 1, 0);
+        const float value = source_intensity;
+        const float factor = 1 - distance(torch_u_v, pixel_id);
+        density_value.a = clamp(density_value.a + value * factor, 0, 1);
+        density_value.rgb = float3(pixel_id.x, pixel_id.y, 0);
 
         color_energy_texture[pixel_id] = density_value;
+        
+        texel_energy_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, density_value.a);
     }
 }
 
@@ -108,7 +103,7 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
     const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
     const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
 
-    const float obstacle_value        = get_obstacle(pixel_id);
+    //const float obstacle_value        = get_obstacle(pixel_id);
     const float top_obstacle_value    = get_obstacle(top_pixel_id);
     const float bottom_obstacle_value = get_obstacle(bottom_pixel_id);
     const float right_obstacle_value  = get_obstacle(right_pixel_id);
@@ -133,9 +128,11 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
         )
         / (1 + 6.0 * k);
     
-    new_density_value *= obstacle_value;
+    //new_density_value *= obstacle_value;
 
-    color_energy_texture[pixel_id] = new_density_value;
+    //color_energy_texture[pixel_id] = new_density_value;
+
+    //color_energy_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
     
-    texel_energy_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
+    //texel_energy_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
 }

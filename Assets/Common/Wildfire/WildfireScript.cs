@@ -26,7 +26,6 @@ namespace Common.Wildfire
         
         private RenderTexture _colorEnergyTexture;
         private RenderTexture _texelEnergyTexture;
-        private Texture3D _energyTexture3D;
         
         //private ComputeBuffer _modulePositionEnergyBuffer;
 
@@ -52,8 +51,7 @@ namespace Common.Wildfire
         // transfer data from gpu to cpu
         private NativeArray<Vector4> _transferNativeArray;
         private AsyncGPUReadbackRequest _request;
-
-        private NativeArray<Vector4> _texturePositions;
+        
         private Matrix4x4 _wildfireZoneTransform;
 
         private ModuleRenderer _moduleRenderer;
@@ -124,15 +122,6 @@ namespace Common.Wildfire
             }
             
             // transfer data from gpu to cpu
-            _energyTexture3D = 
-                new Texture3D(
-                    (int)textureResolution.x,
-                    (int)textureResolution.y,
-                    (int)textureResolution.z,
-                    GraphicsFormat.R32G32B32A32_SFloat,
-                    TextureCreationFlags.None
-                );
-            
             _transferNativeArray 
                 = new NativeArray<Vector4>(
                     (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
@@ -163,13 +152,12 @@ namespace Common.Wildfire
 
                 if (_texelEnergyTexture != null)
                 {
-                    _request
-                        = AsyncGPUReadback.RequestIntoNativeArray(
-                            ref _transferNativeArray,
-                            _texelEnergyTexture,
-                            0,
-                            AsyncGPUReadbackCallback
-                        );
+                    _request = AsyncGPUReadback.RequestIntoNativeArray(
+                        ref _transferNativeArray,
+                        _texelEnergyTexture,
+                        0,
+                        AsyncGPUReadbackCallback
+                    );
                 }
             }
         }
@@ -180,41 +168,40 @@ namespace Common.Wildfire
             {
                 if (_moduleRenderer.transformAccessArray.length > 0)
                 {
-                    if (_energyTexture3D != null)
-                    {
-                        _energyTexture3D.SetPixelData(_transferNativeArray, 0);
-                        _energyTexture3D.Apply(false, false);
-                        
-                        _texturePositions 
-                            = new NativeArray<Vector4>(
-                                _moduleRenderer.modulesCount,
-                                Allocator.TempJob
-                            );
+                    // input
+                    var textureArray = new NativeArray<Vector4>(
+                        _transferNativeArray.Length,
+                        Allocator.TempJob
+                    );
+                    textureArray.CopyFrom(_transferNativeArray);
                     
-                        var job = new ModuleWildfireJob()
-                        {
-                            textureResolution = textureResolution,
-                            
-                            wildfireZoneTransform = _wildfireZoneTransform,
-                            
-                            texturePositions = _texturePositions
-                        };
-                        var handle = job.Schedule(_moduleRenderer.transformAccessArray);
-                        handle.Complete();
-
-                        for (var i = 0; i < _moduleRenderer.modulesCount; i++)
-                        {
-                            var temperature 
-                                = _energyTexture3D.GetPixel(
-                                    (int)_texturePositions[i].x,
-                                    (int)_texturePositions[i].y,
-                                    (int)_texturePositions[i].z
-                                ).a;
-                            _modules[i].temperature = temperature;
-                        }
-
-                        _texturePositions.Dispose();
+                    /*
+                    // output
+                    var temperatureArray = new NativeArray<float>(
+                        _moduleRenderer.modulesCount,
+                        Allocator.TempJob
+                    );
+                    */
+                
+                    var job = new ModuleWildfireJob()
+                    {
+                        textureResolution = textureResolution,
+                        wildfireZoneTransform = _wildfireZoneTransform,
+                        textureArray = textureArray,
+                        //temperatureArray = temperatureArray
+                    };
+                    var handle = job.Schedule(_moduleRenderer.transformAccessArray);
+                    handle.Complete();
+                    
+                    /*
+                    for (var i = 0; i < _moduleRenderer.modulesCount; i++)
+                    {
+                        _modules[i].temperature = temperatureArray[i];
                     }
+                    */
+
+                    textureArray.Dispose();
+                    //temperatureArray.Dispose();
                 }
             }
         }
