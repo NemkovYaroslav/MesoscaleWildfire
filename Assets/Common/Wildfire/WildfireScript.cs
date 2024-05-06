@@ -27,7 +27,7 @@ namespace Common.Wildfire
         private RenderTexture _colorEnergyTexture;
         private RenderTexture _texelEnergyTexture;
         
-        //private ComputeBuffer _modulePositionEnergyBuffer;
+        private ComputeBuffer _positionEnergyBuffer;
 
         private Module[] _modules;
         
@@ -35,7 +35,7 @@ namespace Common.Wildfire
         private int _kernelUserInput;
         private int _kernelDiffusion;
 
-        //private int _kernelModuleInfluence;
+        private int _kernelModulesInfluence;
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         
@@ -43,20 +43,21 @@ namespace Common.Wildfire
         private static readonly int ShaderSourceIntensity    = Shader.PropertyToID("source_intensity");
         private static readonly int ShaderDiffusionIntensity = Shader.PropertyToID("diffusion_intensity");
         private static readonly int ShaderDeltaTime          = Shader.PropertyToID("delta_time");
-        private static readonly int ShaderTorchPosition    = Shader.PropertyToID("torch_position");
+        private static readonly int ShaderTorchPosition      = Shader.PropertyToID("torch_position");
         
         private static readonly int ShaderColorEnergyTexture = Shader.PropertyToID("color_energy_texture");
         private static readonly int ShaderTexelEnergyTexture = Shader.PropertyToID("texel_energy_texture");
 
+        private static readonly int PositionEnergyBuffer = Shader.PropertyToID("position_energy_buffer");
+        
         // transfer data from gpu to cpu
-        private NativeArray<Vector4> _transferNativeArray;
+        private NativeArray<Vector4> _transferArray;
+        private NativeArray<Vector4> _transferTempArray;
         private AsyncGPUReadbackRequest _request;
         
         private Matrix4x4 _wildfireZoneTransform;
 
         private ModuleRenderer _moduleRenderer;
-        
-        //private static readonly int ModulesBuffer = Shader.PropertyToID("modules_buffer");
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
@@ -101,13 +102,13 @@ namespace Common.Wildfire
             _kernelInit      = computeShader.FindKernel("kernel_init");
             _kernelUserInput = computeShader.FindKernel("kernel_user_input");
             _kernelDiffusion = computeShader.FindKernel("kernel_diffusion");
-            //_kernelModuleInfluence = computeShader.FindKernel("kernel_module_influence");
+            _kernelModulesInfluence = computeShader.FindKernel("kernel_modules_influence");
             
             ShaderSetTexturesData(_kernelInit);
             ShaderSetTexturesData(_kernelUserInput);
             ShaderSetTexturesData(_kernelDiffusion);
             
-            //ShaderSetTexturesData(_kernelModuleInfluence);
+            ShaderSetTexturesData(_kernelModulesInfluence);
             
             renderMaterial.SetTexture(MainTex, _colorEnergyTexture);
             
@@ -118,11 +119,17 @@ namespace Common.Wildfire
             _modules = new Module[_moduleRenderer.modulesCount];
             for (var i = 0; i < _moduleRenderer.modulesCount; i++)
             {
-                _modules[i] = _moduleRenderer.transformAccessArray[i].gameObject.GetComponent<Module>();
+                _modules[i] = _moduleRenderer.transformsArray[i].gameObject.GetComponent<Module>();
             }
             
             // transfer data from gpu to cpu
-            _transferNativeArray 
+            _transferArray 
+                = new NativeArray<Vector4>(
+                    (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
+                    Allocator.Persistent
+                );
+            // additional array for transfer
+            _transferTempArray
                 = new NativeArray<Vector4>(
                     (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
                     Allocator.Persistent
@@ -134,7 +141,7 @@ namespace Common.Wildfire
 
             _request 
                 = AsyncGPUReadback.RequestIntoNativeArray(
-                    ref _transferNativeArray,
+                    ref _transferArray,
                     _texelEnergyTexture,
                     0,
                     AsyncGPUReadbackCallback
@@ -148,12 +155,13 @@ namespace Common.Wildfire
         {
             if (request.done && !request.hasError)
             {
-                ParallelReading();
+                // transfer data from grid to modules
+                TransferDataFromGridToModules();
 
                 if (_texelEnergyTexture != null)
                 {
                     _request = AsyncGPUReadback.RequestIntoNativeArray(
-                        ref _transferNativeArray,
+                        ref _transferArray,
                         _texelEnergyTexture,
                         0,
                         AsyncGPUReadbackCallback
@@ -162,46 +170,86 @@ namespace Common.Wildfire
             }
         }
 
-        private void ParallelReading()
+        // transfer data from grid to modules
+        private void TransferDataFromGridToModules()
         {
             if (_moduleRenderer != null)
             {
-                if (_moduleRenderer.transformAccessArray.length > 0)
+                if (_moduleRenderer.transformsArray.length > 0)
                 {
                     // input
-                    var textureArray = new NativeArray<Vector4>(
-                        _transferNativeArray.Length,
-                        Allocator.TempJob
-                    );
-                    textureArray.CopyFrom(_transferNativeArray);
+                    _transferTempArray.CopyFrom(_transferArray);
                     
-                    /*
                     // output
                     var temperatureArray = new NativeArray<float>(
                         _moduleRenderer.modulesCount,
                         Allocator.TempJob
                     );
-                    */
                 
-                    var job = new ModuleWildfireJob()
+                    // job process from GPU to CPU
+                    var job = new TransferDataFromGridToModulesJob()
                     {
                         textureResolution = textureResolution,
                         wildfireZoneTransform = _wildfireZoneTransform,
-                        textureArray = textureArray,
-                        //temperatureArray = temperatureArray
+                        textureArray = _transferTempArray,
+                        temperatureArray = temperatureArray
                     };
-                    var handle = job.Schedule(_moduleRenderer.transformAccessArray);
+                    var handle = job.Schedule(_moduleRenderer.transformsArray);
                     handle.Complete();
                     
-                    /*
+                    // transfer data from grid to modules
                     for (var i = 0; i < _moduleRenderer.modulesCount; i++)
                     {
                         _modules[i].temperature = temperatureArray[i];
                     }
-                    */
+                    
+                    temperatureArray.Dispose();
+                }
+            }
+        }
+        
+        private void CleanupComputeBuffer()
+        {
+            if (_positionEnergyBuffer != null) 
+            {
+                _positionEnergyBuffer.Release();
+            }
+            _positionEnergyBuffer = null;
+        }
 
-                    textureArray.Dispose();
-                    //temperatureArray.Dispose();
+        // transfer data from modules to grid
+        private void TransferDataFromModulesToGrid()
+        {
+            if (_moduleRenderer != null)
+            {
+                if (_moduleRenderer.transformsArray.length > 0)
+                {
+                    // output
+                    var positionEnergyArray = new NativeArray<Vector4>(
+                        _moduleRenderer.modulesCount,
+                        Allocator.TempJob
+                    );
+                    
+                    // job process from CPU to GPU
+                    var job = new TransferDataFromModulesToGridJob()
+                    {
+                        centers = _moduleRenderer.centers,
+                        wildfireZoneTransform = _wildfireZoneTransform,
+                        positionEnergyArray = positionEnergyArray
+                    };
+                    var handle = job.Schedule(_moduleRenderer.transformsArray);
+                    handle.Complete();
+
+                    CleanupComputeBuffer();
+                    
+                    const int stride = sizeof(float) * 4;
+                    _positionEnergyBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, stride);
+                    _positionEnergyBuffer.SetData(positionEnergyArray);
+                
+                    computeShader.SetBuffer(_kernelModulesInfluence, PositionEnergyBuffer, _positionEnergyBuffer);
+                    computeShader.Dispatch(_kernelModulesInfluence, _moduleRenderer.modulesCount / 1, 1, 1);
+
+                    positionEnergyArray.Dispose();
                 }
             }
         }
@@ -258,48 +306,6 @@ namespace Common.Wildfire
         }
         */
 
-        /*
-        private void CleanupComputeBuffer()
-        {
-            if (_modulePositionEnergyBuffer != null) 
-            {
-                _modulePositionEnergyBuffer.Release();
-            }
-            _modulePositionEnergyBuffer = null;
-        }
-        
-        private void UpdateModulesData()
-        {
-            if (_modules.Length > 0)
-            {
-                var modulePositions = new Vector4[_modules.Length];
-                for (var i = 0; i < _modules.Length; i++)
-                {
-                    if (_modules[i].TryGetComponent(out ModuleStats ms))
-                    {
-                        if (ms.isBurning)
-                        {
-                            var localAreaModulePosition = transform.InverseTransformPoint(_modules[i].transform.position);
-                            modulePositions[i] = new Vector4(localAreaModulePosition.x, localAreaModulePosition.y, localAreaModulePosition.z, 0.01f);
-                        }
-                    }
-                }
-
-                if (modulePositions.Length > 0)
-                {
-                    CleanupComputeBuffer();
-            
-                    const int stride = sizeof(float) * 4;
-                    _modulePositionEnergyBuffer = new ComputeBuffer(modulePositions.Length, stride);
-                    _modulePositionEnergyBuffer.SetData(modulePositions);
-                
-                    computeShader.SetBuffer(_kernelModuleInfluence, ModulesBuffer, _modulePositionEnergyBuffer);
-                    computeShader.Dispatch(_kernelModuleInfluence, modulePositions.Length / 10, 1, 1);
-                }
-            }
-        }
-        */
-
         private void FixedUpdate()
         {
             computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
@@ -308,6 +314,9 @@ namespace Common.Wildfire
 
             var torchPosition = transform.InverseTransformPoint(torch.transform.position);
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
+
+            // transfer data from modules to grid
+            TransferDataFromModulesToGrid();
             
             if (Input.GetMouseButton(0))
             {
@@ -323,6 +332,12 @@ namespace Common.Wildfire
         private void OnDestroy()
         {
             AsyncGPUReadbackCallback -= TransferDataFromRenderTargetToTexture3D;
+
+            if (_request.done || _request.hasError)
+            {
+                _transferArray.Dispose();
+            }
+            _transferTempArray.Dispose();
         }
     }
 }

@@ -1,5 +1,5 @@
 #pragma kernel kernel_init
-//#pragma kernel kernel_module_influence
+#pragma kernel kernel_modules_influence
 #pragma kernel kernel_user_input
 #pragma kernel kernel_diffusion
 
@@ -13,7 +13,7 @@ float source_intensity;
 float diffusion_intensity;
 float delta_time;
 
-//RWStructuredBuffer<float4> modules_buffer;
+RWStructuredBuffer<float4> position_energy_buffer;
 
 #define TOP_OFFSET    int3( 0, 1, 0)
 #define BOTTOM_OFFSET int3( 0,-1, 0)
@@ -43,29 +43,25 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
     texel_energy_texture[pixel_id] = 0;
 }
 
-/*
-[numthreads(10,1,1)]
-void kernel_module_influence (uint3 id : SV_DispatchThreadID)
+[numthreads(1,1,1)]
+void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 {
-    float4 module_info = modules_buffer[id.x];
-    float3 position = module_info.xyz;
-
-    position += float3(0.5f, 0.5f, 0.5f);
-    position *= texture_resolution;
-
-    position -= (1.0f / (float)texture_resolution) * (texture_resolution * 0.5f);
-
-    const float obstacle_value = get_obstacle(position).x;
-    const float energy = module_info.a * obstacle_value;
+    float4 module_info = position_energy_buffer[id.x];
     
+    float3 position = module_info.xyz;
+    position += 0.5f;
+    position *= texture_resolution;
+    //position -= 0.5f;
+
     float4 density_value = color_energy_texture[position];
-    density_value.a = clamp(density_value.a + energy, 0, 1);
-    density_value.rgb = float3(1, 1, 0);
+    const float value = module_info.a;
+    density_value.a = clamp(density_value.a + value, 0, 1);
+    density_value.rgb = float3(position.x, position.y, 0);
+    
     color_energy_texture[position] = density_value;
 
     texel_energy_texture[position] = float4(position.x, position.y, position.z, density_value.a);
 }
-*/
 
 [numthreads(8,8,8)]
 void kernel_user_input (uint3 id : SV_DispatchThreadID)

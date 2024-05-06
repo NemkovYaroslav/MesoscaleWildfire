@@ -6,17 +6,19 @@ namespace Resources.PathCreator.Core.Runtime.Placer
     {
         public float temperature;
 
-        private const float IgnitionTemperature = 150.0f;
-        private const float AttenuationTemperature = 450.0f;
-        private const float WoodDensity = 800.0f;
+        public bool isBurning;
+
+        //private const float IgnitionTemperature = 150.0f;
+        //private const float AttenuationTemperature = 450.0f;
+        //private const float WoodDensity = 800.0f;
         
-        private Rigidbody _rigidbody;
-        private CapsuleCollider _capsuleCollider;
+        //private Rigidbody _rigidbody;
+        //private CapsuleCollider _capsuleCollider;
 
         private void Awake()
         {
-            _rigidbody = GetComponent<Rigidbody>();
-            _capsuleCollider = GetComponent<CapsuleCollider>();
+            //_rigidbody = GetComponent<Rigidbody>();
+            //_capsuleCollider = GetComponent<CapsuleCollider>();
         }
 
         /*
@@ -41,11 +43,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         }
         */
 
+        /*
         private float CalculateReactionRate()
         {
             var argument = (temperature - IgnitionTemperature) / (AttenuationTemperature - IgnitionTemperature);
             var reactionRate = 3.0f * Mathf.Pow(argument, 2.0f) - 2.0f * Mathf.Pow(argument, 3.0f);
             return reactionRate;
         }
+        */
     }
 }

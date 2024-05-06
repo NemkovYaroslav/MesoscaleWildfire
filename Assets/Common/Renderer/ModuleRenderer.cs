@@ -7,28 +7,25 @@ namespace Common.Renderer
     public class ModuleRenderer : MonoBehaviour
     {
         [SerializeField] private float range = 10.0f;
-        
         [SerializeField] private Material material;
-        
         [SerializeField] private Mesh mesh;
-        
-        private int _size;
-
-        private CapsuleCollider[] _colliders;
-        
-        private ComputeBuffer _transformsBuffer;
-        
-        private static readonly int Transforms = Shader.PropertyToID("transforms");
 
         public int modulesCount;
         
-        public TransformAccessArray transformAccessArray;
-        private NativeArray<Vector3> _centers;
-        private NativeArray<float> _heights;
-        private NativeArray<float> _radii;
-        private NativeArray<Matrix4x4> _matrices;
-
+        private CapsuleCollider[] _colliders;
+        
+        private ComputeBuffer _transformsBuffer;
+        private int _transformsBufferSize;
+        
         private RenderParams _renderParams;
+        
+        private static readonly int Transforms = Shader.PropertyToID("transforms");
+        
+        // job fields
+        public TransformAccessArray transformsArray;
+        private NativeArray<Matrix4x4> _matrices;
+        public NativeArray<Vector3> centers;
+        private NativeArray<float> _heights;
 
         private void Start()
         {
@@ -41,26 +38,23 @@ namespace Common.Renderer
                 _colliders[i] = modules[i].GetComponent<CapsuleCollider>();
             }
             
-            
-            // job
+            // fill transform array for jobs
             var transforms = new Transform[modulesCount];
             for (var i = 0; i < modulesCount; i++)
             {
                 transforms[i] = modules[i].GetComponent<Transform>();
             }
-            transformAccessArray = new TransformAccessArray(transforms);
-            
-            _centers = new NativeArray<Vector3>(modulesCount, Allocator.Persistent);
+            transformsArray = new TransformAccessArray(transforms);
+            _matrices = new NativeArray<Matrix4x4>(modulesCount, Allocator.Persistent);
+            centers = new NativeArray<Vector3>(modulesCount, Allocator.Persistent);
             _heights = new NativeArray<float>(modulesCount, Allocator.Persistent);
             for (var i = 0; i < modulesCount; i++)
             {
-                _centers[i] = _colliders[i].center;
+                centers[i] = _colliders[i].center;
                 _heights[i] = _colliders[i].height;
             }
             
-            _matrices = new NativeArray<Matrix4x4>(modulesCount, Allocator.Persistent);
-            
-            _size = sizeof(float) * 16;
+            _transformsBufferSize = sizeof(float) * 16;
             
             // render
             _renderParams = new RenderParams(material)
@@ -81,28 +75,29 @@ namespace Common.Renderer
 
         private void CalculateTransforms()
         {
-            _radii = new NativeArray<float>(modulesCount, Allocator.TempJob);
+            // input
+            var radii = new NativeArray<float>(modulesCount, Allocator.TempJob);
             for (var i = 0; i < modulesCount; i++)
             {
-                _radii[i] = _colliders[i].radius;
+                radii[i] = _colliders[i].radius;
             }
             
+            // job process
             var job = new ModuleRenderJob()
             {
-                centers = _centers,
+                centers = centers,
                 heights = _heights,
-                radii = _radii,
+                radii = radii,
                 
                 matrices = _matrices
             };
-            var handle = job.Schedule(transformAccessArray);
+            var handle = job.Schedule(transformsArray);
             handle.Complete();
             
-            _radii.Dispose();
-
-            CleanupComputeBuffer();
+            radii.Dispose();
             
-            _transformsBuffer = new ComputeBuffer(modulesCount, _size);
+            CleanupComputeBuffer();
+            _transformsBuffer = new ComputeBuffer(modulesCount, _transformsBufferSize);
             _transformsBuffer.SetData(_matrices);
             
             _renderParams.matProps.SetBuffer(Transforms, _transformsBuffer);
@@ -118,12 +113,10 @@ namespace Common.Renderer
         {
             CleanupComputeBuffer();
 
-            transformAccessArray.Dispose();
-            
-            _centers.Dispose();
-            _heights.Dispose();
-            
+            transformsArray.Dispose();
             _matrices.Dispose();
+            centers.Dispose();
+            _heights.Dispose();
         }
     }
 }
