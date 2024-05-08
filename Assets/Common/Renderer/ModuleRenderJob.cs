@@ -8,7 +8,6 @@ namespace Common.Renderer
     {
         [ReadOnly] public NativeArray<Vector3> centers;
         [ReadOnly] public NativeArray<float> heights;
-        
         [ReadOnly] public NativeArray<float> radii;
         
         [WriteOnly] public NativeArray<Matrix4x4> matrices;

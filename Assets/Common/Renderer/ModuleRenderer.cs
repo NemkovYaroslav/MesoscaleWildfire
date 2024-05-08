@@ -9,13 +9,13 @@ namespace Common.Renderer
         [SerializeField] private float range = 10.0f;
         [SerializeField] private Material material;
         [SerializeField] private Mesh mesh;
-
+        
+        public CapsuleCollider[] colliders;
+        
         public int modulesCount;
         
-        private CapsuleCollider[] _colliders;
-        
         private ComputeBuffer _transformsBuffer;
-        private int _transformsBufferSize;
+        private int _transformsBufferStride;
         
         private RenderParams _renderParams;
         
@@ -30,12 +30,13 @@ namespace Common.Renderer
         private void Start()
         {
             var modules = GameObject.FindGameObjectsWithTag("Module");
+            
             modulesCount = modules.Length;
             
-            _colliders = new CapsuleCollider[modulesCount];
+            colliders = new CapsuleCollider[modulesCount];
             for (var i = 0; i < modulesCount; i++)
             {
-                _colliders[i] = modules[i].GetComponent<CapsuleCollider>();
+                colliders[i] = modules[i].GetComponent<CapsuleCollider>();
             }
             
             // fill transform array for jobs
@@ -45,16 +46,30 @@ namespace Common.Renderer
                 transforms[i] = modules[i].GetComponent<Transform>();
             }
             transformsArray = new TransformAccessArray(transforms);
-            _matrices = new NativeArray<Matrix4x4>(modulesCount, Allocator.Persistent);
-            centers = new NativeArray<Vector3>(modulesCount, Allocator.Persistent);
-            _heights = new NativeArray<float>(modulesCount, Allocator.Persistent);
+            
+            centers = new NativeArray<Vector3>(
+                modulesCount, 
+                Allocator.Persistent,
+                NativeArrayOptions.UninitializedMemory
+            );
+            _heights = new NativeArray<float>(
+                modulesCount, 
+                Allocator.Persistent,
+                NativeArrayOptions.UninitializedMemory
+            );
             for (var i = 0; i < modulesCount; i++)
             {
-                centers[i] = _colliders[i].center;
-                _heights[i] = _colliders[i].height;
+                centers[i] = colliders[i].center;
+                _heights[i] = colliders[i].height;
             }
             
-            _transformsBufferSize = sizeof(float) * 16;
+            _matrices = new NativeArray<Matrix4x4>(
+                modulesCount, 
+                Allocator.Persistent,
+                NativeArrayOptions.UninitializedMemory
+            );
+            
+            _transformsBufferStride = sizeof(float) * 16;
             
             // render
             _renderParams = new RenderParams(material)
@@ -68,27 +83,35 @@ namespace Common.Renderer
         {
             if (_transformsBuffer != null)
             {
-                _transformsBuffer.Dispose();
+                _transformsBuffer.Release();
             }
             _transformsBuffer = null;
         }
 
-        private void CalculateTransforms()
+        private void RenderModules()
         {
             // input
-            var radii = new NativeArray<float>(modulesCount, Allocator.TempJob);
+            var radii = new NativeArray<float>(
+                modulesCount, 
+                Allocator.TempJob,
+                NativeArrayOptions.UninitializedMemory
+            );
             for (var i = 0; i < modulesCount; i++)
             {
-                radii[i] = _colliders[i].radius;
+                radii[i] = colliders[i].radius;
             }
             
-            // job process
+            // fill native array with modules world positions data
             var job = new ModuleRenderJob()
             {
+                // unchangeable
                 centers = centers,
                 heights = _heights,
+                
+                // changeable
                 radii = radii,
                 
+                // result
                 matrices = _matrices
             };
             var handle = job.Schedule(transformsArray);
@@ -97,16 +120,18 @@ namespace Common.Renderer
             radii.Dispose();
             
             CleanupComputeBuffer();
-            _transformsBuffer = new ComputeBuffer(modulesCount, _transformsBufferSize);
+            _transformsBuffer = new ComputeBuffer(modulesCount, _transformsBufferStride);
             _transformsBuffer.SetData(_matrices);
             
+            // send the modules world positions data to shader
             _renderParams.matProps.SetBuffer(Transforms, _transformsBuffer);
+            // should be called every frame
             Graphics.RenderMeshPrimitives(_renderParams, mesh, 0, modulesCount);
         }
 
         private void Update()
         {
-            CalculateTransforms();
+            RenderModules();
         }
         
         private void OnDestroy()
@@ -114,9 +139,11 @@ namespace Common.Renderer
             CleanupComputeBuffer();
 
             transformsArray.Dispose();
-            _matrices.Dispose();
-            centers.Dispose();
+            
             _heights.Dispose();
+            centers.Dispose();
+            
+            _matrices.Dispose();
         }
     }
 }

@@ -38,9 +38,6 @@ Shader "Unlit/TreeRenderShader"
                 
                 o.position = UnityObjectToClipPos(position);
                 o.color = float4(normal, 1);
-
-                //o.position = UnityObjectToClipPos(v.position);
-                //o.color = float4(v.normal, 1);
                 
                 return o;
             }
