@@ -23,6 +23,8 @@ namespace Common.Wildfire
             posInWildfireArea.y *= textureResolution.y;
             posInWildfireArea.z *= textureResolution.z;
 
+            posInWildfireArea -= new Vector4(0.5f, 0.5f, 0.5f, 0.0f);
+
             if (posInWildfireArea.x < textureResolution.x 
                     && posInWildfireArea.y < textureResolution.y 
                         && posInWildfireArea.z < textureResolution.z 
@@ -35,6 +37,8 @@ namespace Common.Wildfire
                     = (int)posInWildfireArea.x 
                       + (int)posInWildfireArea.y * (int)textureResolution.x 
                         + (int)posInWildfireArea.z * (int)textureResolution.x * (int)textureResolution.y;
+                
+                
                 
                 modulesAmbientTemperatureArray[index] = textureArray[i].w;
             }

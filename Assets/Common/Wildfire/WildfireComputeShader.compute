@@ -3,6 +3,8 @@
 #pragma kernel kernel_modules_influence
 #pragma kernel kernel_diffusion
 
+#pragma kernel kernel_read_texture
+
 RWTexture3D<float4> color_temperature_texture;
 RWTexture3D<float4> texel_temperature_texture;
 
@@ -14,6 +16,9 @@ float diffusion_intensity;
 float delta_time;
 
 int modules_number;
+
+Texture3D MyTex;
+SamplerState MyLinearClampSampler;
 
 RWStructuredBuffer<float4> position_temperature_buffer;
 
@@ -48,13 +53,43 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
     texel_temperature_texture[pixel_id] = 0;
 }
 
+[numthreads(1,1,1)]
+void kernel_read_texture (uint3 id : SV_DispatchThreadID)
+{
+    
+}
+
 [numthreads(8,8,8)]
 void kernel_user_input (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
-
-    const int obstacle_value = get_obstacle(pixel_id);
     
+    if (source_intensity > 0)
+    {
+        float3 torch_u_v = torch_position;
+        torch_u_v += 0.5f;
+        torch_u_v *= texture_resolution;
+        torch_u_v -= 0.5f;
+
+        const float dist = distance(torch_u_v, pixel_id);
+        if (dist < 1)
+        {
+            float4 density_value = color_temperature_texture[pixel_id];
+
+            density_value.rgb = float3(1, 1, 0);
+        
+            const float factor = 1 - dist;
+            const float delta = source_intensity * factor;
+            density_value.a = clamp(density_value.a + delta, 0, 1);
+
+            color_temperature_texture[pixel_id] = density_value;
+    
+            texel_temperature_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, density_value.a);
+        }
+    }
+    
+    /*
+    const int obstacle_value = get_obstacle(pixel_id);
     if (obstacle_value)
     {
         if (source_intensity > 0)
@@ -81,6 +116,7 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
             }
         }
     }
+    */
 }
 
 [numthreads(8,8,8)]
@@ -89,7 +125,7 @@ void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
     const int3 pixel_id = id.xyz;
 
     const int obstacle_value = get_obstacle(pixel_id);
-
+    
     if (obstacle_value)
     {
         for (int i = 0; i < modules_number; i++)

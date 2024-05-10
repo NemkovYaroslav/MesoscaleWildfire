@@ -131,7 +131,7 @@ namespace Common.Renderer
 
         private void Update()
         {
-            RenderModules();
+            //RenderModules();
         }
         
         private void OnDestroy()

@@ -37,8 +37,6 @@ namespace Common.Wildfire
         private int _kernelUserInput;
         private int _kernelDiffusion;
         private int _kernelModulesInfluence;
-
-        private float _generatedTemperature;
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         
@@ -232,39 +230,72 @@ namespace Common.Wildfire
                 if (_moduleRenderer.transformsArray.length > 0)
                 {
                     // MAIN SIMULATION LOGIC
-                    var ambientTemperature = _modulesAmbientTemperatureArray[0];
-                    Debug.Log("ambient Temperature: " + ambientTemperature * 1000.0f);
 
-                    // temperature to transfer to grid
-                    var transferTemperature = 0.0f;
-                    
-                    var temperatureDelta = ambientTemperature * Time.fixedDeltaTime;
-                    if (_modules[0].temperature < ambientTemperature)
-                    {
-                        Debug.Log("less");
-                        _modules[0].temperature += temperatureDelta;
-                        transferTemperature -= temperatureDelta;
-                    }
-                    else
-                    {
-                        if (_modules[0].temperature > ambientTemperature)
-                        {
-                            Debug.Log("more");
-                            _modules[0].temperature -= temperatureDelta;
-                            transferTemperature += temperatureDelta;
-                        }
-                    }
-                    
-                    Debug.Log("module temperature: " + _modules[0].temperature * 1000.0f);
-                    Debug.Log("transfer temperature: " + transferTemperature * 1000.0f);
-                    
                     // input
                     var releaseTemperatureArray = new NativeArray<float>(
                         _moduleRenderer.modulesCount,
                         Allocator.TempJob
                     );
 
-                    releaseTemperatureArray[0] = transferTemperature;
+                    for (var i = 0; i < _moduleRenderer.modulesCount; i++)
+                    {
+                        var ambientTemperature = _modulesAmbientTemperatureArray[i];
+                    
+                        // temperature to transfer to grid
+                        var transferTemperature = 0.0f;
+                        
+                        var surfaceArea = 2.0f * Mathf.PI * _modules[i].capsuleCollider.radius * _modules[i].capsuleCollider.height; // m^2
+                        const float airThermalConductivity = 0.025f; // W / (m * C)
+                        const float airThermalCapacity = 1000.0f; // J / (kg * С)
+                        const float woodThermalConductivity = 0.25f; // W / (m * C)
+                        const float woodThermalCapacity = 2000.0f; // J / (kg * С)
+                        const float thickness = 0.01f;
+                        if (_modules[i].temperature < ambientTemperature && _modules[i].rigidBody.mass > 1)
+                        {
+                            Debug.Log("amb: " + ambientTemperature * 1000.0f + " mod : " + _modules[i].temperature * 1000.0f);
+                            
+                            var temperatureDelta = ambientTemperature * 1000.0f - _modules[i].temperature * 1000.0f;
+                            var heat = woodThermalConductivity * surfaceArea * (temperatureDelta / thickness);
+                            
+                            var temperature = (heat * Time.fixedDeltaTime) / (woodThermalCapacity * _modules[i].rigidBody.mass) / 1000.0f;
+                            
+                            _modules[i].temperature += temperature;
+                            transferTemperature -= temperature;
+                        }
+                        if (_modules[i].temperature > ambientTemperature && _modules[i].rigidBody.mass > 1)
+                        {
+                            Debug.Log("mod : " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                            
+                            var temperatureDelta = _modules[i].temperature * 1000.0f - ambientTemperature * 1000.0f;
+                            var heat = airThermalConductivity * surfaceArea * (temperatureDelta / thickness);
+                            
+                            var temperature = (heat * Time.fixedDeltaTime) / (airThermalCapacity * 0.125f * 1.2f) / 1000.0f;
+                            
+                            _modules[i].temperature -= temperature;
+                            transferTemperature += temperature;
+                        }
+                        
+                        // combustion
+                        if (_modules[i].rigidBody.mass > 1)
+                        {
+                            var lostMass = _modules[i].CalculateLostMass();
+
+                            if (!Mathf.Approximately(lostMass, 0.0f))
+                            {
+                                _modules[i].RecalculateCharacteristics(lostMass);
+
+                                var heat = 10000.0f * lostMass;
+                                
+                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 0.125f * 1.2f) / 1000.0f;
+                                var wood = heat / (woodThermalCapacity * Time.fixedDeltaTime * _modules[i].rigidBody.mass) / 1000.0f;
+                                
+                                _modules[i].temperature += wood;
+                                transferTemperature += air;
+                            }
+                        }
+
+                        releaseTemperatureArray[i] = transferTemperature;
+                    }
                     
                     // output
                     var positionTemperatureArray = new NativeArray<Vector4>(
@@ -311,18 +342,19 @@ namespace Common.Wildfire
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
             
             // transfer data from modules to grid
-            TransferDataFromModulesToGrid();
+            //TransferDataFromModulesToGrid();
             
             if (Input.GetMouseButton(0))
             {
                 ShaderDispatch(_kernelUserInput);
-                _generatedTemperature += sourceIntensity;
-                Debug.Log("generated: " + _generatedTemperature * 1000.0f);
             }
-            
-            for (var i = 0; i < solverIterations; i++)
+
+            if (!Input.GetMouseButton(0))
             {
-               ShaderDispatch(_kernelDiffusion);
+                for (var i = 0; i < solverIterations; i++)
+                {
+                    ShaderDispatch(_kernelDiffusion);
+                }
             }
         }
         
