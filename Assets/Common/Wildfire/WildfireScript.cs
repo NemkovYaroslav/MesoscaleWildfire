@@ -31,12 +31,19 @@ namespace Common.Wildfire
         private ComputeBuffer _positionTemperatureBuffer;
         private int _positionTemperatureBufferStride;
 
+        private ComputeBuffer _posTempBuffer;
+        private int _posTempBufferStride;
+
+        private Texture3D _shitTexture3D;
+
         private Module[] _modules;
         
         private int _kernelInit;
         private int _kernelUserInput;
         private int _kernelDiffusion;
         private int _kernelModulesInfluence;
+
+        private int _kernelReadData;
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         
@@ -47,21 +54,22 @@ namespace Common.Wildfire
         private static readonly int ShaderTorchPosition      = Shader.PropertyToID("torch_position");
         private static readonly int ModulesNumber            = Shader.PropertyToID("modules_number");
         
-        private static readonly int ShaderColorTemperatureTexture = Shader.PropertyToID("color_temperature_texture");
-        private static readonly int ShaderTexelTemperatureTexture = Shader.PropertyToID("texel_temperature_texture");
+        private static readonly int ShaderColorTemperatureTexture = Shader.PropertyToID("ColorTemperatureTexture");
+        private static readonly int ShaderTexelTemperatureTexture = Shader.PropertyToID("TexelTemperatureTexture");
 
-        private static readonly int PositionTemperatureBuffer = Shader.PropertyToID("position_temperature_buffer");
+        private static readonly int PositionTemperatureBuffer = Shader.PropertyToID("PositionTemperatureBuffer");
+        
+        private static readonly int PosTempBuffer = Shader.PropertyToID("posTempBuffer");
+        private static readonly int MyTexture3D = Shader.PropertyToID("myTexture3D");
         
         // transfer data from gpu to cpu
         private NativeArray<Vector4> _transferArray;
-        private NativeArray<Vector4> _transferTempArray;
+        //private NativeArray<Vector4> _transferTempArray;
         private AsyncGPUReadbackRequest _request;
 
         private NativeArray<float> _modulesAmbientTemperatureArray;
         
         private ModuleRenderer _moduleRenderer;
-        
-        private Matrix4x4 _wildfireAreaTransform;
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
@@ -108,45 +116,58 @@ namespace Common.Wildfire
             _kernelDiffusion        = computeShader.FindKernel("kernel_diffusion");
             _kernelModulesInfluence = computeShader.FindKernel("kernel_modules_influence");
             
+            _kernelReadData = computeShader.FindKernel("kernel_read_data");
+            
             ShaderSetTexturesData(_kernelInit);
             ShaderSetTexturesData(_kernelUserInput);
             ShaderSetTexturesData(_kernelDiffusion);
             ShaderSetTexturesData(_kernelModulesInfluence);
             
+            ShaderSetTexturesData(_kernelReadData);
+            
             renderMaterial.SetTexture(MainTex, _colorTemperatureTexture);
             
-            ShaderDispatch(_kernelInit);
-
-            _wildfireAreaTransform = transform.worldToLocalMatrix;
-
-            _positionTemperatureBufferStride = sizeof(float) * 4;
-            
             _moduleRenderer = GameObject.Find("ModuleRenderer").gameObject.GetComponent<ModuleRenderer>();
-            
             _modules = new Module[_moduleRenderer.modulesCount];
             for (var i = 0; i < _moduleRenderer.modulesCount; i++)
             {
                 _modules[i] = _moduleRenderer.transformsArray[i].GetComponent<Module>();
             }
-            
             computeShader.SetInt(ModulesNumber, _moduleRenderer.modulesCount);
             
             // fields to transfer data from grid to modules
             _transferArray
                 = new NativeArray<Vector4>(
-                    (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
-                    Allocator.Persistent,
-                    NativeArrayOptions.UninitializedMemory
-                );
-            _transferTempArray
-                = new NativeArray<Vector4>(
-                    (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
-                    Allocator.Persistent,
-                    NativeArrayOptions.UninitializedMemory
+                    (int)textureResolution.x 
+                        * (int)textureResolution.y 
+                            * (int)textureResolution.z,
+                    Allocator.Persistent
                 );
             
+            _posTempBufferStride = sizeof(float) * 4;
+            
+            _positionTemperatureBufferStride = sizeof(float) * 4;
+            
+            _shitTexture3D = new Texture3D(
+                _texelTemperatureTexture.width,
+                _texelTemperatureTexture.height,
+                _texelTemperatureTexture.volumeDepth,
+                _texelTemperatureTexture.graphicsFormat,
+                TextureCreationFlags.None
+            );
+            // set empty texture
+            computeShader.SetTexture(_kernelReadData, MyTexture3D, _shitTexture3D);
+            
+            /*
+            _transferTempArray
+                = new NativeArray<Vector4>(
+                    1,
+                    Allocator.Persistent
+                );
+            */
+            
             // modules ambient temperature
-            _modulesAmbientTemperatureArray
+            _modulesAmbientTemperatureArray 
                 = new NativeArray<float>(
                     _moduleRenderer.modulesCount,
                     Allocator.Persistent
@@ -161,10 +182,13 @@ namespace Common.Wildfire
                     0,
                     AsyncGPUReadbackCallback
                 );
+            
+            ShaderDispatch(_kernelInit);
         }
         
         private static event Action<AsyncGPUReadbackRequest> AsyncGPUReadbackCallback;
         
+        /*
         // transfer data from grid to modules
         private void TransferDataFromGrid()
         {
@@ -193,16 +217,79 @@ namespace Common.Wildfire
                 }
             }
         }
+        */
+
+        private void TransferDataFromShader()
+        {
+            if (_moduleRenderer != null)
+            {
+                if (_moduleRenderer.modulesCount > 0)
+                {
+                    // output
+                    var positionTemperatureArray = new NativeArray<Vector4>(
+                        _moduleRenderer.modulesCount,
+                        Allocator.TempJob,
+                        NativeArrayOptions.UninitializedMemory
+                    );
+                
+                    // fill the output temperature array
+                    var job = new TransferDataFromShaderJob()
+                    {
+                        // unchangeable
+                        centers = _moduleRenderer.centers,
+                        wildfireAreaTransform = transform.worldToLocalMatrix,
+                        
+                        // result
+                        posTempArray = positionTemperatureArray
+                    };
+                    var handle = job.Schedule(_moduleRenderer.transformsArray);
+                    handle.Complete();
+
+                    CleanupPosTempBuffer();
+                    _posTempBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, _posTempBufferStride);
+                    _posTempBuffer.SetData(positionTemperatureArray);
+                    
+                    computeShader.SetBuffer(_kernelReadData, PosTempBuffer, _posTempBuffer);
+                    
+                    _shitTexture3D.SetPixelData(_transferArray, 0);
+                    _shitTexture3D.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+                    
+                    computeShader.SetTexture(_kernelReadData, MyTexture3D, _shitTexture3D);
+                    
+                    computeShader.Dispatch(
+                        _kernelReadData,
+                        1,
+                        1,
+                        1
+                    );
+                    
+                    var temp = new Vector4[_moduleRenderer.modulesCount];
+                    _posTempBuffer.GetData(temp);
+
+                    for (var i = 0; i < temp.Length; i++)
+                    {
+                        _modulesAmbientTemperatureArray[i] = temp[i].w;
+                        
+                        Debug.Log(temp[i]);
+                    }
+                    
+                    positionTemperatureArray.Dispose();
+                }
+            }
+        }
         
         private void TransferTextureData(AsyncGPUReadbackRequest request)
         {
             if (request.done && !request.hasError)
             {
                 // transfer data from grid to modules
-                TransferDataFromGrid();
-
+                //TransferDataFromGrid();
+                
+                // read data about modules temperature
                 if (_texelTemperatureTexture != null)
                 {
+                    TransferDataFromShader();
+                    
                     _request = AsyncGPUReadback.RequestIntoNativeArray(
                         ref _transferArray,
                         _texelTemperatureTexture,
@@ -213,15 +300,24 @@ namespace Common.Wildfire
             }
         }
         
-        private void CleanupComputeBuffer()
+        private void CleanupPosTempBuffer()
         {
-            if (_positionTemperatureBuffer != null) 
+            if (_posTempBuffer != null)
+            {
+                _posTempBuffer.Release();
+            }
+            _posTempBuffer = null;
+        }
+        
+        private void CleanupPositionTemperatureBuffer()
+        {
+            if (_positionTemperatureBuffer != null)
             {
                 _positionTemperatureBuffer.Release();
             }
             _positionTemperatureBuffer = null;
         }
-
+        
         // transfer data from modules to grid
         private void TransferDataFromModulesToGrid()
         {
@@ -284,7 +380,7 @@ namespace Common.Wildfire
                             {
                                 _modules[i].RecalculateCharacteristics(lostMass);
 
-                                var heat = 10000.0f * lostMass;
+                                var heat = 15000.0f * lostMass;
                                 
                                 var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 0.125f * 1.2f) / 1000.0f;
                                 var wood = heat / (woodThermalCapacity * Time.fixedDeltaTime * _modules[i].rigidBody.mass) / 1000.0f;
@@ -307,8 +403,9 @@ namespace Common.Wildfire
                     // job process
                     var job = new TransferDataFromModulesToGridJob()
                     {
+                        // input
                         centers = _moduleRenderer.centers,
-                        wildfireZoneTransform = _wildfireAreaTransform,
+                        wildfireZoneTransform = transform.worldToLocalMatrix,
                         
                         // changeable
                         releaseTemperatureArray = releaseTemperatureArray,
@@ -319,7 +416,7 @@ namespace Common.Wildfire
                     var handle = job.Schedule(_moduleRenderer.transformsArray);
                     handle.Complete();
 
-                    CleanupComputeBuffer();
+                    CleanupPositionTemperatureBuffer();
                     _positionTemperatureBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, _positionTemperatureBufferStride);
                     _positionTemperatureBuffer.SetData(positionTemperatureArray);
                     
@@ -344,17 +441,16 @@ namespace Common.Wildfire
             // transfer data from modules to grid
             //TransferDataFromModulesToGrid();
             
+            ShaderDispatch(_kernelReadData);
+            
             if (Input.GetMouseButton(0))
             {
                 ShaderDispatch(_kernelUserInput);
             }
-
-            if (!Input.GetMouseButton(0))
+            
+            for (var i = 0; i < solverIterations; i++)
             {
-                for (var i = 0; i < solverIterations; i++)
-                {
-                    ShaderDispatch(_kernelDiffusion);
-                }
+                ShaderDispatch(_kernelDiffusion);
             }
         }
         
@@ -363,12 +459,12 @@ namespace Common.Wildfire
             AsyncGPUReadbackCallback -= TransferTextureData;
             
             //_transferArray.Dispose();
-            
-            _transferTempArray.Dispose();
+            //_transferTempArray.Dispose();
 
             _modulesAmbientTemperatureArray.Dispose();
             
-            CleanupComputeBuffer();
+            CleanupPosTempBuffer();
+            CleanupPositionTemperatureBuffer();
         }
     }
 }

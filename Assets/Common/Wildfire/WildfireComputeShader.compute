@@ -1,12 +1,11 @@
 #pragma kernel kernel_init
 #pragma kernel kernel_user_input
+#pragma kernel kernel_read_data
 #pragma kernel kernel_modules_influence
 #pragma kernel kernel_diffusion
 
-#pragma kernel kernel_read_texture
-
-RWTexture3D<float4> color_temperature_texture;
-RWTexture3D<float4> texel_temperature_texture;
+RWTexture3D<float4> ColorTemperatureTexture;
+RWTexture3D<float4> TexelTemperatureTexture;
 
 float3 texture_resolution;
 float3 torch_position;
@@ -17,10 +16,12 @@ float delta_time;
 
 int modules_number;
 
-Texture3D MyTex;
-SamplerState MyLinearClampSampler;
+Texture3D myTexture3D;
+SamplerState linearClampSampler;
 
-RWStructuredBuffer<float4> position_temperature_buffer;
+RWStructuredBuffer<float4> posTempBuffer;
+
+RWStructuredBuffer<float4> PositionTemperatureBuffer;
 
 #define TOP_OFFSET    int3( 0, 1, 0)
 #define BOTTOM_OFFSET int3( 0,-1, 0)
@@ -49,14 +50,8 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
     
-    color_temperature_texture[pixel_id] = 0;
-    texel_temperature_texture[pixel_id] = 0;
-}
-
-[numthreads(1,1,1)]
-void kernel_read_texture (uint3 id : SV_DispatchThreadID)
-{
-    
+    ColorTemperatureTexture[pixel_id] = 0;
+    TexelTemperatureTexture[pixel_id] = 0;
 }
 
 [numthreads(8,8,8)]
@@ -64,33 +59,9 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
     
-    if (source_intensity > 0)
-    {
-        float3 torch_u_v = torch_position;
-        torch_u_v += 0.5f;
-        torch_u_v *= texture_resolution;
-        torch_u_v -= 0.5f;
-
-        const float dist = distance(torch_u_v, pixel_id);
-        if (dist < 1)
-        {
-            float4 density_value = color_temperature_texture[pixel_id];
-
-            density_value.rgb = float3(1, 1, 0);
-        
-            const float factor = 1 - dist;
-            const float delta = source_intensity * factor;
-            density_value.a = clamp(density_value.a + delta, 0, 1);
-
-            color_temperature_texture[pixel_id] = density_value;
-    
-            texel_temperature_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, density_value.a);
-        }
-    }
-    
-    /*
     const int obstacle_value = get_obstacle(pixel_id);
-    if (obstacle_value)
+    bool t = true;
+    if (t)
     {
         if (source_intensity > 0)
         {
@@ -102,21 +73,89 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
             const float dist = distance(torch_u_v, pixel_id);
             if (dist < 1)
             {
-                float4 density_value = color_temperature_texture[pixel_id];
+                float4 density_value = ColorTemperatureTexture[pixel_id];
 
                 density_value.rgb = float3(1, 1, 0);
             
-                const float factor = 1 - dist;
+                const float factor = 0.25f;
                 const float delta = source_intensity * factor;
                 density_value.a = clamp(density_value.a + delta, 0, 1);
 
-                color_temperature_texture[pixel_id] = density_value;
+                ColorTemperatureTexture[pixel_id] = density_value;
         
-                texel_temperature_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, density_value.a);
+                TexelTemperatureTexture[pixel_id] = float4(0.0f, 0.0f, 0.0f, density_value.a);
             }
         }
     }
+}
+
+[numthreads(1,1,1)]
+void kernel_read_data (uint3 id : SV_DispatchThreadID)
+{
+    const int index = id.x;
+
+    /*
+    // sample temperature data from texture
+    float3 u_v = posTempBuffer[index].xyz;
+    u_v += 0.5f;
+    float4 val = myTexture3D.SampleLevel(linearClampSampler, u_v, 0);
+    posTempBuffer[index].w = val.w;
+
+    // calculate texture position
+    u_v *= texture_resolution;
+    u_v -= 0.5f;
+    posTempBuffer[index].xyz = u_v;
     */
+
+    // решающая
+
+    // calculate module position
+    float3 position = posTempBuffer[index].xyz;
+    position += 0.5f;
+    position *= texture_resolution;
+
+    // grid step
+    const float grid_step = 1.0f;
+    
+    // calculate x pos
+    const float x_value = position.x;
+    const float x_value_offset = x_value - grid_step / 2.0f;
+    const float x_value_offset_step = x_value_offset / grid_step;
+    const float floor_x = floor(x_value_offset_step);
+
+    // calculate y pos
+    const float y_value = position.y;
+    const float y_value_offset = y_value - grid_step / 2.0f;
+    const float y_value_offset_step = y_value_offset / grid_step;
+    const float floor_y = floor(y_value_offset_step);
+
+    // calculate z pos
+    const float z_value = position.z;
+    const float z_value_offset = z_value - grid_step / 2.0f;
+    const float z_value_offset_step = z_value_offset / grid_step;
+    const float floor_z = floor(z_value_offset_step);
+       
+    
+    // calculate factors
+    const float dif_x_f = x_value - floor_x; // f
+    const float dif_x_s = 1.0f - dif_x_f;    // s
+
+    const float dif_y_f = y_value - floor_y; // f
+    const float dif_y_s = 1.0f - dif_y_f;    // s
+
+    const float dif_z_f = z_value - floor_z; // f
+    const float dif_z_s = 1.0f - dif_z_f;    // s
+
+    // write factors
+    const int3 x_f_y_f_z_f = int3(floor_x, floor_y, floor_z);
+    const float factor_f_f_f = dif_x_f * dif_y_f * dif_z_f;
+
+        
+
+    // result
+    posTempBuffer[index] = float4(floor_x, floor_y, floor_z, 0.0f);
+    
+    //posTempBuffer[index] = float4(position.x, position.y, position.z, 0.0f);
 }
 
 [numthreads(8,8,8)]
@@ -124,37 +163,39 @@ void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
 
+    /*
     const int obstacle_value = get_obstacle(pixel_id);
     
     if (obstacle_value)
     {
         for (int i = 0; i < modules_number; i++)
         {
-            float3 position = position_temperature_buffer[i].xyz;
+            float3 position = PositionTemperatureBuffer[i].xyz;
             
             position += 0.5f;
             position *= texture_resolution;
             position -= 0.5f;
-
+            
             const float dist = distance(position, pixel_id);
             if (dist < 1)
             {
-                float4 color_temperature_value = color_temperature_texture[pixel_id];
+                float4 color_temperature_value = ColorTemperatureTexture[pixel_id];
 
                 color_temperature_value.rgb = float3(1, 1, 0);
                 
-                const float temperature = position_temperature_buffer[i].a;
+                const float temperature = PositionTemperatureBuffer[i].a;
 
                 const float factor = 1 - dist;
                 const float delta = temperature * factor;
                 color_temperature_value.a = clamp(color_temperature_value.a + delta, 0, 1);
                 
-                color_temperature_texture[pixel_id] = color_temperature_value;
+                ColorTemperatureTexture[pixel_id] = color_temperature_value;
 
-                texel_temperature_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, color_temperature_value.a);
+                TexelTemperatureTexture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, color_temperature_value.a);
             }
         }
     }
+    */
 }
 
 [numthreads(8,8,8)]
@@ -180,13 +221,13 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
         const float front_obstacle_value  = get_obstacle(front_pixel_id);
         const float back_obstacle_value   = get_obstacle(back_pixel_id);
     
-        const float4 density_value        = color_temperature_texture[pixel_id];
-        const float4 top_density_value    = color_temperature_texture[top_pixel_id]    * top_obstacle_value;
-        const float4 bottom_density_value = color_temperature_texture[bottom_pixel_id] * bottom_obstacle_value;
-        const float4 right_density_value  = color_temperature_texture[right_pixel_id]  * right_obstacle_value;
-        const float4 left_density_value   = color_temperature_texture[left_pixel_id]   * left_obstacle_value;
-        const float4 front_density_value  = color_temperature_texture[front_pixel_id]  * front_obstacle_value;
-        const float4 back_density_value   = color_temperature_texture[back_pixel_id]   * back_obstacle_value;
+        const float4 density_value        = ColorTemperatureTexture[pixel_id];
+        const float4 top_density_value    = ColorTemperatureTexture[top_pixel_id]    * top_obstacle_value;
+        const float4 bottom_density_value = ColorTemperatureTexture[bottom_pixel_id] * bottom_obstacle_value;
+        const float4 right_density_value  = ColorTemperatureTexture[right_pixel_id]  * right_obstacle_value;
+        const float4 left_density_value   = ColorTemperatureTexture[left_pixel_id]   * left_obstacle_value;
+        const float4 front_density_value  = ColorTemperatureTexture[front_pixel_id]  * front_obstacle_value;
+        const float4 back_density_value   = ColorTemperatureTexture[back_pixel_id]   * back_obstacle_value;
     
         const float k = delta_time * diffusion_intensity * texture_resolution.x;
         float4 new_density_value =
@@ -197,8 +238,8 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
             )
             / (1 + 6.0 * k);
         
-        color_temperature_texture[pixel_id] = new_density_value;
+        ColorTemperatureTexture[pixel_id] = new_density_value;
     
-        texel_temperature_texture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
+        TexelTemperatureTexture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
     }
 }

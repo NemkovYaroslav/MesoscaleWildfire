@@ -8,6 +8,7 @@ namespace Common.Wildfire
     {
         [ReadOnly] public NativeArray<Vector3> centers;
         [ReadOnly] public Matrix4x4 wildfireZoneTransform;
+        
         [ReadOnly] public NativeArray<float> releaseTemperatureArray;
 
         [WriteOnly] public NativeArray<Vector4> positionTemperatureArray;
