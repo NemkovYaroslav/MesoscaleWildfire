@@ -258,7 +258,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelReadData,
-                        1,
+                        _moduleRenderer.modulesCount / 10,
                         1,
                         1
                     );
@@ -269,8 +269,6 @@ namespace Common.Wildfire
                     for (var i = 0; i < temp.Length; i++)
                     {
                         _modulesAmbientTemperatureArray[i] = temp[i].w;
-                        
-                        Debug.Log(temp[i]);
                     }
                     
                     positionTemperatureArray.Dispose();
@@ -333,6 +331,12 @@ namespace Common.Wildfire
                         Allocator.TempJob
                     );
 
+                    const float airThermalConductivity = 0.025f; // W / (m * C)
+                    const float airThermalCapacity = 1000.0f; // J / (kg * С)
+                    const float woodThermalConductivity = 0.25f; // W / (m * C)
+                    const float woodThermalCapacity = 2000.0f; // J / (kg * С)
+                    const float thickness = 0.01f;
+                    
                     for (var i = 0; i < _moduleRenderer.modulesCount; i++)
                     {
                         var ambientTemperature = _modulesAmbientTemperatureArray[i];
@@ -340,12 +344,43 @@ namespace Common.Wildfire
                         // temperature to transfer to grid
                         var transferTemperature = 0.0f;
                         
+                        if (_modules[i].rigidBody.mass > 0.1f)
+                        {
+                            if (!_modules[i].isSelfSupported)
+                            {
+                                _modules[i].temperature = ambientTemperature;
+                            }
+
+                            if (_modules[i].temperature > 0.25f && !_modules[i].isSelfSupported)
+                            {
+                                _modules[i].isSelfSupported = true;
+                                _modules[i].temperature = ambientTemperature;
+                            }
+                            
+                            var lostMass = _modules[i].CalculateLostMass();
+
+                            if (!Mathf.Approximately(lostMass, 0.0f))
+                            {
+                                _modules[i].RecalculateCharacteristics(lostMass);
+
+                                var heat = 10000.0f * lostMass;
+                                
+                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 0.125f * 1.2f) / 1000.0f;
+
+                                if (_modules[i].isSelfSupported)
+                                {
+                                    var wood = heat / (woodThermalCapacity * Time.fixedDeltaTime * _modules[i].rigidBody.mass) / 1000.0f;
+                                    _modules[i].temperature += wood;
+                                }
+                                
+                                transferTemperature += air * 5.0f;
+                            }
+                            
+                            Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                        }
+                        
+                        /*
                         var surfaceArea = 2.0f * Mathf.PI * _modules[i].capsuleCollider.radius * _modules[i].capsuleCollider.height; // m^2
-                        const float airThermalConductivity = 0.025f; // W / (m * C)
-                        const float airThermalCapacity = 1000.0f; // J / (kg * С)
-                        const float woodThermalConductivity = 0.25f; // W / (m * C)
-                        const float woodThermalCapacity = 2000.0f; // J / (kg * С)
-                        const float thickness = 0.01f;
                         if (_modules[i].temperature < ambientTemperature && _modules[i].rigidBody.mass > 1)
                         {
                             Debug.Log("amb: " + ambientTemperature * 1000.0f + " mod : " + _modules[i].temperature * 1000.0f);
@@ -353,7 +388,7 @@ namespace Common.Wildfire
                             var temperatureDelta = ambientTemperature * 1000.0f - _modules[i].temperature * 1000.0f;
                             var heat = woodThermalConductivity * surfaceArea * (temperatureDelta / thickness);
                             
-                            var temperature = (heat * Time.fixedDeltaTime) / (woodThermalCapacity * _modules[i].rigidBody.mass) / 1000.0f;
+                            var temperature = (heat * Time.fixedDeltaTime) / (woodThermalCapacity * _modules[0].rigidBody.mass) / 1000.0f;
                             
                             _modules[i].temperature += temperature;
                             transferTemperature -= temperature;
@@ -365,13 +400,12 @@ namespace Common.Wildfire
                             var temperatureDelta = _modules[i].temperature * 1000.0f - ambientTemperature * 1000.0f;
                             var heat = airThermalConductivity * surfaceArea * (temperatureDelta / thickness);
                             
-                            var temperature = (heat * Time.fixedDeltaTime) / (airThermalCapacity * 0.125f * 1.2f) / 1000.0f;
+                            var temperature = (heat * Time.fixedDeltaTime) / (airThermalCapacity * 1.0f * 1.2f) / 1000.0f;
                             
                             _modules[i].temperature -= temperature;
                             transferTemperature += temperature;
                         }
                         
-                        // combustion
                         if (_modules[i].rigidBody.mass > 1)
                         {
                             var lostMass = _modules[i].CalculateLostMass();
@@ -380,18 +414,54 @@ namespace Common.Wildfire
                             {
                                 _modules[i].RecalculateCharacteristics(lostMass);
 
-                                var heat = 15000.0f * lostMass;
+                                var heat = 1000.0f * lostMass;
                                 
                                 var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 0.125f * 1.2f) / 1000.0f;
                                 var wood = heat / (woodThermalCapacity * Time.fixedDeltaTime * _modules[i].rigidBody.mass) / 1000.0f;
-                                
-                                _modules[i].temperature += wood;
+
+                                if (_modules[i].temperature < 840.0f)
+                                {
+                                    _modules[i].temperature += wood;
+                                }
                                 transferTemperature += air;
                             }
                         }
+                        */
 
                         releaseTemperatureArray[i] = transferTemperature;
                     }
+
+                    /*
+                    if (!Mathf.Approximately(_modules[0].temperature, _modules[1].temperature))
+                    {
+                        var temperatureDelta = Mathf.Abs(_modules[0].temperature * 1000.0f - _modules[1].temperature * 1000.0f);
+
+                        //Debug.Log("delta: " + temperatureDelta);
+                        
+                        var radius = (_modules[0].capsuleCollider.radius + _modules[1].capsuleCollider.radius) / 2.0f;
+                        var surfaceArea = 2.0f * Mathf.PI * Mathf.Pow(radius, 2.0f);
+
+                        var heat = woodThermalConductivity * 1 * temperatureDelta;
+                        
+                        //Debug.Log("heat: " + heat);
+
+                        if (_modules[0].temperature > _modules[1].temperature)
+                        {
+                            var temperature = (heat * Time.fixedDeltaTime) / (woodThermalCapacity * _modules[1].rigidBody.mass);
+                            _modules[1].temperature += temperature;
+                            
+                            //Debug.Log("1 + " + temperature);
+                        }
+                        
+                        if (_modules[1].temperature > _modules[0].temperature)
+                        {
+                            var temperature = (heat * Time.fixedDeltaTime) / (woodThermalCapacity * _modules[0].rigidBody.mass);
+                            _modules[0].temperature += temperature;
+                            
+                            //Debug.Log("0 + " + temperature);
+                        }
+                    }
+                    */
                     
                     // output
                     var positionTemperatureArray = new NativeArray<Vector4>(
@@ -439,7 +509,7 @@ namespace Common.Wildfire
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
             
             // transfer data from modules to grid
-            //TransferDataFromModulesToGrid();
+            TransferDataFromModulesToGrid();
             
             ShaderDispatch(_kernelReadData);
             

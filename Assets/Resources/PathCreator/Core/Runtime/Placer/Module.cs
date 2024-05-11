@@ -12,6 +12,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         public const float WoodDensity = 800.0f;
 
+        public bool isSelfSupported;
+
         public Rigidbody rigidBody;
         public CapsuleCollider capsuleCollider;
 
