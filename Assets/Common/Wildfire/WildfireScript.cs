@@ -26,15 +26,14 @@ namespace Common.Wildfire
         
         // render textures
         private RenderTexture _colorTemperatureTexture;
-        private RenderTexture _texelTemperatureTexture;
         
-        private ComputeBuffer _positionTemperatureBuffer;
-        private int _positionTemperatureBufferStride;
+        private ComputeBuffer _posForSetData;
+        private int _posForSetDataStride;
 
-        private ComputeBuffer _posTempBuffer;
-        private int _posTempBufferStride;
+        private ComputeBuffer _posForGetData;
+        private int _posForGetDataStride;
 
-        private Texture3D _shitTexture3D;
+        private Texture3D _textureForSampleTemperature;
 
         private Module[] _modules;
         
@@ -56,13 +55,12 @@ namespace Common.Wildfire
         private static readonly int ShaderTorchPosition      = Shader.PropertyToID("torch_position");
         private static readonly int ModulesNumber            = Shader.PropertyToID("modules_number");
         
-        private static readonly int ShaderColorTemperatureTexture = Shader.PropertyToID("ColorTemperatureTexture");
-        private static readonly int ShaderTexelTemperatureTexture = Shader.PropertyToID("TexelTemperatureTexture");
-
-        private static readonly int PositionTemperatureBuffer = Shader.PropertyToID("PositionTemperatureBuffer");
+        private static readonly int ShaderColorTemperatureTexture = Shader.PropertyToID("color_temperature_texture");
         
-        private static readonly int PosTempBuffer = Shader.PropertyToID("posTempBuffer");
-        private static readonly int MyTexture3D = Shader.PropertyToID("myTexture3D");
+        private static readonly int PosForGetDataBuffer = Shader.PropertyToID("pos_for_get_data");
+        private static readonly int TextureForSampleTemperature = Shader.PropertyToID("texture_for_sample_temperature");
+        
+        private static readonly int PosForSetDataBuffer = Shader.PropertyToID("pos_for_set_data");
         
         // transfer data from gpu to cpu
         private NativeArray<Vector4> _transferArray;
@@ -70,6 +68,15 @@ namespace Common.Wildfire
         private NativeArray<float> _modulesAmbientTemperatureArray;
         
         private ModuleRenderer _moduleRenderer;
+        
+        
+        // WIND SHIT
+
+        //private int _kernelAdvection;
+        
+        
+        
+        
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
@@ -101,7 +108,6 @@ namespace Common.Wildfire
         private void ShaderSetTexturesData(int kernel)
         {
             computeShader.SetTexture(kernel, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(kernel, ShaderTexelTemperatureTexture, _texelTemperatureTexture);
         }
 
         private void Start()
@@ -111,12 +117,15 @@ namespace Common.Wildfire
             computeShader.SetVector(ShaderAreaScale, transform.lossyScale);
             
             _colorTemperatureTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
-            _texelTemperatureTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
             
             _kernelInit             = computeShader.FindKernel("kernel_init");
             _kernelUserInput        = computeShader.FindKernel("kernel_user_input");
             _kernelDiffusion        = computeShader.FindKernel("kernel_diffusion");
             _kernelModulesInfluence = computeShader.FindKernel("kernel_modules_influence");
+
+
+            //_kernelAdvection = computeShader.FindKernel("kernel_advection");
+            
             
             _kernelReadData = computeShader.FindKernel("kernel_read_data");
             
@@ -146,19 +155,19 @@ namespace Common.Wildfire
                     Allocator.Persistent
                 );
             
-            _posTempBufferStride = sizeof(float) * 4;
+            _posForGetDataStride = sizeof(float) * 4;
             
-            _positionTemperatureBufferStride = sizeof(float) * 4;
+            _posForSetDataStride = sizeof(float) * 4;
             
-            _shitTexture3D = new Texture3D(
-                _texelTemperatureTexture.width,
-                _texelTemperatureTexture.height,
-                _texelTemperatureTexture.volumeDepth,
-                _texelTemperatureTexture.graphicsFormat,
+            _textureForSampleTemperature = new Texture3D(
+                _colorTemperatureTexture.width,
+                _colorTemperatureTexture.height,
+                _colorTemperatureTexture.volumeDepth,
+                _colorTemperatureTexture.graphicsFormat,
                 TextureCreationFlags.None
             );
             // set empty texture
-            computeShader.SetTexture(_kernelReadData, MyTexture3D, _shitTexture3D);
+            computeShader.SetTexture(_kernelReadData, TextureForSampleTemperature, _textureForSampleTemperature);
             
             // modules ambient temperature
             _modulesAmbientTemperatureArray 
@@ -170,7 +179,7 @@ namespace Common.Wildfire
             AsyncGPUReadbackCallback += TransferTextureData;
             AsyncGPUReadback.RequestIntoNativeArray(
                 ref _transferArray,
-                _texelTemperatureTexture,
+                _colorTemperatureTexture,
                 0,
                 AsyncGPUReadbackCallback
             );
@@ -194,7 +203,7 @@ namespace Common.Wildfire
                     );
                 
                     // fill the output temperature array
-                    var job = new TransferDataFromShaderJob()
+                    var job = new TransferDataFromGridJob()
                     {
                         // unchangeable
                         centers = _moduleRenderer.centers,
@@ -207,15 +216,15 @@ namespace Common.Wildfire
                     handle.Complete();
 
                     CleanupPosTempBuffer();
-                    _posTempBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, _posTempBufferStride);
-                    _posTempBuffer.SetData(positionTemperatureArray);
+                    _posForGetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForGetDataStride);
+                    _posForGetData.SetData(positionTemperatureArray);
                     
-                    computeShader.SetBuffer(_kernelReadData, PosTempBuffer, _posTempBuffer);
+                    computeShader.SetBuffer(_kernelReadData, PosForGetDataBuffer, _posForGetData);
                     
-                    _shitTexture3D.SetPixelData(_transferArray, 0);
-                    _shitTexture3D.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+                    _textureForSampleTemperature.SetPixelData(_transferArray, 0);
+                    _textureForSampleTemperature.Apply(updateMipmaps: false, makeNoLongerReadable: false);
                     
-                    computeShader.SetTexture(_kernelReadData, MyTexture3D, _shitTexture3D);
+                    computeShader.SetTexture(_kernelReadData, TextureForSampleTemperature, _textureForSampleTemperature);
                     
                     computeShader.Dispatch(
                         _kernelReadData,
@@ -225,7 +234,7 @@ namespace Common.Wildfire
                     );
                     
                     var temp = new Vector4[_moduleRenderer.modulesCount];
-                    _posTempBuffer.GetData(temp);
+                    _posForGetData.GetData(temp);
 
                     for (var i = 0; i < temp.Length; i++)
                     {
@@ -244,13 +253,13 @@ namespace Common.Wildfire
             if (request.done && !request.hasError)
             {
                 // read data about modules temperature
-                if (_texelTemperatureTexture != null)
+                if (_colorTemperatureTexture != null)
                 {
                     TransferDataFromShader();
                     
                     AsyncGPUReadback.RequestIntoNativeArray(
                         ref _transferArray,
-                        _texelTemperatureTexture,
+                        _colorTemperatureTexture,
                         0,
                         AsyncGPUReadbackCallback
                     );
@@ -260,20 +269,20 @@ namespace Common.Wildfire
         
         private void CleanupPosTempBuffer()
         {
-            if (_posTempBuffer != null)
+            if (_posForGetData != null)
             {
-                _posTempBuffer.Release();
+                _posForGetData.Release();
             }
-            _posTempBuffer = null;
+            _posForGetData = null;
         }
         
         private void CleanupPositionTemperatureBuffer()
         {
-            if (_positionTemperatureBuffer != null)
+            if (_posForSetData != null)
             {
-                _positionTemperatureBuffer.Release();
+                _posForSetData.Release();
             }
-            _positionTemperatureBuffer = null;
+            _posForSetData = null;
         }
         
         // transfer data from modules to grid
@@ -290,12 +299,9 @@ namespace Common.Wildfire
                         _moduleRenderer.modulesCount,
                         Allocator.TempJob
                     );
-
-                    //const float airThermalConductivity = 0.025f; // W / (m * C)
+                    
                     const float airThermalCapacity = 1000.0f; // J / (kg * С)
-                    //const float woodThermalConductivity = 0.25f; // W / (m * C)
                     const float woodThermalCapacity = 2000.0f; // J / (kg * С)
-                    //const float thickness = 0.01f;
                     
                     for (var i = 0; i < _moduleRenderer.modulesCount; i++)
                     {
@@ -309,7 +315,6 @@ namespace Common.Wildfire
                             if (_modules[i].temperature > 0.25f && !_modules[i].isSelfSupported)
                             {
                                 _modules[i].isSelfSupported = true;
-                                //_modules[i].temperature += ambientTemperature;
                             }
                             
                             if (!_modules[i].isSelfSupported)
@@ -350,7 +355,7 @@ namespace Common.Wildfire
                     );
                     
                     // job process
-                    var job = new TransferDataFromModulesToGridJob()
+                    var job = new TransferDataFromModulesJob()
                     {
                         // input
                         centers = _moduleRenderer.centers,
@@ -366,10 +371,10 @@ namespace Common.Wildfire
                     handle.Complete();
 
                     CleanupPositionTemperatureBuffer();
-                    _positionTemperatureBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, _positionTemperatureBufferStride);
-                    _positionTemperatureBuffer.SetData(positionTemperatureArray);
+                    _posForSetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForSetDataStride);
+                    _posForSetData.SetData(positionTemperatureArray);
                     
-                    computeShader.SetBuffer(_kernelModulesInfluence, PositionTemperatureBuffer, _positionTemperatureBuffer);
+                    computeShader.SetBuffer(_kernelModulesInfluence, PosForSetDataBuffer, _posForSetData);
                     
                     computeShader.Dispatch(
                         _kernelModulesInfluence,

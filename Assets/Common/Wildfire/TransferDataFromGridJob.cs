@@ -4,7 +4,7 @@ using UnityEngine.Jobs;
 
 namespace Common.Wildfire
 {
-    public struct TransferDataFromShaderJob : IJobParallelForTransform
+    public struct TransferDataFromGridJob : IJobParallelForTransform
     {
         [ReadOnly] public NativeArray<Vector3> centers;
         [ReadOnly] public Matrix4x4 wildfireAreaTransform;
