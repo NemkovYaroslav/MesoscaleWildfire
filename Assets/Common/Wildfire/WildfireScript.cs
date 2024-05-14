@@ -72,10 +72,19 @@ namespace Common.Wildfire
         
         // WIND SHIT
 
-        //private int _kernelAdvection;
+        private RenderTexture _velocityTexture;
+        private int _kernelAdvection;
+        private static readonly int ShaderVelocityTexture = Shader.PropertyToID("velocity_texture");
+
+        private RenderTexture _divergenceTexture;
+        private int _kernelDivergence;
+        private static readonly int ShaderDivergenceTexture = Shader.PropertyToID("divergence_texture");
         
-        
-        
+        private RenderTexture _pressureTexture;
+        private int _kernelPressure;
+        private static readonly int ShaderPressureTexture = Shader.PropertyToID("pressure_texture");
+
+        private int _kernelSubtractGradient;
         
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
@@ -123,8 +132,31 @@ namespace Common.Wildfire
             _kernelDiffusion        = computeShader.FindKernel("kernel_diffusion");
             _kernelModulesInfluence = computeShader.FindKernel("kernel_modules_influence");
 
+            
+            
+            // WIND SHIT
+            _velocityTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
+            _kernelAdvection = computeShader.FindKernel("kernel_advection");
+            computeShader.SetTexture(_kernelInit, ShaderVelocityTexture, _velocityTexture);
+            computeShader.SetTexture(_kernelAdvection, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            computeShader.SetTexture(_kernelAdvection, ShaderVelocityTexture, _velocityTexture);
 
-            //_kernelAdvection = computeShader.FindKernel("kernel_advection");
+            _divergenceTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
+            _kernelDivergence = computeShader.FindKernel("kernel_divergence");
+            computeShader.SetTexture(_kernelInit, ShaderDivergenceTexture, _divergenceTexture);
+            computeShader.SetTexture(_kernelDivergence, ShaderDivergenceTexture, _divergenceTexture);
+            computeShader.SetTexture(_kernelDivergence, ShaderVelocityTexture, _velocityTexture);
+            
+            _pressureTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
+            _kernelPressure = computeShader.FindKernel("kernel_pressure");
+            computeShader.SetTexture(_kernelInit, ShaderPressureTexture, _pressureTexture);
+            computeShader.SetTexture(_kernelPressure, ShaderPressureTexture, _pressureTexture);
+            computeShader.SetTexture(_kernelPressure, ShaderDivergenceTexture, _divergenceTexture);
+            
+            _kernelSubtractGradient = computeShader.FindKernel("kernel_subtract_gradient");
+            computeShader.SetTexture(_kernelSubtractGradient, ShaderPressureTexture, _pressureTexture);
+            computeShader.SetTexture(_kernelSubtractGradient, ShaderVelocityTexture, _velocityTexture);
+            
             
             
             _kernelReadData = computeShader.FindKernel("kernel_read_data");
@@ -240,7 +272,7 @@ namespace Common.Wildfire
                     {
                         _modulesAmbientTemperatureArray[i] = temp[i].w;
                         
-                        //Debug.Log("info: " + temp[i]);
+                        Debug.Log("info: " + temp[i]);
                     }
                     
                     positionTemperatureArray.Dispose();
@@ -403,6 +435,14 @@ namespace Common.Wildfire
             
             ShaderDispatch(_kernelReadData);
             
+            for (var i = 0; i < solverIterations; i++)
+            {
+                ShaderDispatch(_kernelDiffusion);
+            }
+            
+            // WIND SHIT
+            ShaderDispatch(_kernelAdvection);
+            
             if (Input.GetMouseButton(0))
             {
                 computeShader.Dispatch(
@@ -413,10 +453,16 @@ namespace Common.Wildfire
                 );
             }
             
+            ShaderDispatch(_kernelDivergence);
+            
             for (var i = 0; i < solverIterations; i++)
             {
-                ShaderDispatch(_kernelDiffusion);
+                ShaderDispatch(_kernelPressure);
             }
+            
+            ShaderDispatch(_kernelSubtractGradient);
+            
+            ShaderDispatch(_kernelReadData);
         }
         
         private void OnDestroy()

@@ -3,8 +3,21 @@
 #pragma kernel kernel_read_data
 #pragma kernel kernel_modules_influence
 #pragma kernel kernel_diffusion
+#pragma kernel kernel_advection
+#pragma kernel kernel_divergence
+#pragma kernel kernel_pressure
+#pragma kernel kernel_subtract_gradient
 
 RWTexture3D<float4> color_temperature_texture;
+
+
+
+// WIND SHIT
+RWTexture3D<float3> velocity_texture;
+RWTexture3D<float> divergence_texture;
+RWTexture3D<float> pressure_texture;
+
+
 
 float3 texture_resolution;
 float3 area_scale;
@@ -52,6 +65,11 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
     const int3 pixel_id = id.xyz;
     
     color_temperature_texture[pixel_id] = 0;
+
+    // WIND SHIT
+    velocity_texture[pixel_id]   = 0;
+    divergence_texture[pixel_id] = 0;
+    pressure_texture[pixel_id]   = 0;
 }
 
 [numthreads(1,1,1)]
@@ -367,7 +385,7 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
         const float front_obstacle_value  = get_obstacle(front_pixel_id);
         const float back_obstacle_value   = get_obstacle(back_pixel_id);
     
-        const float4 density_value        = color_temperature_texture[pixel_id];
+        const float4 density_value = color_temperature_texture[pixel_id];
         const float4 top_density_value    = color_temperature_texture[top_pixel_id]    * top_obstacle_value;
         const float4 bottom_density_value = color_temperature_texture[bottom_pixel_id] * bottom_obstacle_value;
         const float4 right_density_value  = color_temperature_texture[right_pixel_id]  * right_obstacle_value;
@@ -375,9 +393,9 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
         const float4 front_density_value  = color_temperature_texture[front_pixel_id]  * front_obstacle_value;
         const float4 back_density_value   = color_temperature_texture[back_pixel_id]   * back_obstacle_value;
 
-        const float res = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
+        const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
         
-        const float k = delta_time * diffusion_intensity * res;
+        const float k = delta_time * diffusion_intensity * resolution;
         const float4 new_density_value =
         (
             density_value
@@ -392,10 +410,166 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
 
 // WIND SHIT
 
-/*
 [numthreads(8,8,8)]
 void kernel_advection (uint3 id : SV_DispatchThreadID)
 {
+    const int3 pixel_id = id.xyz;
     
+    //const float3 velocity = velocity_texture[pixel_id].xyz;
+
+    const float3 velocity = float3(0, 0, 25.0f);
+
+    // get previous id for previous value -> current value
+    const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
+    const float3 displacement = velocity * delta_time;
+    
+    const int3 previous_id = round(float3(pixel_id) - displacement);
+    
+    // advect temperature
+    color_temperature_texture[pixel_id] = 0.99f * color_temperature_texture[previous_id];
+
+    // advect velocity
+    velocity_texture[pixel_id] = 0.999f * velocity_texture[previous_id];
 }
-*/
+
+[numthreads(8,8,8)]
+void kernel_divergence (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+
+    const float obstacle_value = get_obstacle(pixel_id);
+    
+    if (obstacle_value)
+    {
+        const float top_obstacle_value    = get_obstacle(top_pixel_id);
+        const float bottom_obstacle_value = get_obstacle(bottom_pixel_id);
+        const float right_obstacle_value  = get_obstacle(right_pixel_id);
+        const float left_obstacle_value   = get_obstacle(left_pixel_id);
+        const float front_obstacle_value  = get_obstacle(front_pixel_id);
+        const float back_obstacle_value   = get_obstacle(back_pixel_id);
+        
+        const float3 top_velocity_value    = velocity_texture[top_pixel_id]    * top_obstacle_value;
+        const float3 bottom_velocity_value = velocity_texture[bottom_pixel_id] * bottom_obstacle_value;
+        const float3 right_velocity_value  = velocity_texture[right_pixel_id]  * right_obstacle_value;
+        const float3 left_velocity_value   = velocity_texture[left_pixel_id]   * left_obstacle_value;
+        const float3 front_velocity_value  = velocity_texture[front_pixel_id]  * front_obstacle_value;
+        const float3 back_velocity_value   = velocity_texture[back_pixel_id]   * back_obstacle_value;
+        
+        // calculate divergence
+        const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
+        const float half_pixel_resolution = (1.0f / float(resolution)) * 0.5f;
+        
+        const float divergence
+            = half_pixel_resolution
+                * (right_velocity_value.x - left_velocity_value.x
+                    + top_velocity_value.y - bottom_velocity_value.y
+                        + front_velocity_value.z - back_velocity_value.z);
+        
+        divergence_texture[pixel_id] = divergence;
+    }
+}
+
+[numthreads(8,8,8)]
+void kernel_pressure (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+
+    const float obstacle_value = get_obstacle(pixel_id);
+    
+    if (obstacle_value)
+    {
+        const float top_obstacle_value    = get_obstacle(top_pixel_id);
+        const float bottom_obstacle_value = get_obstacle(bottom_pixel_id);
+        const float right_obstacle_value  = get_obstacle(right_pixel_id);
+        const float left_obstacle_value   = get_obstacle(left_pixel_id);
+        const float front_obstacle_value  = get_obstacle(front_pixel_id);
+        const float back_obstacle_value   = get_obstacle(back_pixel_id);
+
+        // calculate pressure
+        float pressure_value = pressure_texture[pixel_id].x;
+        const float top_pressure_value    = lerp(pressure_value, pressure_texture[top_pixel_id].x   , top_obstacle_value   );
+        const float bottom_pressure_value = lerp(pressure_value, pressure_texture[bottom_pixel_id].x, bottom_obstacle_value);
+        const float right_pressure_value  = lerp(pressure_value, pressure_texture[right_pixel_id].x , right_obstacle_value );
+        const float left_pressure_value   = lerp(pressure_value, pressure_texture[left_pixel_id].x  , left_obstacle_value  );
+        const float front_pressure_value  = lerp(pressure_value, pressure_texture[front_pixel_id].x , front_obstacle_value );
+        const float back_pressure_value   = lerp(pressure_value, pressure_texture[back_pixel_id].x  , back_obstacle_value  );
+
+        // calculate new pressure
+        const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
+        const float divergence_value = divergence_texture[pixel_id].x * resolution;
+        
+        pressure_value
+            = (
+                left_pressure_value + right_pressure_value
+                    + bottom_pressure_value + top_pressure_value
+                        + front_pressure_value + back_pressure_value
+                            - divergence_value
+            ) / 6.0;
+
+        pressure_texture[pixel_id] = pressure_value;
+    }
+}
+
+[numthreads(8,8,8)]
+void kernel_subtract_gradient (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+
+    const float obstacle_value = get_obstacle(pixel_id);
+    
+    if (obstacle_value)
+    {
+        const float top_obstacle_value    = get_obstacle(top_pixel_id);
+        const float bottom_obstacle_value = get_obstacle(bottom_pixel_id);
+        const float right_obstacle_value  = get_obstacle(right_pixel_id);
+        const float left_obstacle_value   = get_obstacle(left_pixel_id);
+        const float front_obstacle_value  = get_obstacle(front_pixel_id);
+        const float back_obstacle_value   = get_obstacle(back_pixel_id);
+
+        // calculate pressure
+        const float pressure_value = pressure_texture[pixel_id].x;
+        const float top_pressure_value    = lerp(pressure_value, pressure_texture[top_pixel_id].x   , top_obstacle_value   );
+        const float bottom_pressure_value = lerp(pressure_value, pressure_texture[bottom_pixel_id].x, bottom_obstacle_value);
+        const float right_pressure_value  = lerp(pressure_value, pressure_texture[right_pixel_id].x , right_obstacle_value );
+        const float left_pressure_value   = lerp(pressure_value, pressure_texture[left_pixel_id].x  , left_obstacle_value  );
+        const float front_pressure_value  = lerp(pressure_value, pressure_texture[front_pixel_id].x , front_obstacle_value );
+        const float back_pressure_value   = lerp(pressure_value, pressure_texture[back_pixel_id].x  , back_obstacle_value  );
+
+        // pressure affect velocity, where the curl happens
+        float3 velocity = velocity_texture[pixel_id].xyz;
+        
+        const float curl_size = 1.0; // 0.2 - feels like thicker, 1.0 - more flowy
+        
+        const float3 gradient
+            = float3(
+                right_pressure_value - left_pressure_value,
+                    top_pressure_value - bottom_pressure_value,
+                        front_pressure_value - back_pressure_value
+            ) * curl_size;
+        
+        velocity -= gradient;
+        
+        velocity_texture[pixel_id] = float3(velocity); 
+    }
+}
