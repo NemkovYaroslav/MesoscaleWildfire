@@ -112,7 +112,6 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                             var prototypeCollider = prototype.GetComponent<CapsuleCollider>();
 
                             var targetMass = Mathf.PI * Mathf.Pow(prototypeCollider.radius, 2.0f) * prototypeCollider.height;
-
                             prototypeRigidbody.mass = targetMass * woodDensity;
 
                             prototypeRigidbody.automaticInertiaTensor = false;

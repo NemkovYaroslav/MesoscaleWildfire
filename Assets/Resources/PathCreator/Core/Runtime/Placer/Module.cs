@@ -14,6 +14,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         public bool isSelfSupported;
 
+        public float stopCombustionMass = 0.0f;
+
         public Rigidbody rigidBody;
         public CapsuleCollider capsuleCollider;
 
@@ -21,6 +23,8 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         {
             rigidBody = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
+
+            stopCombustionMass = rigidBody.mass;
         }
 
         // calculate lost mass depend on module temperature
