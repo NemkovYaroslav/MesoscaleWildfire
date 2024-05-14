@@ -219,7 +219,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelReadData,
-                        1,
+                        _moduleRenderer.modulesCount / 8,
                         1,
                         1
                     );
@@ -231,7 +231,7 @@ namespace Common.Wildfire
                     {
                         _modulesAmbientTemperatureArray[i] = temp[i].w;
                         
-                        Debug.Log("info: " + temp[i]);
+                        //Debug.Log("info: " + temp[i]);
                     }
                     
                     positionTemperatureArray.Dispose();
@@ -304,18 +304,16 @@ namespace Common.Wildfire
                         // temperature to transfer to grid
                         var transferTemperature = 0.0f;
                         
-                        //var surfaceArea = 2.0f * Mathf.PI * _modules[i].capsuleCollider.radius * _modules[i].capsuleCollider.height; // m^2
-                        
-                        if (_modules[i].rigidBody.mass > _modules[i].stopCombustionMass * 0.02f)
+                        if (_modules[i].rigidBody.mass > _modules[i].stopCombustionMass)
                         {
-                            if (!_modules[i].isSelfSupported)
-                            {
-                                _modules[i].temperature = ambientTemperature;
-                            }
-
                             if (_modules[i].temperature > 0.25f && !_modules[i].isSelfSupported)
                             {
                                 _modules[i].isSelfSupported = true;
+                                //_modules[i].temperature += ambientTemperature;
+                            }
+                            
+                            if (!_modules[i].isSelfSupported)
+                            {
                                 _modules[i].temperature = ambientTemperature;
                             }
                             
@@ -327,7 +325,7 @@ namespace Common.Wildfire
 
                                 var heat = 10000.0f * lostMass;
                                 
-                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 0.125f * 1.2f) / 1000.0f;
+                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 1.2f) / 1000.0f;
 
                                 if (_modules[i].isSelfSupported)
                                 {
@@ -335,10 +333,10 @@ namespace Common.Wildfire
                                     _modules[i].temperature += wood;
                                 }
                                 
-                                transferTemperature += air * 5.0f;
+                                transferTemperature += air;
                             }
                             
-                            Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                            //Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
                         }
 
                         releaseTemperatureArray[i] = transferTemperature;
@@ -372,7 +370,13 @@ namespace Common.Wildfire
                     _positionTemperatureBuffer.SetData(positionTemperatureArray);
                     
                     computeShader.SetBuffer(_kernelModulesInfluence, PositionTemperatureBuffer, _positionTemperatureBuffer);
-                    ShaderDispatch(_kernelModulesInfluence);
+                    
+                    computeShader.Dispatch(
+                        _kernelModulesInfluence,
+                        _moduleRenderer.modulesCount / 8,
+                        1,
+                        1
+                    );
                     
                     positionTemperatureArray.Dispose();
                     releaseTemperatureArray.Dispose();
@@ -390,7 +394,7 @@ namespace Common.Wildfire
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
             
             // transfer data from modules to grid
-            //TransferDataFromModulesToGrid();
+            TransferDataFromModulesToGrid();
             
             ShaderDispatch(_kernelReadData);
             

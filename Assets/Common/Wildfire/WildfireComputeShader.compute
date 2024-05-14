@@ -97,70 +97,110 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
         const float inf_101 = x_1 * y_0 * z_1;
         const float inf_011 = x_0 * y_1 * z_1;
         const float inf_111 = x_1 * y_1 * z_1;
+
+        int neighbours_number = 0;
+        if (inf_000 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_100 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_010 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_001 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_110 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_101 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_011 > 0.0f)
+        {
+            neighbours_number++;
+        }
+        if (inf_111 > 0.0f)
+        {
+            neighbours_number++;
+        }
         
         const float3 color = float3(1, 1, 0);
-        
-        float temperature = 0.0f;
+
+        const float air_cell_width  = area_scale.x / texture_resolution.x;
+        const float air_cell_height = area_scale.y / texture_resolution.y;
+        const float air_cell_depth  = area_scale.z / texture_resolution.z;
+
+        const float ait_cell_volume = air_cell_width * air_cell_height * air_cell_depth;
+    
+        const float temperature = source_intensity * neighbours_number / ait_cell_volume;
         
         float4 temperature_cell_000 = ColorTemperatureTexture[cell_000];
         temperature_cell_000.rgb = color;
-        temperature = source_intensity * inf_000;
-        temperature_cell_000.a = clamp(temperature_cell_000.a + temperature, 0.0f, 1.0f);
+        const float temperature_000 = temperature * inf_000;
+        temperature_cell_000.a = clamp(temperature_cell_000.a + temperature_000, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_000] = temperature_cell_000;
         TexelTemperatureTexture[cell_000] = float4(0, 0, 0, temperature_cell_000.a);
 
         float4 temperature_cell_100 = ColorTemperatureTexture[cell_100];
         temperature_cell_100.rgb = color;
-        temperature = source_intensity * inf_100;
-        temperature_cell_100.a = clamp(temperature_cell_100.a + temperature, 0.0f, 1.0f);
+        const float temperature_100 = temperature * inf_100;
+        temperature_cell_100.a = clamp(temperature_cell_100.a + temperature_100, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_100] = temperature_cell_100;
         TexelTemperatureTexture[cell_100] = float4(0, 0, 0, temperature_cell_100.a);
 
         float4 temperature_cell_010 = ColorTemperatureTexture[cell_010];
         temperature_cell_010.rgb = color;
-        temperature = source_intensity * inf_010;
-        temperature_cell_010.a = clamp(temperature_cell_010.a + temperature, 0.0f, 1.0f);
+        const float temperature_010 = temperature * inf_010;
+        temperature_cell_010.a = clamp(temperature_cell_010.a + temperature_010, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_010] = temperature_cell_010;
         TexelTemperatureTexture[cell_010] = float4(0, 0, 0, temperature_cell_010.a);
 
         float4 temperature_cell_001 = ColorTemperatureTexture[cell_001];
         temperature_cell_001.rgb = color;
-        temperature = source_intensity * inf_001;
-        temperature_cell_001.a = clamp(temperature_cell_001.a + temperature, 0.0f, 1.0f);
+        const float temperature_001 = temperature * inf_001;
+        temperature_cell_001.a = clamp(temperature_cell_001.a + temperature_001, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_001] = temperature_cell_001;
         TexelTemperatureTexture[cell_001] = float4(0, 0, 0, temperature_cell_001.a);
 
         float4 temperature_cell_110 = ColorTemperatureTexture[cell_110];
         temperature_cell_110.rgb = color;
-        temperature = source_intensity * inf_110;
-        temperature_cell_110.a = clamp(temperature_cell_110.a + temperature, 0.0f, 1.0f);
+        const float temperature_110 = temperature * inf_110;
+        temperature_cell_110.a = clamp(temperature_cell_110.a + temperature_110, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_110] = temperature_cell_110;
         TexelTemperatureTexture[cell_110] = float4(0, 0, 0, temperature_cell_110.a);
 
         float4 temperature_cell_101 = ColorTemperatureTexture[cell_101];
         temperature_cell_101.rgb = color;
-        temperature = source_intensity * inf_101;
-        temperature_cell_101.a = clamp(temperature_cell_101.a + temperature, 0.0f, 1.0f);
+        const float temperature_101 = temperature * inf_101;
+        temperature_cell_101.a = clamp(temperature_cell_101.a + temperature_101, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_101] = temperature_cell_101;
         TexelTemperatureTexture[cell_101] = float4(0, 0, 0, temperature_cell_101.a);
 
         float4 temperature_cell_011 = ColorTemperatureTexture[cell_011];
         temperature_cell_011.rgb = color;
-        temperature = source_intensity * inf_011;
-        temperature_cell_011.a = clamp(temperature_cell_011.a + temperature, 0.0f, 1.0f);
+        const float temperature_011 = temperature * inf_011;
+        temperature_cell_011.a = clamp(temperature_cell_011.a + temperature_011, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_011] = temperature_cell_011;
         TexelTemperatureTexture[cell_011] = float4(0, 0, 0, temperature_cell_011.a);
 
         float4 temperature_cell_111 = ColorTemperatureTexture[cell_111];
         temperature_cell_111.rgb = color;
-        temperature = source_intensity * inf_111;
-        temperature_cell_111.a = clamp(temperature_cell_111.a + temperature, 0.0f, 1.0f);
+        const float temperature_111 = temperature * inf_111;
+        temperature_cell_111.a = clamp(temperature_cell_111.a + temperature_111, 0.0f, 1.0f);
         ColorTemperatureTexture[cell_111] = temperature_cell_111;
         TexelTemperatureTexture[cell_111] = float4(0, 0, 0, temperature_cell_111.a);
     }
 }
 
-[numthreads(1,1,1)]
+[numthreads(8,1,1)]
 void kernel_read_data (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
@@ -177,42 +217,149 @@ void kernel_read_data (uint3 id : SV_DispatchThreadID)
     posTempBuffer[index].xyz = uv;
 }
 
-[numthreads(8,8,8)]
+[numthreads(8,1,1)]
 void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 {
-    const int3 pixel_id = id.xyz;
+    const int index = id.x;
+
+    float3 uv = PositionTemperatureBuffer[index].xyz;
     
-    const int obstacle_value = get_obstacle(pixel_id);
+    uv += 0.5f;
+    uv *= texture_resolution;
+
+    const float grid_space = 1.0f;
+    const float half_grid_space = grid_space / 2.0f;
+
+    const float3 nearest_cell_uv = (uv - half_grid_space);
+    const float3 floor_cell_uv = floor(nearest_cell_uv);
     
-    if (obstacle_value)
+    const float3 cell_000 = floor_cell_uv;
+    const float3 cell_100 = floor_cell_uv + float3(1, 0, 0);
+    const float3 cell_010 = floor_cell_uv + float3(0, 1, 0);
+    const float3 cell_001 = floor_cell_uv + float3(0, 0, 1);
+    const float3 cell_110 = floor_cell_uv + float3(1, 1, 0);
+    const float3 cell_101 = floor_cell_uv + float3(1, 0, 1);
+    const float3 cell_011 = floor_cell_uv + float3(0, 1, 1);
+    const float3 cell_111 = floor_cell_uv + float3(1, 1, 1);
+
+    const float x_1 = nearest_cell_uv.x - floor_cell_uv.x;
+    const float x_0 = 1.0f - x_1;
+
+    const float y_1 = nearest_cell_uv.y - floor_cell_uv.y;
+    const float y_0 = 1.0f - y_1;
+
+    const float z_1 = nearest_cell_uv.z - floor_cell_uv.z;
+    const float z_0 = 1.0f - z_1;
+
+    const float inf_000 = x_0 * y_0 * z_0;
+    const float inf_100 = x_1 * y_0 * z_0;
+    const float inf_010 = x_0 * y_1 * z_0;
+    const float inf_001 = x_0 * y_0 * z_1;
+    const float inf_110 = x_1 * y_1 * z_0;
+    const float inf_101 = x_1 * y_0 * z_1;
+    const float inf_011 = x_0 * y_1 * z_1;
+    const float inf_111 = x_1 * y_1 * z_1;
+
+    int neighbours_number = 0;
+    if (inf_000 > 0.0f)
     {
-        for (int i = 0; i < modules_number; i++)
-        {
-            float3 position = PositionTemperatureBuffer[i].xyz;
-            
-            position += 0.5f;
-            position *= texture_resolution;
-            position -= 0.5f;
-            
-            const float dist = distance(position, pixel_id);
-            if (dist < 1)
-            {
-                float4 color_temperature_value = ColorTemperatureTexture[pixel_id];
-
-                color_temperature_value.rgb = float3(1, 1, 0);
-                
-                const float temperature = PositionTemperatureBuffer[i].a;
-
-                //const float factor = 1 - dist;
-                const float delta = temperature * 0.125f;
-                color_temperature_value.a = clamp(color_temperature_value.a + delta, 0, 1);
-                
-                ColorTemperatureTexture[pixel_id] = color_temperature_value;
-
-                TexelTemperatureTexture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, color_temperature_value.a);
-            }
-        }
+        neighbours_number++;
     }
+    if (inf_100 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    if (inf_010 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    if (inf_001 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    if (inf_110 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    if (inf_101 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    if (inf_011 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    if (inf_111 > 0.0f)
+    {
+        neighbours_number++;
+    }
+    
+    const float3 color = float3(1, 1, 0);
+
+    const float air_cell_width  = area_scale.x / texture_resolution.x;
+    const float air_cell_height = area_scale.y / texture_resolution.y;
+    const float air_cell_depth  = area_scale.z / texture_resolution.z;
+
+    const float ait_cell_volume = air_cell_width * air_cell_height * air_cell_depth;
+    
+    //const float temperature = source_intensity * neighbours_number / ait_cell_volume;
+    const float temperature = PositionTemperatureBuffer[index].a * neighbours_number / ait_cell_volume;
+    
+    float4 temperature_cell_000 = ColorTemperatureTexture[cell_000];
+    temperature_cell_000.rgb = color;
+    const float temperature_000 = temperature * inf_000;
+    temperature_cell_000.a = clamp(temperature_cell_000.a + temperature_000, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_000] = temperature_cell_000;
+    TexelTemperatureTexture[cell_000] = float4(0, 0, 0, temperature_cell_000.a);
+
+    float4 temperature_cell_100 = ColorTemperatureTexture[cell_100];
+    temperature_cell_100.rgb = color;
+    const float temperature_100 = temperature * inf_100;
+    temperature_cell_100.a = clamp(temperature_cell_100.a + temperature_100, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_100] = temperature_cell_100;
+    TexelTemperatureTexture[cell_100] = float4(0, 0, 0, temperature_cell_100.a);
+
+    float4 temperature_cell_010 = ColorTemperatureTexture[cell_010];
+    temperature_cell_010.rgb = color;
+    const float temperature_010 = temperature * inf_010;
+    temperature_cell_010.a = clamp(temperature_cell_010.a + temperature_010, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_010] = temperature_cell_010;
+    TexelTemperatureTexture[cell_010] = float4(0, 0, 0, temperature_cell_010.a);
+
+    float4 temperature_cell_001 = ColorTemperatureTexture[cell_001];
+    temperature_cell_001.rgb = color;
+    const float temperature_001 = temperature * inf_001;
+    temperature_cell_001.a = clamp(temperature_cell_001.a + temperature_001, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_001] = temperature_cell_001;
+    TexelTemperatureTexture[cell_001] = float4(0, 0, 0, temperature_cell_001.a);
+
+    float4 temperature_cell_110 = ColorTemperatureTexture[cell_110];
+    temperature_cell_110.rgb = color;
+    const float temperature_110 = temperature * inf_110;
+    temperature_cell_110.a = clamp(temperature_cell_110.a + temperature_110, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_110] = temperature_cell_110;
+    TexelTemperatureTexture[cell_110] = float4(0, 0, 0, temperature_cell_110.a);
+
+    float4 temperature_cell_101 = ColorTemperatureTexture[cell_101];
+    temperature_cell_101.rgb = color;
+    const float temperature_101 = temperature * inf_101;
+    temperature_cell_101.a = clamp(temperature_cell_101.a + temperature_101, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_101] = temperature_cell_101;
+    TexelTemperatureTexture[cell_101] = float4(0, 0, 0, temperature_cell_101.a);
+
+    float4 temperature_cell_011 = ColorTemperatureTexture[cell_011];
+    temperature_cell_011.rgb = color;
+    const float temperature_011 = temperature * inf_011;
+    temperature_cell_011.a = clamp(temperature_cell_011.a + temperature_011, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_011] = temperature_cell_011;
+    TexelTemperatureTexture[cell_011] = float4(0, 0, 0, temperature_cell_011.a);
+
+    float4 temperature_cell_111 = ColorTemperatureTexture[cell_111];
+    temperature_cell_111.rgb = color;
+    const float temperature_111 = temperature * inf_111;
+    temperature_cell_111.a = clamp(temperature_cell_111.a + temperature_111, 0.0f, 1.0f);
+    ColorTemperatureTexture[cell_111] = temperature_cell_111;
+    TexelTemperatureTexture[cell_111] = float4(0, 0, 0, temperature_cell_111.a);
 }
 
 [numthreads(8,8,8)]
@@ -245,8 +392,10 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
         const float4 left_density_value   = ColorTemperatureTexture[left_pixel_id]   * left_obstacle_value;
         const float4 front_density_value  = ColorTemperatureTexture[front_pixel_id]  * front_obstacle_value;
         const float4 back_density_value   = ColorTemperatureTexture[back_pixel_id]   * back_obstacle_value;
-    
-        const float k = delta_time * diffusion_intensity * texture_resolution.x;
+
+        const float res = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
+        
+        const float k = delta_time * diffusion_intensity * res;
         float4 new_density_value =
             (
                 density_value
@@ -257,6 +406,6 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
         
         ColorTemperatureTexture[pixel_id] = new_density_value;
     
-        TexelTemperatureTexture[pixel_id] = float4(pixel_id.x, pixel_id.y, pixel_id.z, new_density_value.a);
+        TexelTemperatureTexture[pixel_id] = float4(0.0f, 0.0f, 0.0f, new_density_value.a);
     }
 }

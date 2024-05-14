@@ -24,7 +24,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             rigidBody = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
 
-            stopCombustionMass = rigidBody.mass;
+            stopCombustionMass = rigidBody.mass * 0.1f;
         }
 
         // calculate lost mass depend on module temperature
@@ -47,8 +47,10 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             {
                 reactionRate = 1;
             }
+
+            const float thickness = 0.01f;
             
-            var lostMass = reactionRate * surfaceArea * 0.01f;
+            var lostMass = reactionRate * surfaceArea * thickness;
 
             return lostMass;
         }
