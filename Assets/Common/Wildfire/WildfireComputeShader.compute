@@ -8,6 +8,8 @@ RWTexture3D<float4> ColorTemperatureTexture;
 RWTexture3D<float4> TexelTemperatureTexture;
 
 float3 texture_resolution;
+float3 area_scale;
+
 float3 torch_position;
 
 float source_intensity;
@@ -63,7 +65,10 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
         uv += 0.5f;
         uv *= texture_resolution;
 
-        const float3 nearest_cell_uv = uv - 0.5f;
+        const float grid_space = 1.0f;
+        const float half_grid_space = grid_space / 2.0f;
+
+        const float3 nearest_cell_uv = (uv - half_grid_space);
         const float3 floor_cell_uv = floor(nearest_cell_uv);
         
         const float3 cell_000 = floor_cell_uv;
@@ -74,7 +79,6 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
         const float3 cell_101 = floor_cell_uv + float3(1, 0, 1);
         const float3 cell_011 = floor_cell_uv + float3(0, 1, 1);
         const float3 cell_111 = floor_cell_uv + float3(1, 1, 1);
-        
 
         const float x_1 = nearest_cell_uv.x - floor_cell_uv.x;
         const float x_0 = 1.0f - x_1;
@@ -94,11 +98,9 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
         const float inf_011 = x_0 * y_1 * z_1;
         const float inf_111 = x_1 * y_1 * z_1;
         
-        
         const float3 color = float3(1, 1, 0);
         
         float temperature = 0.0f;
-        //const float temperature = source_intensity * delta_time;
         
         float4 temperature_cell_000 = ColorTemperatureTexture[cell_000];
         temperature_cell_000.rgb = color;
@@ -164,15 +166,15 @@ void kernel_read_data (uint3 id : SV_DispatchThreadID)
     const int index = id.x;
     
     // sample temperature data from texture
-    float3 u_v = posTempBuffer[index].xyz;
-    u_v += 0.5f;
-    float4 val = myTexture3D.SampleLevel(linearClampSampler, u_v, 0);
+    float3 uv = posTempBuffer[index].xyz;
+    uv += 0.5f;
+    float4 val = myTexture3D.SampleLevel(linearClampSampler, uv, 0);
     posTempBuffer[index].w = val.w;
     
     // calculate texture position
-    u_v *= texture_resolution;
-    u_v -= 0.5f;
-    posTempBuffer[index].xyz = u_v;
+    uv *= texture_resolution;
+    uv -= 0.5f;
+    posTempBuffer[index].xyz = uv;
 }
 
 [numthreads(8,8,8)]

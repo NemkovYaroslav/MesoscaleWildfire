@@ -48,6 +48,8 @@ namespace Common.Wildfire
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         
         private static readonly int ShaderTextureResolution  = Shader.PropertyToID("texture_resolution");
+        private static readonly int ShaderAreaScale  = Shader.PropertyToID("area_scale");
+        
         private static readonly int ShaderSourceIntensity    = Shader.PropertyToID("source_intensity");
         private static readonly int ShaderDiffusionIntensity = Shader.PropertyToID("diffusion_intensity");
         private static readonly int ShaderDeltaTime          = Shader.PropertyToID("delta_time");
@@ -105,6 +107,8 @@ namespace Common.Wildfire
         private void Start()
         {
             computeShader.SetVector(ShaderTextureResolution, textureResolution);
+            
+            computeShader.SetVector(ShaderAreaScale, transform.lossyScale);
             
             _colorTemperatureTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
             _texelTemperatureTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
@@ -392,8 +396,6 @@ namespace Common.Wildfire
             
             if (Input.GetMouseButton(0))
             {
-                //ShaderDispatch(_kernelUserInput);
-                
                 computeShader.Dispatch(
                     _kernelUserInput,
                     1,
