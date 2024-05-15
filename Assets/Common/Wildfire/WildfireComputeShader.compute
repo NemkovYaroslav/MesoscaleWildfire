@@ -1,23 +1,20 @@
 #pragma kernel kernel_init
 #pragma kernel kernel_user_input
-#pragma kernel kernel_read_data
 #pragma kernel kernel_modules_influence
-#pragma kernel kernel_diffusion
-#pragma kernel kernel_advection
-#pragma kernel kernel_divergence
-#pragma kernel kernel_pressure
+#pragma kernel kernel_diffusion_velocity
+#pragma kernel kernel_divergence;
+#pragma kernel kernel_pressure;
 #pragma kernel kernel_subtract_gradient
+#pragma kernel kernel_advection_velocity
+#pragma kernel kernel_diffusion_temperature
+#pragma kernel kernel_read_data
 
 RWTexture3D<float4> color_temperature_texture;
 
-
-
-// WIND SHIT
 RWTexture3D<float3> velocity_texture;
+
 RWTexture3D<float> divergence_texture;
 RWTexture3D<float> pressure_texture;
-
-
 
 float3 texture_resolution;
 float3 area_scale;
@@ -65,11 +62,11 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
     const int3 pixel_id = id.xyz;
     
     color_temperature_texture[pixel_id] = 0;
+    
+    velocity_texture[pixel_id] = 0;
 
-    // WIND SHIT
-    velocity_texture[pixel_id]   = 0;
     divergence_texture[pixel_id] = 0;
-    pressure_texture[pixel_id]   = 0;
+    pressure_texture[pixel_id] = 0;
 }
 
 [numthreads(1,1,1)]
@@ -149,14 +146,8 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
         }
         
         const float3 color = float3(1, 1, 0);
-
-        const float air_cell_width  = area_scale.x / texture_resolution.x;
-        const float air_cell_height = area_scale.y / texture_resolution.y;
-        const float air_cell_depth  = area_scale.z / texture_resolution.z;
-
-        const float ait_cell_volume = air_cell_width * air_cell_height * air_cell_depth;
     
-        const float temperature = source_intensity * neighbours_number / ait_cell_volume;
+        const float temperature = source_intensity * neighbours_number;
         
         float4 temperature_cell_000 = color_temperature_texture[cell_000];
         temperature_cell_000.rgb = color;
@@ -206,23 +197,6 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
         temperature_cell_111.a = clamp(temperature_cell_111.a + temperature_111, 0.0f, 1.0f);
         color_temperature_texture[cell_111] = temperature_cell_111;
     }
-}
-
-[numthreads(8,1,1)]
-void kernel_read_data (uint3 id : SV_DispatchThreadID)
-{
-    const int index = id.x;
-    
-    // sample temperature data from texture
-    float3 uv = pos_for_get_data[index].xyz;
-    uv += 0.5f;
-    float4 val = texture_for_sample_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
-    pos_for_get_data[index].w = val.w;
-    
-    // calculate texture position
-    uv *= texture_resolution;
-    uv -= 0.5f;
-    pos_for_get_data[index].xyz = uv;
 }
 
 [numthreads(8,1,1)]
@@ -303,15 +277,8 @@ void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
     }
     
     const float3 color = float3(1, 1, 0);
-
-    const float air_cell_width  = area_scale.x / texture_resolution.x;
-    const float air_cell_height = area_scale.y / texture_resolution.y;
-    const float air_cell_depth  = area_scale.z / texture_resolution.z;
-
-    const float ait_cell_volume = air_cell_width * air_cell_height * air_cell_depth;
     
-    //const float temperature = source_intensity * neighbours_number / ait_cell_volume;
-    const float temperature = pos_for_set_data[index].a * neighbours_number / ait_cell_volume;
+    const float temperature = pos_for_set_data[index].a * neighbours_number;
     
     float4 temperature_cell_000 = color_temperature_texture[cell_000];
     temperature_cell_000.rgb = color;
@@ -363,7 +330,7 @@ void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 }
 
 [numthreads(8,8,8)]
-void kernel_diffusion (uint3 id : SV_DispatchThreadID)
+void kernel_diffusion_velocity (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
     
@@ -374,40 +341,189 @@ void kernel_diffusion (uint3 id : SV_DispatchThreadID)
     const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
     const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
 
-    const float obstacle_value = get_obstacle(pixel_id);
-    
-    if (obstacle_value)
-    {
-        const float top_obstacle_value    = get_obstacle(top_pixel_id);
-        const float bottom_obstacle_value = get_obstacle(bottom_pixel_id);
-        const float right_obstacle_value  = get_obstacle(right_pixel_id);
-        const float left_obstacle_value   = get_obstacle(left_pixel_id);
-        const float front_obstacle_value  = get_obstacle(front_pixel_id);
-        const float back_obstacle_value   = get_obstacle(back_pixel_id);
-    
-        const float4 density_value = color_temperature_texture[pixel_id];
-        const float4 top_density_value    = color_temperature_texture[top_pixel_id]    * top_obstacle_value;
-        const float4 bottom_density_value = color_temperature_texture[bottom_pixel_id] * bottom_obstacle_value;
-        const float4 right_density_value  = color_temperature_texture[right_pixel_id]  * right_obstacle_value;
-        const float4 left_density_value   = color_temperature_texture[left_pixel_id]   * left_obstacle_value;
-        const float4 front_density_value  = color_temperature_texture[front_pixel_id]  * front_obstacle_value;
-        const float4 back_density_value   = color_temperature_texture[back_pixel_id]   * back_obstacle_value;
+    const float3 velocity_value        = velocity_texture[pixel_id];
+    const float3 top_velocity_value    = velocity_texture[top_pixel_id]; 
+    const float3 bottom_velocity_value = velocity_texture[bottom_pixel_id];
+    const float3 right_velocity_value  = velocity_texture[right_pixel_id];
+    const float3 left_velocity_value   = velocity_texture[left_pixel_id]; 
+    const float3 front_velocity_value  = velocity_texture[front_pixel_id];
+    const float3 back_velocity_value   = velocity_texture[back_pixel_id];
 
-        const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
-        
-        const float k = delta_time * diffusion_intensity * resolution;
-        const float4 new_density_value =
-        (
-            density_value
+    const float viscosity = 0.001f;
+    const float k = delta_time * viscosity * texture_resolution.x * texture_resolution.y;
+    const float3 velocity =
+    (
+        velocity_value
             + k
-            * (top_density_value + bottom_density_value + right_density_value + left_density_value + front_density_value + back_density_value)
-        )
-        / (1 + 6.0 * k);
-        
-        color_temperature_texture[pixel_id] = new_density_value;
-    }
+                * (top_velocity_value + bottom_velocity_value + right_velocity_value + left_velocity_value + front_velocity_value + back_velocity_value)
+    )
+    / (1 + 6.0 * k);
+    
+    velocity_texture[pixel_id] = velocity;
 }
 
+[numthreads(8,8,8)]
+void kernel_divergence (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+        
+    const float3 top_velocity_value    = velocity_texture[top_pixel_id];  
+    const float3 bottom_velocity_value = velocity_texture[bottom_pixel_id];
+    const float3 right_velocity_value  = velocity_texture[right_pixel_id];
+    const float3 left_velocity_value   = velocity_texture[left_pixel_id];  
+    const float3 front_velocity_value  = velocity_texture[front_pixel_id]; 
+    const float3 back_velocity_value   = velocity_texture[back_pixel_id];  
+    
+    const float divergence
+        = 0.5f
+            * (right_velocity_value.x - left_velocity_value.x
+                + top_velocity_value.y - bottom_velocity_value.y
+                    + front_velocity_value.z - back_velocity_value.z)
+                        / texture_resolution.x;
+    
+    divergence_texture[pixel_id] = divergence;
+
+    pressure_texture[pixel_id] = 0;
+}
+
+[numthreads(8,8,8)]
+void kernel_pressure (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+    
+    const float top_pressure_value    = pressure_texture[top_pixel_id];
+    const float bottom_pressure_value = pressure_texture[bottom_pixel_id];
+    const float right_pressure_value  = pressure_texture[right_pixel_id];
+    const float left_pressure_value   = pressure_texture[left_pixel_id];
+    const float front_pressure_value  = pressure_texture[front_pixel_id];
+    const float back_pressure_value   = pressure_texture[back_pixel_id];
+    
+    //const float divergence_value = divergence_texture[pixel_id];
+    const float divergence_value = divergence_texture[pixel_id] * texture_resolution.x;
+    
+    const float pressure
+        = (
+            left_pressure_value + right_pressure_value
+                + bottom_pressure_value + top_pressure_value
+                    + front_pressure_value + back_pressure_value
+                        - divergence_value
+        ) / 6.0;
+
+    pressure_texture[pixel_id] = pressure;
+}
+
+[numthreads(8,8,8)]
+void kernel_subtract_gradient (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+    
+    const float top_pressure_value    = pressure_texture[top_pixel_id];
+    const float bottom_pressure_value = pressure_texture[bottom_pixel_id];
+    const float right_pressure_value  = pressure_texture[right_pixel_id];
+    const float left_pressure_value   = pressure_texture[left_pixel_id];
+    const float front_pressure_value  = pressure_texture[front_pixel_id];
+    const float back_pressure_value   = pressure_texture[back_pixel_id];
+    
+    //const float vel_x = 0.5f * (right_pressure_value - left_pressure_value) * texture_resolution.x;
+    //const float vel_y = 0.5f * (top_pressure_value - bottom_pressure_value) * texture_resolution.x;
+    //const float vel_z = 0.5f * (front_pressure_value - back_pressure_value) * texture_resolution.x;
+
+    const float vel_x = 1.0f * (right_pressure_value - left_pressure_value);
+    const float vel_y = 1.0f * (top_pressure_value - bottom_pressure_value);
+    const float vel_z = 1.0f * (front_pressure_value - back_pressure_value);
+    
+    velocity_texture[pixel_id] -= float3(vel_x, vel_y, vel_z);
+}
+
+[numthreads(8,8,8)]
+void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+
+    const float3 velocity = float3(0, 0, 25.0f);
+    
+    const float3 displacement = velocity * delta_time;
+    const int3 previous_id = round(float3(pixel_id) - displacement);
+    
+    // advect temperature
+    color_temperature_texture[pixel_id] = 0.99f * color_temperature_texture[previous_id];
+
+    // advect velocity
+    velocity_texture[pixel_id] = 0.999f * velocity_texture[previous_id];
+}
+
+[numthreads(8,8,8)]
+void kernel_diffusion_temperature (uint3 id : SV_DispatchThreadID)
+{
+    const int3 pixel_id = id.xyz;
+    
+    const int3 top_pixel_id    = pixel_id + TOP_OFFSET;
+    const int3 bottom_pixel_id = pixel_id + BOTTOM_OFFSET;
+    const int3 right_pixel_id  = pixel_id + RIGHT_OFFSET;
+    const int3 left_pixel_id   = pixel_id + LEFT_OFFSET;
+    const int3 front_pixel_id  = pixel_id + FRONT_OFFSET;
+    const int3 back_pixel_id   = pixel_id + BACK_OFFSET;
+
+    const float4 density_value = color_temperature_texture[pixel_id];
+    const float4 top_density_value    = color_temperature_texture[top_pixel_id];
+    const float4 bottom_density_value = color_temperature_texture[bottom_pixel_id];
+    const float4 right_density_value  = color_temperature_texture[right_pixel_id];
+    const float4 left_density_value   = color_temperature_texture[left_pixel_id]; 
+    const float4 front_density_value  = color_temperature_texture[front_pixel_id];
+    const float4 back_density_value   = color_temperature_texture[back_pixel_id]; 
+
+    const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
+    const float k = delta_time * diffusion_intensity * resolution;
+    const float4 new_density_value =
+    (
+        density_value
+        + k
+        * (top_density_value + bottom_density_value + right_density_value + left_density_value + front_density_value + back_density_value)
+    )
+    / (1 + 6.0 * k);
+    
+    color_temperature_texture[pixel_id] = new_density_value;
+}
+
+[numthreads(8,1,1)]
+void kernel_read_data (uint3 id : SV_DispatchThreadID)
+{
+    const int index = id.x;
+    
+    // sample temperature data from texture
+    float3 uv = pos_for_get_data[index].xyz;
+    uv += 0.5f;
+    float4 val = texture_for_sample_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
+    pos_for_get_data[index].w = val.w;
+    
+    // calculate texture position
+    uv *= texture_resolution;
+    uv -= 0.5f;
+    pos_for_get_data[index].xyz = uv;
+}
+
+/*
 // WIND SHIT
 
 [numthreads(8,8,8)]
@@ -422,14 +538,24 @@ void kernel_advection (uint3 id : SV_DispatchThreadID)
     // get previous id for previous value -> current value
     const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 2.0f;
     const float3 displacement = velocity * delta_time;
-    
     const int3 previous_id = round(float3(pixel_id) - displacement);
     
-    // advect temperature
-    color_temperature_texture[pixel_id] = 0.99f * color_temperature_texture[previous_id];
+    if (velocity.x > 0 || velocity.y > 0 || velocity.z > 0)
+    {
+        // advect temperature
+        color_temperature_texture[pixel_id] = 0.99f * color_temperature_texture[previous_id];
 
-    // advect velocity
-    velocity_texture[pixel_id] = 0.999f * velocity_texture[previous_id];
+        // advect velocity
+        velocity_texture[pixel_id] = 0.999f * velocity_texture[previous_id];
+    }
+    else
+    {
+        // advect temperature
+        color_temperature_texture[pixel_id] = color_temperature_texture[previous_id];
+
+        // advect velocity
+        velocity_texture[pixel_id] = velocity_texture[previous_id];
+    }
 }
 
 [numthreads(8,8,8)]
@@ -573,3 +699,4 @@ void kernel_subtract_gradient (uint3 id : SV_DispatchThreadID)
         velocity_texture[pixel_id] = float3(velocity); 
     }
 }
+*/
