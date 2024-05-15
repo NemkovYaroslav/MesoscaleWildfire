@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Jobs;
 using UnityEngine.Rendering;
-using UnityEngine.Serialization;
 
 namespace Common.Wildfire
 {
@@ -20,12 +19,13 @@ namespace Common.Wildfire
         [Header("Torch Settings")]
         [SerializeField] private GameObject torch;
         
-        [FormerlySerializedAs("sourceIntensity")]
         [Header("Solver Settings")]
-        [SerializeField] private float torchTemperatureIntensity;
+        [SerializeField] private float torchIntensity;
         [SerializeField] private float diffusionIntensity;
         [SerializeField] private float viscosityIntensity;
         [SerializeField] private int solverIterations;
+
+        [SerializeField] private Wind.Wind[] winds;
         
         // render textures
         private RenderTexture _colorTemperatureTexture;
@@ -44,7 +44,7 @@ namespace Common.Wildfire
         private int _kernelUserInput;
         private int _kernelDiffusionTemperature;
         private int _kernelModulesInfluence;
-
+        private int _kernelAddWind;
         private int _kernelReadData;
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -90,6 +90,8 @@ namespace Common.Wildfire
         private int _kernelSubtractGradient;
         private int _kernelAdvectionVelocity;
         private int _kernelAdvectionTemperature;
+        private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
+        private static readonly int ShaderWindStrength = Shader.PropertyToID("wind_strength");
         
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
@@ -138,6 +140,7 @@ namespace Common.Wildfire
             _kernelModulesInfluence     = computeShader.FindKernel("kernel_modules_influence");
             
             
+            
             // ANOTHER SHIT
             
             _kernelDiffusionVelocity = computeShader.FindKernel("kernel_diffusion_velocity");
@@ -169,6 +172,12 @@ namespace Common.Wildfire
             _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+
+            
+            
+            _kernelAddWind = computeShader.FindKernel("kernel_add_wind");
+            computeShader.SetTexture(_kernelAddWind, ShaderVelocityTexture, _velocityTexture);
+            
             
             
             _kernelReadData = computeShader.FindKernel("kernel_read_data");
@@ -210,8 +219,6 @@ namespace Common.Wildfire
                 _colorTemperatureTexture.graphicsFormat,
                 TextureCreationFlags.None
             );
-            // set empty texture
-            computeShader.SetTexture(_kernelReadData, TextureForSampleTemperature, _textureForSampleTemperature);
             
             // modules ambient temperature
             _modulesAmbientTemperatureArray 
@@ -259,8 +266,11 @@ namespace Common.Wildfire
                     var handle = job.Schedule(_moduleRenderer.transformsArray);
                     handle.Complete();
 
-                    CleanupPosTempBuffer();
-                    _posForGetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForGetDataStride);
+                    //CleanupPosTempBuffer();
+                    if (_posForGetData == null)
+                    {
+                        _posForGetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForGetDataStride);
+                    }
                     _posForGetData.SetData(positionTemperatureArray);
                     
                     computeShader.SetBuffer(_kernelReadData, PosForGetDataBuffer, _posForGetData);
@@ -272,7 +282,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelReadData,
-                        _moduleRenderer.modulesCount / 8,
+                        1,
                         1,
                         1
                     );
@@ -284,7 +294,7 @@ namespace Common.Wildfire
                     {
                         _modulesAmbientTemperatureArray[i] = temp[i].w;
                         
-                        Debug.Log("info: " + temp[i]);
+                        //Debug.Log("info: " + temp[i]);
                     }
                     
                     positionTemperatureArray.Dispose();
@@ -311,7 +321,7 @@ namespace Common.Wildfire
             }
         }
         
-        private void CleanupPosTempBuffer()
+        private void CleanupPosForGetData()
         {
             if (_posForGetData != null)
             {
@@ -320,7 +330,7 @@ namespace Common.Wildfire
             _posForGetData = null;
         }
         
-        private void CleanupPositionTemperatureBuffer()
+        private void CleanupPosForSetData()
         {
             if (_posForSetData != null)
             {
@@ -375,12 +385,12 @@ namespace Common.Wildfire
                                 var heat = 10000.0f * lostMass;
 
                                 var areaScale = transform.lossyScale;
-                                var airVolume 
-                                    = (areaScale.x / textureResolution.x) 
-                                      * (areaScale.y / textureResolution.y) 
-                                        * (areaScale.z / textureResolution.z);
                                 
-                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * airVolume * 1.2f) / 1000.0f;
+                                var airScale 
+                                    = (textureResolution.x + textureResolution.y + textureResolution.z) 
+                                      / (areaScale.x + areaScale.y + areaScale.z);
+                                
+                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 1 * 1.2f) / 1000.0f * airScale;
 
                                 if (_modules[i].isSelfSupported)
                                 {
@@ -391,7 +401,7 @@ namespace Common.Wildfire
                                 transferTemperature += air;
                             }
                             
-                            //Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                            Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
                         }
 
                         releaseTemperatureArray[i] = transferTemperature;
@@ -420,15 +430,18 @@ namespace Common.Wildfire
                     var handle = job.Schedule(_moduleRenderer.transformsArray);
                     handle.Complete();
 
-                    CleanupPositionTemperatureBuffer();
-                    _posForSetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForSetDataStride);
+                    //CleanupPositionTemperatureBuffer();
+                    if (_posForSetData == null)
+                    {
+                        _posForSetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForSetDataStride);
+                    }
                     _posForSetData.SetData(positionTemperatureArray);
                     
                     computeShader.SetBuffer(_kernelModulesInfluence, PosForSetDataBuffer, _posForSetData);
                     
                     computeShader.Dispatch(
                         _kernelModulesInfluence,
-                        _moduleRenderer.modulesCount / 8,
+                        1,
                         1,
                         1
                     );
@@ -442,9 +455,23 @@ namespace Common.Wildfire
         private void FixedUpdate()
         {
             computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
-            computeShader.SetFloat(ShaderSourceIntensity, torchTemperatureIntensity);
+            computeShader.SetFloat(ShaderSourceIntensity, torchIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
+
+            ///*
+            if (winds.Length > 0)
+            {
+                var windForce = winds[0].GetWindForceAtPosition();
+                var windDirection = windForce.normalized;
+                var windStrength = windForce.magnitude;
+                
+                computeShader.SetVector(ShaderWindDirection, windDirection);
+                computeShader.SetFloat(ShaderWindStrength, windStrength);
+                
+                ShaderDispatch(_kernelAddWind);
+            }
+            //*/
 
             var torchPosition = transform.InverseTransformPoint(torch.transform.position);
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
@@ -461,8 +488,6 @@ namespace Common.Wildfire
             
             // transfer data from modules to grid
             TransferDataFromModulesToGrid();
-            
-            // ANOTHER SHIT
             
             // DIFFUSE VELOCITY
             for (var i = 0; i < solverIterations; i++)
@@ -498,7 +523,11 @@ namespace Common.Wildfire
             // ADVECT TEMPERATURE
             ShaderDispatch(_kernelAdvectionTemperature);
             
-            ShaderDispatch(_kernelReadData);
+            // READ DATA
+            if (_posForGetData != null)
+            {
+                ShaderDispatch(_kernelReadData);
+            }
         }
         
         private void OnDestroy()
@@ -507,8 +536,8 @@ namespace Common.Wildfire
 
             _modulesAmbientTemperatureArray.Dispose();
             
-            CleanupPosTempBuffer();
-            CleanupPositionTemperatureBuffer();
+            CleanupPosForGetData();
+            CleanupPosForSetData();
         }
     }
 }

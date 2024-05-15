@@ -50,7 +50,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
             const float thickness = 0.01f;
             
-            var lostMass = reactionRate * surfaceArea * thickness;
+            var lostMass = reactionRate * surfaceArea * thickness * 2.0f;
 
             return lostMass;
         }
