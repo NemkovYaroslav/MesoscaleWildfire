@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Jobs;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 namespace Common.Wildfire
 {
@@ -19,9 +20,11 @@ namespace Common.Wildfire
         [Header("Torch Settings")]
         [SerializeField] private GameObject torch;
         
+        [FormerlySerializedAs("sourceIntensity")]
         [Header("Solver Settings")]
-        [SerializeField] private float sourceIntensity;
+        [SerializeField] private float torchTemperatureIntensity;
         [SerializeField] private float diffusionIntensity;
+        [SerializeField] private float viscosityIntensity;
         [SerializeField] private int solverIterations;
         
         // render textures
@@ -51,6 +54,7 @@ namespace Common.Wildfire
         
         private static readonly int ShaderSourceIntensity    = Shader.PropertyToID("source_intensity");
         private static readonly int ShaderDiffusionIntensity = Shader.PropertyToID("diffusion_intensity");
+        private static readonly int ShaderViscosityIntensity = Shader.PropertyToID("viscosity_intensity");
         private static readonly int ShaderDeltaTime          = Shader.PropertyToID("delta_time");
         private static readonly int ShaderTorchPosition      = Shader.PropertyToID("torch_position");
         private static readonly int ModulesNumber            = Shader.PropertyToID("modules_number");
@@ -83,29 +87,9 @@ namespace Common.Wildfire
         private static readonly int ShaderPressureTexture = Shader.PropertyToID("pressure_texture");
 
         private int _kernelPressure;
-
         private int _kernelSubtractGradient;
-
         private int _kernelAdvectionVelocity;
-        
-        
-        /*
-        // WIND SHIT
-
-        private RenderTexture _velocityTexture;
-        private int _kernelAdvection;
-        private static readonly int ShaderVelocityTexture = Shader.PropertyToID("velocity_texture");
-
-        private RenderTexture _divergenceTexture;
-        private int _kernelDivergence;
-        private static readonly int ShaderDivergenceTexture = Shader.PropertyToID("divergence_texture");
-        
-        private RenderTexture _pressureTexture;
-        private int _kernelPressure;
-        private static readonly int ShaderPressureTexture = Shader.PropertyToID("pressure_texture");
-
-        private int _kernelSubtractGradient;
-        */
+        private int _kernelAdvectionTemperature;
         
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
@@ -153,6 +137,7 @@ namespace Common.Wildfire
             _kernelDiffusionTemperature = computeShader.FindKernel("kernel_diffusion_temperature");
             _kernelModulesInfluence     = computeShader.FindKernel("kernel_modules_influence");
             
+            
             // ANOTHER SHIT
             
             _kernelDiffusionVelocity = computeShader.FindKernel("kernel_diffusion_velocity");
@@ -180,34 +165,10 @@ namespace Common.Wildfire
 
             _kernelAdvectionVelocity = computeShader.FindKernel("kernel_advection_velocity");
             computeShader.SetTexture(_kernelAdvectionVelocity, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelAdvectionVelocity, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             
-            
-            /*
-            // WIND SHIT
-            _velocityTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
-            _kernelAdvection = computeShader.FindKernel("kernel_advection");
-            computeShader.SetTexture(_kernelInit, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelAdvection, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelAdvection, ShaderVelocityTexture, _velocityTexture);
-
-            _divergenceTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
-            _kernelDivergence = computeShader.FindKernel("kernel_divergence");
-            computeShader.SetTexture(_kernelInit, ShaderDivergenceTexture, _divergenceTexture);
-            computeShader.SetTexture(_kernelDivergence, ShaderDivergenceTexture, _divergenceTexture);
-            computeShader.SetTexture(_kernelDivergence, ShaderVelocityTexture, _velocityTexture);
-            
-            _pressureTexture = CreateRenderTexture3D(GraphicsFormat.R32G32B32A32_SFloat);
-            _kernelPressure = computeShader.FindKernel("kernel_pressure");
-            computeShader.SetTexture(_kernelInit, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelPressure, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelPressure, ShaderDivergenceTexture, _divergenceTexture);
-            
-            _kernelSubtractGradient = computeShader.FindKernel("kernel_subtract_gradient");
-            computeShader.SetTexture(_kernelSubtractGradient, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelSubtractGradient, ShaderVelocityTexture, _velocityTexture);
-            */
-            
+            _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
+            computeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
+            computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             
             
             _kernelReadData = computeShader.FindKernel("kernel_read_data");
@@ -481,16 +442,12 @@ namespace Common.Wildfire
         private void FixedUpdate()
         {
             computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
-            computeShader.SetFloat(ShaderSourceIntensity, sourceIntensity);
+            computeShader.SetFloat(ShaderSourceIntensity, torchTemperatureIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
+            computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
 
             var torchPosition = transform.InverseTransformPoint(torch.transform.position);
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
-
-            /*
-            // WIND SHIT
-            ShaderDispatch(_kernelAdvection);
-            */
             
             if (Input.GetMouseButton(0))
             {
@@ -524,11 +481,22 @@ namespace Common.Wildfire
             // ADVECT VELOCITY
             ShaderDispatch(_kernelAdvectionVelocity);
             
+            // PROJECT
+            ShaderDispatch(_kernelDivergence);
+            for (var i = 0; i < solverIterations; i++)
+            {
+                ShaderDispatch(_kernelPressure);
+            }
+            ShaderDispatch(_kernelSubtractGradient);
+            
             // DIFFUSE TEMPERATURE
             for (var i = 0; i < solverIterations; i++)
             {
                 ShaderDispatch(_kernelDiffusionTemperature);
             }
+            
+            // ADVECT TEMPERATURE
+            ShaderDispatch(_kernelAdvectionTemperature);
             
             ShaderDispatch(_kernelReadData);
         }
