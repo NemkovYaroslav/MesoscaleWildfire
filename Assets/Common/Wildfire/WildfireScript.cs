@@ -2,6 +2,7 @@ using System;
 using Common.Renderer;
 using Resources.PathCreator.Core.Runtime.Placer;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Jobs;
@@ -44,7 +45,7 @@ namespace Common.Wildfire
         private int _kernelUserInput;
         private int _kernelDiffusionTemperature;
         private int _kernelModulesInfluence;
-        private int _kernelAddWind;
+        private int _kernelAddFire;
         private int _kernelReadData;
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -52,7 +53,7 @@ namespace Common.Wildfire
         private static readonly int ShaderTextureResolution  = Shader.PropertyToID("texture_resolution");
         private static readonly int ShaderAreaScale  = Shader.PropertyToID("area_scale");
         
-        private static readonly int ShaderSourceIntensity    = Shader.PropertyToID("source_intensity");
+        private static readonly int ShaderTorchIntensity     = Shader.PropertyToID("torch_intensity");
         private static readonly int ShaderDiffusionIntensity = Shader.PropertyToID("diffusion_intensity");
         private static readonly int ShaderViscosityIntensity = Shader.PropertyToID("viscosity_intensity");
         private static readonly int ShaderDeltaTime          = Shader.PropertyToID("delta_time");
@@ -90,9 +91,12 @@ namespace Common.Wildfire
         private int _kernelSubtractGradient;
         private int _kernelAdvectionVelocity;
         private int _kernelAdvectionTemperature;
-        private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
-        private static readonly int ShaderWindStrength = Shader.PropertyToID("wind_strength");
         
+        //private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
+        //private static readonly int ShaderWindStrength = Shader.PropertyToID("wind_strength");
+        
+        private static readonly int ShaderFireDirection = Shader.PropertyToID("fire_direction");
+        private static readonly int ShaderFireStrength = Shader.PropertyToID("fire_strength");
 
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
@@ -172,13 +176,9 @@ namespace Common.Wildfire
             _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-
             
-            
-            _kernelAddWind = computeShader.FindKernel("kernel_add_wind");
-            computeShader.SetTexture(_kernelAddWind, ShaderVelocityTexture, _velocityTexture);
-            
-            
+            _kernelAddFire = computeShader.FindKernel("kernel_add_fire");
+            computeShader.SetTexture(_kernelAddFire, ShaderVelocityTexture, _velocityTexture);
             
             _kernelReadData = computeShader.FindKernel("kernel_read_data");
             
@@ -282,7 +282,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelReadData,
-                        1,
+                        _moduleRenderer.modulesCount / 8,
                         1,
                         1
                     );
@@ -342,7 +342,7 @@ namespace Common.Wildfire
         // transfer data from modules to grid
         private void TransferDataFromModulesToGrid()
         {
-            if (_moduleRenderer != null)
+            if (_moduleRenderer)
             {
                 if (_moduleRenderer.transformsArray.length > 0)
                 {
@@ -398,10 +398,10 @@ namespace Common.Wildfire
                                     _modules[i].temperature += wood;
                                 }
                                 
-                                transferTemperature += air;
+                                transferTemperature += air * 25;
                             }
                             
-                            Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                            //Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
                         }
 
                         releaseTemperatureArray[i] = transferTemperature;
@@ -429,8 +429,7 @@ namespace Common.Wildfire
                     };
                     var handle = job.Schedule(_moduleRenderer.transformsArray);
                     handle.Complete();
-
-                    //CleanupPositionTemperatureBuffer();
+                    
                     if (_posForSetData == null)
                     {
                         _posForSetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForSetDataStride);
@@ -441,7 +440,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelModulesInfluence,
-                        1,
+                        _moduleRenderer.modulesCount / 8,
                         1,
                         1
                     );
@@ -452,26 +451,46 @@ namespace Common.Wildfire
             }
         }
 
+        private void SimulateTreesDynamics()
+        {
+            if (winds.Length > 0 && _moduleRenderer)
+            {
+                // wind
+                var windForce = winds[0].GetWindForceAtPosition();
+                
+                for (var i = 0; i < _moduleRenderer.modulesCount; i++)
+                {
+                    _modules[i].rigidBody.AddForce(windForce * 100.0f, ForceMode.Force);
+
+                    //var position = _modules[i].rigidBody.position;
+                    //Debug.DrawLine(position, position + windForce.normalized * 0.1f, Color.red, 1.0f);
+                }
+                
+                //var windDirection = windForce.normalized;
+                //var windStrength = windForce.magnitude;
+                
+                //computeShader.SetVector(ShaderWindDirection, windDirection);
+                //computeShader.SetFloat(ShaderWindStrength, windStrength);
+                
+                ShaderDispatch(_kernelAddFire);
+
+                // fire
+                var fireForce = winds[1].GetWindForceAtPosition();
+                
+                var fireDirection = fireForce.normalized;
+                var fireStrength = fireForce.magnitude;
+                
+                computeShader.SetVector(ShaderFireDirection, fireDirection);
+                computeShader.SetFloat(ShaderFireStrength, fireStrength);
+            }
+        }
+
         private void FixedUpdate()
         {
             computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
-            computeShader.SetFloat(ShaderSourceIntensity, torchIntensity);
+            computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
-
-            ///*
-            if (winds.Length > 0)
-            {
-                var windForce = winds[0].GetWindForceAtPosition();
-                var windDirection = windForce.normalized;
-                var windStrength = windForce.magnitude;
-                
-                computeShader.SetVector(ShaderWindDirection, windDirection);
-                computeShader.SetFloat(ShaderWindStrength, windStrength);
-                
-                ShaderDispatch(_kernelAddWind);
-            }
-            //*/
 
             var torchPosition = transform.InverseTransformPoint(torch.transform.position);
             computeShader.SetVector(ShaderTorchPosition, torchPosition);
@@ -488,6 +507,8 @@ namespace Common.Wildfire
             
             // transfer data from modules to grid
             TransferDataFromModulesToGrid();
+
+            SimulateTreesDynamics();
             
             // DIFFUSE VELOCITY
             for (var i = 0; i < solverIterations; i++)

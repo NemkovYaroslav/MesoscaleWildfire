@@ -10,7 +10,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         private const float IgnitionTemperature = 0.15f;
         private const float AttenuationTemperature = 0.45f;
 
-        public const float WoodDensity = 800.0f;
+        private const float WoodDensity = 800.0f;
 
         public bool isSelfSupported;
 
@@ -18,16 +18,17 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         public Rigidbody rigidBody;
         public CapsuleCollider capsuleCollider;
+        public FixedJoint fixedJoint;
 
         private void Awake()
         {
             rigidBody = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
+            fixedJoint = GetComponent<FixedJoint>();
 
             stopCombustionMass = rigidBody.mass * 0.1f;
         }
-
-        // calculate lost mass depend on module temperature
+        
         public float CalculateLostMass()
         {
             var surfaceArea = 2.0f * Mathf.PI * capsuleCollider.radius * capsuleCollider.height;
@@ -57,9 +58,11 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         public void RecalculateCharacteristics(float lostMass)
         {
-            rigidBody.mass -= lostMass;
+            var difference = rigidBody.mass - lostMass;
             
-            capsuleCollider.radius = Mathf.Sqrt(rigidBody.mass / (Mathf.PI * WoodDensity * capsuleCollider.height));
+            rigidBody.mass = difference;
+            
+            capsuleCollider.radius = Mathf.Sqrt(difference / (Mathf.PI * WoodDensity * capsuleCollider.height));
         }
     }
 }
