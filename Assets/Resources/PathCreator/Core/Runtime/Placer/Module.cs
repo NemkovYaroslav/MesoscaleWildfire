@@ -12,7 +12,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         private const float WoodDensity = 800.0f;
 
-        public bool isSelfSupported;
+        public bool isBurnable;
 
         public float stopCombustionMass = 0.0f;
 
@@ -51,18 +51,18 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
             const float thickness = 0.01f;
             
-            var lostMass = reactionRate * surfaceArea * thickness * 2.0f;
+            var lostMass = reactionRate * surfaceArea * thickness;
 
             return lostMass;
         }
 
         public void RecalculateCharacteristics(float lostMass)
         {
-            var difference = rigidBody.mass - lostMass;
+            var mass = rigidBody.mass - lostMass;
             
-            rigidBody.mass = difference;
+            rigidBody.mass = mass;
             
-            capsuleCollider.radius = Mathf.Sqrt(difference / (Mathf.PI * WoodDensity * capsuleCollider.height));
+            capsuleCollider.radius = Mathf.Sqrt(mass / (Mathf.PI * WoodDensity * capsuleCollider.height));
         }
     }
 }

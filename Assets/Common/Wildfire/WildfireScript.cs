@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
 using Common.Renderer;
 using Resources.PathCreator.Core.Runtime.Placer;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Jobs;
 using UnityEngine.Rendering;
+using Tree = Resources.PathCreator.Core.Runtime.Placer.Tree;
 
 namespace Common.Wildfire
 {
@@ -40,6 +44,8 @@ namespace Common.Wildfire
         private Texture3D _textureForSampleTemperature;
 
         private Module[] _modules;
+        private List<Module> _orderedModuleList;
+        private Dictionary<Rigidbody, Module> _orderedRigidbodyDictionary;
         
         private int _kernelInit;
         private int _kernelUserInput;
@@ -70,7 +76,7 @@ namespace Common.Wildfire
         // transfer data from gpu to cpu
         private NativeArray<Vector4> _transferArray;
 
-        private NativeArray<float> _modulesAmbientTemperatureArray;
+        private NativeArray<float> _ambientTemperatureArray;
         
         private ModuleRenderer _moduleRenderer;
         
@@ -220,8 +226,41 @@ namespace Common.Wildfire
                 TextureCreationFlags.None
             );
             
+            ///*
+            var trees = GameObject.FindGameObjectsWithTag("Tree");
+            _orderedModuleList = new List<Module>(_moduleRenderer.modulesCount);
+            _orderedRigidbodyDictionary = new Dictionary<Rigidbody, Module>(_moduleRenderer.modulesCount);
+            foreach (var tree in trees)
+            {
+                var parent = tree.transform;
+                foreach (Transform child in parent)
+                {
+                    var module = child.gameObject.GetComponent<Module>();
+
+                    if (child.GetSiblingIndex() > 0)
+                    {
+                        // used to order modules structure
+                        _orderedModuleList.Add(module);
+                    }
+                
+                    // used for search connected modules
+                    _orderedRigidbodyDictionary.Add(module.rigidBody, module);
+                }
+            }
+
+            /*
+            for (var i = _orderedModuleList.Count - 1; i >= 0; i--)
+            {
+                var currentModule = _orderedModuleList[i];
+                Debug.Log("parent: " + currentModule.transform.parent.gameObject.name 
+                                     + " first: " + currentModule.gameObject.name 
+                                        + " second: " + _orderedRigidbodyDictionary[currentModule.fixedJoint.connectedBody].gameObject.name);
+            }
+            */
+            //*/
+            
             // modules ambient temperature
-            _modulesAmbientTemperatureArray 
+            _ambientTemperatureArray 
                 = new NativeArray<float>(
                     _moduleRenderer.modulesCount,
                     Allocator.Persistent
@@ -265,8 +304,7 @@ namespace Common.Wildfire
                     };
                     var handle = job.Schedule(_moduleRenderer.transformsArray);
                     handle.Complete();
-
-                    //CleanupPosTempBuffer();
+                    
                     if (_posForGetData == null)
                     {
                         _posForGetData = new ComputeBuffer(_moduleRenderer.modulesCount, _posForGetDataStride);
@@ -282,7 +320,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelReadData,
-                        _moduleRenderer.modulesCount / 8,
+                        1,
                         1,
                         1
                     );
@@ -292,9 +330,9 @@ namespace Common.Wildfire
 
                     for (var i = 0; i < temp.Length; i++)
                     {
-                        _modulesAmbientTemperatureArray[i] = temp[i].w;
+                        _ambientTemperatureArray[i] = temp[i].w;
                         
-                        //Debug.Log("info: " + temp[i]);
+                        //Debug.Log("cell temperature: " + temp[i].w);
                     }
                     
                     positionTemperatureArray.Dispose();
@@ -347,64 +385,77 @@ namespace Common.Wildfire
                 if (_moduleRenderer.transformsArray.length > 0)
                 {
                     // MAIN SIMULATION LOGIC
+                    
+                    
+                    // tree diffusion
+                    
+                    for (var i = _orderedModuleList.Count - 1; i >= 0; i--)
+                    {
+                        var module = _orderedModuleList[i];
+                        var neighbour = _orderedRigidbodyDictionary[module.fixedJoint.connectedBody];
+                        
+                        var middleRadius = (module.capsuleCollider.radius + neighbour.capsuleCollider.radius) / 2.0f;
+                        var surfaceArea = Mathf.PI * Mathf.Pow(middleRadius, 2);
 
+                        var heatPerSecond = 0.2f * surfaceArea * Mathf.Abs(module.temperature - neighbour.temperature) / 0.0001f;
+                        var heat = heatPerSecond * Time.fixedDeltaTime;
+                        
+                        if (module.temperature > neighbour.temperature)
+                        {
+                            var transferredTemperature = heat / (2000.0f * neighbour.rigidBody.mass);
+                            
+                            module.temperature -= transferredTemperature;
+                            neighbour.temperature += transferredTemperature;
+                        }
+                        if (neighbour.temperature > module.temperature)
+                        {
+                            var transferredTemperature = heat / (2000.0f * module.rigidBody.mass);
+                            
+                            module.temperature += transferredTemperature;
+                            neighbour.temperature -= transferredTemperature;
+                        }
+                    }
+                    
+                    
+                    // tree conduction
+                    
                     // input
-                    var releaseTemperatureArray = new NativeArray<float>(
+                    var updatedAmbientTemperatureArray = new NativeArray<float>(
                         _moduleRenderer.modulesCount,
                         Allocator.TempJob
                     );
                     
-                    const float airThermalCapacity = 1000.0f; // J / (kg * С)
-                    const float woodThermalCapacity = 2000.0f; // J / (kg * С)
-                    
                     for (var i = 0; i < _moduleRenderer.modulesCount; i++)
                     {
-                        var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                    
-                        // temperature to transfer to grid
-                        var transferTemperature = 0.0f;
+                        // module take heat by combustion
                         
-                        if (_modules[i].rigidBody.mass > _modules[i].stopCombustionMass)
+                        var transferAmbientTemperature = 0.0f;
+
+                        var lostMass = _modules[i].CalculateLostMass();
+                        if (!Mathf.Approximately(lostMass, 0))
                         {
-                            if (_modules[i].temperature > 0.25f && !_modules[i].isSelfSupported)
-                            {
-                                _modules[i].isSelfSupported = true;
-                            }
+                            var releaseTemperature = (lostMass * 150000.0f) / 1000.0f;
+
+                            transferAmbientTemperature = releaseTemperature;
                             
-                            if (!_modules[i].isSelfSupported)
-                            {
-                                _modules[i].temperature = ambientTemperature;
-                            }
+                            _modules[i].RecalculateCharacteristics(lostMass);
                             
-                            var lostMass = _modules[i].CalculateLostMass();
-
-                            if (!Mathf.Approximately(lostMass, 0.0f))
-                            {
-                                _modules[i].RecalculateCharacteristics(lostMass);
-
-                                var heat = 10000.0f * lostMass;
-
-                                var areaScale = transform.lossyScale;
-                                
-                                var airScale 
-                                    = (textureResolution.x + textureResolution.y + textureResolution.z) 
-                                      / (areaScale.x + areaScale.y + areaScale.z);
-                                
-                                var air = heat / (airThermalCapacity * Time.fixedDeltaTime * 1 * 1.2f) / 1000.0f * airScale;
-
-                                if (_modules[i].isSelfSupported)
-                                {
-                                    var wood = heat / (woodThermalCapacity * Time.fixedDeltaTime * _modules[i].rigidBody.mass) / 1000.0f;
-                                    _modules[i].temperature += wood;
-                                }
-                                
-                                transferTemperature += air * 25;
-                            }
-                            
-                            //Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                            Debug.Log("transfer: " + releaseTemperature * 1000.0f);
                         }
+                        
+                        updatedAmbientTemperatureArray[i] = transferAmbientTemperature;
+                        
+                        
+                        // module lost heat by air
 
-                        releaseTemperatureArray[i] = transferTemperature;
+                        var ambientTemperature = _ambientTemperatureArray[i];
+                        
+                        Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                        
+                        var temperatureDifference = ambientTemperature - _modules[i].temperature;
+                        var transferredTemperature = 0.001f * temperatureDifference;
+                        
+                        _modules[i].temperature += transferredTemperature;
                     }
                     
                     // output
@@ -422,7 +473,7 @@ namespace Common.Wildfire
                         wildfireZoneTransform = transform.worldToLocalMatrix,
                         
                         // changeable
-                        releaseTemperatureArray = releaseTemperatureArray,
+                        releaseTemperatureArray = updatedAmbientTemperatureArray,
                         
                         // result
                         positionTemperatureArray = positionTemperatureArray
@@ -440,13 +491,13 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelModulesInfluence,
-                        _moduleRenderer.modulesCount / 8,
+                        1,
                         1,
                         1
                     );
                     
                     positionTemperatureArray.Dispose();
-                    releaseTemperatureArray.Dispose();
+                    updatedAmbientTemperatureArray.Dispose();
                 }
             }
         }
@@ -458,6 +509,7 @@ namespace Common.Wildfire
                 // wind
                 var windForce = winds[0].GetWindForceAtPosition();
                 
+                /*
                 for (var i = 0; i < _moduleRenderer.modulesCount; i++)
                 {
                     _modules[i].rigidBody.AddForce(windForce * 100.0f, ForceMode.Force);
@@ -465,14 +517,13 @@ namespace Common.Wildfire
                     //var position = _modules[i].rigidBody.position;
                     //Debug.DrawLine(position, position + windForce.normalized * 0.1f, Color.red, 1.0f);
                 }
+                */
                 
                 //var windDirection = windForce.normalized;
                 //var windStrength = windForce.magnitude;
                 
                 //computeShader.SetVector(ShaderWindDirection, windDirection);
                 //computeShader.SetFloat(ShaderWindStrength, windStrength);
-                
-                ShaderDispatch(_kernelAddFire);
 
                 // fire
                 var fireForce = winds[1].GetWindForceAtPosition();
@@ -482,6 +533,8 @@ namespace Common.Wildfire
                 
                 computeShader.SetVector(ShaderFireDirection, fireDirection);
                 computeShader.SetFloat(ShaderFireStrength, fireStrength);
+                
+                ShaderDispatch(_kernelAddFire);
             }
         }
 
@@ -507,7 +560,7 @@ namespace Common.Wildfire
             
             // transfer data from modules to grid
             TransferDataFromModulesToGrid();
-
+            
             SimulateTreesDynamics();
             
             // DIFFUSE VELOCITY
@@ -535,6 +588,7 @@ namespace Common.Wildfire
             }
             ShaderDispatch(_kernelSubtractGradient);
             
+            
             // DIFFUSE TEMPERATURE
             for (var i = 0; i < solverIterations; i++)
             {
@@ -555,7 +609,7 @@ namespace Common.Wildfire
         {
             AsyncGPUReadbackCallback -= TransferTextureData;
 
-            _modulesAmbientTemperatureArray.Dispose();
+            _ambientTemperatureArray.Dispose();
             
             CleanupPosForGetData();
             CleanupPosForSetData();

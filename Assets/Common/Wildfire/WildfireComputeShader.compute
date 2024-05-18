@@ -80,270 +80,33 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
     uv += 0.5f;
     uv *= texture_resolution;
     
-    const float grid_space = 1.0f;
-    const float half_grid_space = grid_space / 2.0f;
+    const float3 position = floor(uv);
 
-    const float3 nearest_cell_uv = (uv - half_grid_space);
-    const float3 floor_cell_uv = floor(nearest_cell_uv);
+    float4 temperature = color_temperature_texture[position];
+
+    temperature.rgb = float3(0,0,1);
+    temperature.a = clamp(temperature.a + torch_intensity, 0 , 1);
     
-    const float3 cell_000 = floor_cell_uv;
-    const float3 cell_100 = floor_cell_uv + float3(1, 0, 0);
-    const float3 cell_010 = floor_cell_uv + float3(0, 1, 0);
-    const float3 cell_001 = floor_cell_uv + float3(0, 0, 1);
-    const float3 cell_110 = floor_cell_uv + float3(1, 1, 0);
-    const float3 cell_101 = floor_cell_uv + float3(1, 0, 1);
-    const float3 cell_011 = floor_cell_uv + float3(0, 1, 1);
-    const float3 cell_111 = floor_cell_uv + float3(1, 1, 1);
-
-    const float x_1 = nearest_cell_uv.x - floor_cell_uv.x;
-    const float x_0 = 1.0f - x_1;
-
-    const float y_1 = nearest_cell_uv.y - floor_cell_uv.y;
-    const float y_0 = 1.0f - y_1;
-
-    const float z_1 = nearest_cell_uv.z - floor_cell_uv.z;
-    const float z_0 = 1.0f - z_1;
-
-    const float inf_000 = x_0 * y_0 * z_0;
-    const float inf_100 = x_1 * y_0 * z_0;
-    const float inf_010 = x_0 * y_1 * z_0;
-    const float inf_001 = x_0 * y_0 * z_1;
-    const float inf_110 = x_1 * y_1 * z_0;
-    const float inf_101 = x_1 * y_0 * z_1;
-    const float inf_011 = x_0 * y_1 * z_1;
-    const float inf_111 = x_1 * y_1 * z_1;
-    
-    const float3 color = float3(1, 1, 0);
-
-    const float temperature = torch_intensity;
-
-    if (inf_000 > 0)
-    {
-        float4 temperature_cell_000 = color_temperature_texture[cell_000];
-        temperature_cell_000.rgb = color;
-        const float temperature_000 = temperature * inf_000;
-        temperature_cell_000.a = clamp(temperature_cell_000.a + temperature_000, 0.0f, 1.0f);
-        color_temperature_texture[cell_000] = temperature_cell_000;
-    }
-
-    if (inf_100 > 0)
-    {
-        float4 temperature_cell_100 = color_temperature_texture[cell_100];
-        temperature_cell_100.rgb = color;
-        const float temperature_100 = temperature * inf_100;
-        temperature_cell_100.a = clamp(temperature_cell_100.a + temperature_100, 0.0f, 1.0f);
-        color_temperature_texture[cell_100] = temperature_cell_100;
-    }
-
-    if (inf_010 > 0)
-    {
-        float4 temperature_cell_010 = color_temperature_texture[cell_010];
-        temperature_cell_010.rgb = color;
-        const float temperature_010 = temperature * inf_010;
-        temperature_cell_010.a = clamp(temperature_cell_010.a + temperature_010, 0.0f, 1.0f);
-        color_temperature_texture[cell_010] = temperature_cell_010;
-    }
-
-    if (inf_001 > 0)
-    {
-        float4 temperature_cell_001 = color_temperature_texture[cell_001];
-        temperature_cell_001.rgb = color;
-        const float temperature_001 = temperature * inf_001;
-        temperature_cell_001.a = clamp(temperature_cell_001.a + temperature_001, 0.0f, 1.0f);
-        color_temperature_texture[cell_001] = temperature_cell_001;
-    }
-
-    if (inf_110 > 0)
-    {
-        float4 temperature_cell_110 = color_temperature_texture[cell_110];
-        temperature_cell_110.rgb = color;
-        const float temperature_110 = temperature * inf_110;
-        temperature_cell_110.a = clamp(temperature_cell_110.a + temperature_110, 0.0f, 1.0f);
-        color_temperature_texture[cell_110] = temperature_cell_110;
-    }
-
-    if (inf_101 > 0)
-    {
-        float4 temperature_cell_101 = color_temperature_texture[cell_101];
-        temperature_cell_101.rgb = color;
-        const float temperature_101 = temperature * inf_101;
-        temperature_cell_101.a = clamp(temperature_cell_101.a + temperature_101, 0.0f, 1.0f);
-        color_temperature_texture[cell_101] = temperature_cell_101;
-    }
-
-    if (inf_011 > 0)
-    {
-        float4 temperature_cell_011 = color_temperature_texture[cell_011];
-        temperature_cell_011.rgb = color;
-        const float temperature_011 = temperature * inf_011;
-        temperature_cell_011.a = clamp(temperature_cell_011.a + temperature_011, 0.0f, 1.0f);
-        color_temperature_texture[cell_011] = temperature_cell_011;
-    }
-
-    if (inf_111 > 0)
-    {
-        float4 temperature_cell_111 = color_temperature_texture[cell_111];
-        temperature_cell_111.rgb = color;
-        const float temperature_111 = temperature * inf_111;
-        temperature_cell_111.a = clamp(temperature_cell_111.a + temperature_111, 0.0f, 1.0f);
-        color_temperature_texture[cell_111] = temperature_cell_111;
-    }
+    color_temperature_texture[position] = temperature;
 }
 
-[numthreads(8,1,1)]
+[numthreads(1,1,1)]
 void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
 
     float3 uv = pos_for_set_data[index].xyz;
-    
     uv += 0.5f;
     uv *= texture_resolution;
-
-    const float grid_space = 1.0f;
-    const float half_grid_space = grid_space / 2.0f;
-
-    const float3 nearest_cell_uv = (uv - half_grid_space);
-    const float3 floor_cell_uv = floor(nearest_cell_uv);
     
-    const float3 cell_000 = floor_cell_uv;
-    const float3 cell_100 = floor_cell_uv + float3(1, 0, 0);
-    const float3 cell_010 = floor_cell_uv + float3(0, 1, 0);
-    const float3 cell_001 = floor_cell_uv + float3(0, 0, 1);
-    const float3 cell_110 = floor_cell_uv + float3(1, 1, 0);
-    const float3 cell_101 = floor_cell_uv + float3(1, 0, 1);
-    const float3 cell_011 = floor_cell_uv + float3(0, 1, 1);
-    const float3 cell_111 = floor_cell_uv + float3(1, 1, 1);
-
-    const float x_1 = nearest_cell_uv.x - floor_cell_uv.x;
-    const float x_0 = 1.0f - x_1;
-
-    const float y_1 = nearest_cell_uv.y - floor_cell_uv.y;
-    const float y_0 = 1.0f - y_1;
-
-    const float z_1 = nearest_cell_uv.z - floor_cell_uv.z;
-    const float z_0 = 1.0f - z_1;
-
-    const float inf_000 = x_0 * y_0 * z_0;
-    const float inf_100 = x_1 * y_0 * z_0;
-    const float inf_010 = x_0 * y_1 * z_0;
-    const float inf_001 = x_0 * y_0 * z_1;
-    const float inf_110 = x_1 * y_1 * z_0;
-    const float inf_101 = x_1 * y_0 * z_1;
-    const float inf_011 = x_0 * y_1 * z_1;
-    const float inf_111 = x_1 * y_1 * z_1;
+    const float3 position = floor(uv);
     
-    const float3 color = float3(1, 1, 0);
-
-    int neighbours_number = 0;
-    if (inf_000 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_100 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_010 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_001 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_110 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_101 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_011 > 0.0f)
-    {
-        neighbours_number++;
-    }
-    if (inf_111 > 0.0f)
-    {
-        neighbours_number++;
-    }
+    float4 current_temperature = color_temperature_texture[position];
     
-    const float temperature = pos_for_set_data[index].a * neighbours_number;
-
-    //const float temperature = pos_for_set_data[index].a; ///////////////////////////////////////////////
-
-    if (inf_000 > 0)
-    {
-        float4 temperature_cell_000 = color_temperature_texture[cell_000];
-        temperature_cell_000.rgb = color;
-        const float temperature_000 = temperature * inf_000;
-        temperature_cell_000.a = clamp(temperature_cell_000.a + temperature_000, 0.0f, 1.0f);
-        color_temperature_texture[cell_000] = temperature_cell_000;
-    }
-
-    if (inf_100 > 0)
-    {
-        float4 temperature_cell_100 = color_temperature_texture[cell_100];
-        temperature_cell_100.rgb = color;
-        const float temperature_100 = temperature * inf_100;
-        temperature_cell_100.a = clamp(temperature_cell_100.a + temperature_100, 0.0f, 1.0f);
-        color_temperature_texture[cell_100] = temperature_cell_100;
-    }
-
-    if (inf_010 > 0)
-    {
-        float4 temperature_cell_010 = color_temperature_texture[cell_010];
-        temperature_cell_010.rgb = color;
-        const float temperature_010 = temperature * inf_010;
-        temperature_cell_010.a = clamp(temperature_cell_010.a + temperature_010, 0.0f, 1.0f);
-        color_temperature_texture[cell_010] = temperature_cell_010;
-    }
-
-    if (inf_001 > 0)
-    {
-        float4 temperature_cell_001 = color_temperature_texture[cell_001];
-        temperature_cell_001.rgb = color;
-        const float temperature_001 = temperature * inf_001;
-        temperature_cell_001.a = clamp(temperature_cell_001.a + temperature_001, 0.0f, 1.0f);
-        color_temperature_texture[cell_001] = temperature_cell_001;
-    }
-
-    if (inf_110 > 0)
-    {
-        float4 temperature_cell_110 = color_temperature_texture[cell_110];
-        temperature_cell_110.rgb = color;
-        const float temperature_110 = temperature * inf_110;
-        temperature_cell_110.a = clamp(temperature_cell_110.a + temperature_110, 0.0f, 1.0f);
-        color_temperature_texture[cell_110] = temperature_cell_110;
-    }
-
-    if (inf_101 > 0)
-    {
-        float4 temperature_cell_101 = color_temperature_texture[cell_101];
-        temperature_cell_101.rgb = color;
-        const float temperature_101 = temperature * inf_101;
-        temperature_cell_101.a = clamp(temperature_cell_101.a + temperature_101, 0.0f, 1.0f);
-        color_temperature_texture[cell_101] = temperature_cell_101;
-    }
-
-    if (inf_011 > 0)
-    {
-        float4 temperature_cell_011 = color_temperature_texture[cell_011];
-        temperature_cell_011.rgb = color;
-        const float temperature_011 = temperature * inf_011;
-        temperature_cell_011.a = clamp(temperature_cell_011.a + temperature_011, 0.0f, 1.0f);
-        color_temperature_texture[cell_011] = temperature_cell_011;
-    }
-
-    if (inf_111 > 0)
-    {
-        float4 temperature_cell_111 = color_temperature_texture[cell_111];
-        temperature_cell_111.rgb = color;
-        const float temperature_111 = temperature * inf_111;
-        temperature_cell_111.a = clamp(temperature_cell_111.a + temperature_111, 0.0f, 1.0f);
-        color_temperature_texture[cell_111] = temperature_cell_111;
-    }
+    current_temperature.rgb = float3(1,0,0);
+    current_temperature.a   = clamp(current_temperature.a + pos_for_set_data[index].a, 0, 1);
+    
+    color_temperature_texture[position] = current_temperature;
 }
 
 [numthreads(8,8,8)]
@@ -485,8 +248,6 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
     const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
     
     const float3 grid_velocity = velocity_texture[pixel_id];
-
-    //const float3 grid_velocity = float3(0.0f, 0.5f, 0.0f);
     
     if (grid_velocity.x > 0 || grid_velocity.y > 0 || grid_velocity.z > 0)
     {
@@ -539,7 +300,7 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
                                     + velocity_011 * inf_011
                                         + velocity_111 * inf_111;
 
-        velocity *= 0.9f;
+        //velocity *= 0.25f;
 
         velocity_texture[pixel_id] = velocity;
     }
@@ -553,8 +314,6 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
     const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
 
     const float3 grid_velocity = velocity_texture[pixel_id];
-
-    //const float3 grid_velocity = float3(0.0f, 0.5f, 0.0f);
     
     if (grid_velocity.x > 0 || grid_velocity.y > 0 || grid_velocity.z > 0)
     {
@@ -607,8 +366,8 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                     + temperature_011 * inf_011
                                         + temperature_111 * inf_111;
 
-        temperature.rgb *= 0.9f;
-        temperature.a   *= 0.999f;
+        temperature.rgb *= 0.75f;
+        //temperature.a   *= 1.0f;
         
         color_temperature_texture[pixel_id] = temperature;
     }
@@ -662,15 +421,28 @@ void kernel_add_fire (uint3 id : SV_DispatchThreadID)
 void kernel_read_data (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
+
+    float3 uv = pos_for_get_data[index].xyz;
+    uv += 0.5f;
+    uv *= texture_resolution;
     
+    const float3 position = floor(uv);
+
+    const float4 current_temperature = color_temperature_texture[position];
+
+    pos_for_get_data[index] = current_temperature;
+
+    /*
     // sample temperature data from texture
     float3 uv = pos_for_get_data[index].xyz;
     uv += 0.5f;
-    float4 val = texture_for_sample_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
-    pos_for_get_data[index].w = val.w;
+    
+    float4 temperature = texture_for_sample_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
+    pos_for_get_data[index].w = temperature.w;
     
     // calculate texture position
     uv *= texture_resolution;
     uv -= 0.5f;
     pos_for_get_data[index].xyz = uv;
+    */
 }
