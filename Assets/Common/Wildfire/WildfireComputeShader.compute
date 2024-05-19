@@ -90,7 +90,7 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
     color_temperature_texture[position] = temperature;
 }
 
-[numthreads(1,1,1)]
+[numthreads(8,1,1)]
 void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
@@ -300,7 +300,7 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
                                     + velocity_011 * inf_011
                                         + velocity_111 * inf_111;
 
-        //velocity *= 0.25f;
+        velocity *= 0.25f;
 
         velocity_texture[pixel_id] = velocity;
     }
@@ -366,8 +366,8 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                     + temperature_011 * inf_011
                                         + temperature_111 * inf_111;
 
-        temperature.rgb *= 0.75f;
-        //temperature.a   *= 1.0f;
+        //temperature.rgb *= 0.75f;
+        //temperature.a   *= 0.75f;
         
         color_temperature_texture[pixel_id] = temperature;
     }

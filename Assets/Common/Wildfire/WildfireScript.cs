@@ -195,6 +195,7 @@ namespace Common.Wildfire
             
             ShaderSetTexturesData(_kernelReadData);
             
+            //renderMaterial.SetTexture(MainTex, _colorTemperatureTexture);
             renderMaterial.SetTexture(MainTex, _colorTemperatureTexture);
             
             _moduleRenderer = GameObject.Find("ModuleRenderer").gameObject.GetComponent<ModuleRenderer>();
@@ -320,7 +321,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelReadData,
-                        1,
+                        _moduleRenderer.modulesCount / 8,
                         1,
                         1
                     );
@@ -389,15 +390,17 @@ namespace Common.Wildfire
                     
                     // tree diffusion
                     
+                    ///*
                     for (var i = _orderedModuleList.Count - 1; i >= 0; i--)
                     {
                         var module = _orderedModuleList[i];
                         var neighbour = _orderedRigidbodyDictionary[module.fixedJoint.connectedBody];
                         
+                        /*
                         var middleRadius = (module.capsuleCollider.radius + neighbour.capsuleCollider.radius) / 2.0f;
                         var surfaceArea = Mathf.PI * Mathf.Pow(middleRadius, 2);
 
-                        var heatPerSecond = 0.2f * surfaceArea * Mathf.Abs(module.temperature - neighbour.temperature) / 0.0001f;
+                        var heatPerSecond = 0.2f * surfaceArea * Mathf.Abs(module.temperature - neighbour.temperature) / 0.01f;
                         var heat = heatPerSecond * Time.fixedDeltaTime;
                         
                         if (module.temperature > neighbour.temperature)
@@ -414,8 +417,24 @@ namespace Common.Wildfire
                             module.temperature += transferredTemperature;
                             neighbour.temperature -= transferredTemperature;
                         }
+                        */
+                        
+                        /*
+                        var middleTemperature = (module.temperature + neighbour.temperature) / 2.0f;
+                        var transferredTemperature = 0.0001f * middleTemperature;
+                        if (module.temperature > neighbour.temperature)
+                        {
+                            module.temperature -= transferredTemperature;
+                            neighbour.temperature += transferredTemperature;
+                        }
+                        if (neighbour.temperature > module.temperature)
+                        {
+                            module.temperature += transferredTemperature;
+                            neighbour.temperature -= transferredTemperature;
+                        }
+                        */
                     }
-                    
+                    //*/
                     
                     // tree conduction
                     
@@ -431,20 +450,22 @@ namespace Common.Wildfire
                         
                         var transferAmbientTemperature = 0.0f;
 
-                        var lostMass = _modules[i].CalculateLostMass();
-                        if (!Mathf.Approximately(lostMass, 0))
+                        if (_modules[i].temperature < _modules[i].stopCombustionMass)
                         {
-                            var releaseTemperature = (lostMass * 150000.0f) / 1000.0f;
+                            var lostMass = _modules[i].CalculateLostMass();
+                            if (!Mathf.Approximately(lostMass, 0))
+                            {
+                                var releaseTemperature = (lostMass * 150000.0f) / 1000.0f;
 
-                            transferAmbientTemperature = releaseTemperature;
+                                transferAmbientTemperature = releaseTemperature;
                             
-                            _modules[i].RecalculateCharacteristics(lostMass);
+                                _modules[i].RecalculateCharacteristics(lostMass);
                             
-                            Debug.Log("transfer: " + releaseTemperature * 1000.0f);
+                                //Debug.Log("transfer: " + releaseTemperature * 1000.0f);
+                            }
                         }
                         
                         updatedAmbientTemperatureArray[i] = transferAmbientTemperature;
-                        
                         
                         // module lost heat by air
 
@@ -491,7 +512,7 @@ namespace Common.Wildfire
                     
                     computeShader.Dispatch(
                         _kernelModulesInfluence,
-                        1,
+                        _moduleRenderer.modulesCount / 8,
                         1,
                         1
                     );
@@ -540,6 +561,10 @@ namespace Common.Wildfire
 
         private void FixedUpdate()
         {
+            //renderMaterial.SetVector("boundsMin", transform.position - transform.localScale / 2f);
+            //renderMaterial.SetVector("boundsMax", transform.position + transform.localScale / 2f);
+            
+            
             computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
             computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
