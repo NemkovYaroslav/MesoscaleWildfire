@@ -38,10 +38,11 @@ namespace Common.Wildfire
         private ComputeBuffer _modulePositionsForGetData;
         private int _modulePositionsDataStride;
         
-        
+        /*
         // TREE HIERARCHY
         private List<Module> _orderedModuleList;
         private Dictionary<Rigidbody, Module> _orderedRigidbodyDictionary;
+        */
         
         
         // FLUID SOLVER STEPS
@@ -211,31 +212,6 @@ namespace Common.Wildfire
             
             _modulePositionsDataStride = sizeof(float) * 4;
             
-            
-            // INITIALIZE TREE HIERARCHY DATA
-            var trees = GameObject.FindGameObjectsWithTag("Tree");
-            // used to sort modules to tree hierarchy order
-            _orderedModuleList = new List<Module>(_moduleRenderer.modulesCount);
-            // used to fast search modules from Fixed Joint connected body property
-            _orderedRigidbodyDictionary = new Dictionary<Rigidbody, Module>(_moduleRenderer.modulesCount);
-            foreach (var tree in trees)
-            {
-                var parent = tree.transform;
-                foreach (Transform child in parent)
-                {
-                    var module = child.gameObject.GetComponent<Module>();
-                    
-                    // if it's not a tree root
-                    if (child.GetSiblingIndex() > 0)
-                    {
-                        _orderedModuleList.Add(module);
-                    }
-                    
-                    _orderedRigidbodyDictionary.Add(module.rigidBody, module);
-                }
-            }
-            
-            
             _modulesAmbientTemperatureArray 
                 = new NativeArray<float>(
                     _moduleRenderer.modulesCount,
@@ -260,7 +236,7 @@ namespace Common.Wildfire
 
         private void TransferDataFromGridToModules()
         {
-            if (_moduleRenderer != null)
+            if (_moduleRenderer)
             {
                 if (_moduleRenderer.modulesCount > 0)
                 {
@@ -355,25 +331,28 @@ namespace Common.Wildfire
         {
             if (_moduleRenderer)
             {
-                if (_moduleRenderer.transformsArray.length > 0)
+                if (_moduleRenderer.modulesCount > 0)
                 {
                     // MODULES TEMPERATURE DIFFUSION IN TREE HIERARCHY
-                    for (var i = _orderedModuleList.Count - 1; i >= 0; i--)
+                    for (var i = _moduleRenderer.orderedModuleList.Count - 1; i >= 0; i--)
                     {
-                        var module = _orderedModuleList[i];
-                        var neighbour = _orderedRigidbodyDictionary[module.fixedJoint.connectedBody];
+                        var module = _moduleRenderer.orderedModuleList[i];
+                        var neighbour = module.neighbourModule;
 
-                        var middleTemperature = (module.temperature + neighbour.temperature) / 2.0f;
-                        var transferredTemperature = 0.001f * middleTemperature;
-                        if (module.temperature > neighbour.temperature)
+                        if (neighbour)
                         {
-                            module.temperature -= transferredTemperature;
-                            neighbour.temperature += transferredTemperature;
-                        }
-                        if (neighbour.temperature > module.temperature)
-                        {
-                            module.temperature += transferredTemperature;
-                            neighbour.temperature -= transferredTemperature;
+                            var middleTemperature = (module.temperature + neighbour.temperature) / 2.0f;
+                            var transferredTemperature = 0.001f * middleTemperature;
+                            if (module.temperature > neighbour.temperature)
+                            {
+                                module.temperature -= transferredTemperature;
+                                neighbour.temperature += transferredTemperature;
+                            }
+                            if (neighbour.temperature > module.temperature)
+                            {
+                                module.temperature += transferredTemperature;
+                                neighbour.temperature -= transferredTemperature;
+                            }
                         }
                     }
                     

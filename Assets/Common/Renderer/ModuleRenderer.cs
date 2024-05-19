@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Resources.PathCreator.Core.Runtime.Placer;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
@@ -11,52 +13,59 @@ namespace Common.Renderer
         
         private RenderParams _renderParams;
         
-        private CapsuleCollider[] _colliders;
-        
         public int modulesCount;
         public TransformAccessArray transformsArray;
         public NativeArray<Vector3> centers;
-        public NativeArray<float> heights;
+        private NativeArray<float> _heights;
         
         private static readonly int Matrices = Shader.PropertyToID("matrices");
         private ComputeBuffer _renderMatricesBuffer;
         private int _matricesBufferStride;
+        
+        // TREE HIERARCHY VARIABLES
+        public List<Module> orderedModuleList;
 
-        private void Awake()
+        private void Start()
         {
-            var modules = GameObject.FindGameObjectsWithTag("Module");
-            modulesCount = modules.Length;
-            
-            _colliders = new CapsuleCollider[modulesCount];
-            for (var i = 0; i < modulesCount; i++)
+            // INITIALIZE TREE HIERARCHY DATA
+            // used to sort modules to tree hierarchy order
+            orderedModuleList = new List<Module>();
+            var trees = GameObject.FindGameObjectsWithTag("Tree");
+            foreach (var tree in trees)
             {
-                _colliders[i] = modules[i].GetComponent<CapsuleCollider>();
+                var parent = tree.transform;
+                foreach (Transform child in parent)
+                {
+                    var module = child.gameObject.GetComponent<Module>();
+                    orderedModuleList.Add(module);
+                }
             }
+            modulesCount = orderedModuleList.Count;
             
+            // fill transforms array
             var transforms = new Transform[modulesCount];
             for (var i = 0; i < modulesCount; i++)
             {
-                transforms[i] = modules[i].transform;
+                transforms[i] = orderedModuleList[i].transForm;
             }
             transformsArray = new TransformAccessArray(transforms);
         
+            // fill module centers and heights
             centers = new NativeArray<Vector3>(
                 modulesCount, 
                 Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory
             );
-            heights = new NativeArray<float>(
+            _heights = new NativeArray<float>(
                 modulesCount, 
                 Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory
             );
             for (var i = 0; i < modulesCount; i++)
             {
-                centers[i] = _colliders[i].center;
-                heights[i] = _colliders[i].height;
+                centers[i] = orderedModuleList[i].capsuleCollider.center;
+                _heights[i] = orderedModuleList[i].capsuleCollider.height;
             }
-            
-            _matricesBufferStride = sizeof(float) * 16;
 
             var wildfireArea = GameObject.FindWithTag("WildfireArea");
             var wildfireAreaPosition = wildfireArea.transform.position;
@@ -66,6 +75,8 @@ namespace Common.Renderer
                 worldBounds = new Bounds(wildfireAreaPosition, wildfireAreaScale),
                 matProps = new MaterialPropertyBlock()
             };
+            
+            _matricesBufferStride = sizeof(float) * 16;
         }
 
         private void RenderModules()
@@ -79,7 +90,7 @@ namespace Common.Renderer
             
             for (var i = 0; i < modulesCount; i++)
             {
-                radii[i] = _colliders[i].radius;
+                radii[i] = orderedModuleList[i].capsuleCollider.radius;
             }
             
             var matrices 
@@ -92,7 +103,7 @@ namespace Common.Renderer
             var job = new ConstructModuleMatricesJob()
             {
                 centers = centers,
-                heights = heights,
+                heights = _heights,
                 radii = radii,
                 matrices = matrices
             };
@@ -130,7 +141,7 @@ namespace Common.Renderer
         {
             CleanupComputeBuffer();
             transformsArray.Dispose();
-            heights.Dispose();
+            _heights.Dispose();
             centers.Dispose();
         }
     }

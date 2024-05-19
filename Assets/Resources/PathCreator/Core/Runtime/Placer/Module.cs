@@ -11,15 +11,25 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         public float temperature = 0.0f;
         public float stopCombustionMass = 0.0f;
 
+        public Transform transForm;
         public Rigidbody rigidBody;
         public CapsuleCollider capsuleCollider;
         public FixedJoint fixedJoint;
+        
+        public Module neighbourModule;
 
         private void Awake()
         {
+            transForm       = transform;
             rigidBody       = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
             fixedJoint      = GetComponent<FixedJoint>();
+
+            // get neighbour from joint
+            if (fixedJoint.connectedBody.TryGetComponent(out Module module))
+            {
+                neighbourModule = module;
+            }
 
             stopCombustionMass = rigidBody.mass * 0.1f;
         }
