@@ -27,14 +27,14 @@ Shader "Unlit/TreeRenderShader"
                 float4 color : COLOR;
             };
 
-            StructuredBuffer<float4x4> transforms;
+            StructuredBuffer<float4x4> matrices;
 
             frag_input vert (const vert_input v, const uint instance_id : SV_InstanceID)
             {
                 frag_input o;
                 
-                const float4 position = mul(transforms[instance_id], v.position);
-                const float3 normal = normalize(mul(transforms[instance_id], v.normal));
+                const float4 position = mul(matrices[instance_id], v.position);
+                const float3 normal = normalize(mul(matrices[instance_id], v.normal));
                 
                 o.position = UnityObjectToClipPos(position);
                 o.color = float4(normal, 1);

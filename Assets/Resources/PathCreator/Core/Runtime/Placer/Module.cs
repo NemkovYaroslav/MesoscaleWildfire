@@ -1,19 +1,14 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
     public class Module : MonoBehaviour
     {
-        public float temperature = 0.0f;
-        
         private const float IgnitionTemperature = 0.15f;
         private const float AttenuationTemperature = 0.45f;
-
         private const float WoodDensity = 800.0f;
-
-        public bool isBurnable;
-
+        
+        public float temperature = 0.0f;
         public float stopCombustionMass = 0.0f;
 
         public Rigidbody rigidBody;
@@ -22,9 +17,9 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         private void Awake()
         {
-            rigidBody = GetComponent<Rigidbody>();
+            rigidBody       = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
-            fixedJoint = GetComponent<FixedJoint>();
+            fixedJoint      = GetComponent<FixedJoint>();
 
             stopCombustionMass = rigidBody.mass * 0.1f;
         }

@@ -1,6 +1,9 @@
 #pragma kernel kernel_init
 #pragma kernel kernel_user_input
+
+#pragma kernel kernel_read_data
 #pragma kernel kernel_modules_influence
+
 #pragma kernel kernel_diffusion_velocity
 #pragma kernel kernel_divergence;
 #pragma kernel kernel_pressure;
@@ -8,8 +11,8 @@
 #pragma kernel kernel_advection_velocity
 #pragma kernel kernel_advection_temperature
 #pragma kernel kernel_diffusion_temperature
+
 #pragma kernel kernel_add_fire
-#pragma kernel kernel_read_data
 
 RWTexture3D<float4> color_temperature_texture;
 RWTexture3D<float3> velocity_texture;
@@ -17,7 +20,6 @@ RWTexture3D<float> divergence_texture;
 RWTexture3D<float> pressure_texture;
 
 float3 texture_resolution;
-float3 area_scale;
 
 float3 fire_direction;
 float fire_strength;
@@ -29,9 +31,7 @@ float diffusion_intensity;
 float viscosity_intensity;
 float delta_time;
 
-int modules_number;
-
-Texture3D texture_for_sample_temperature;
+Texture3D texture_for_sample_modules_ambient_temperature;
 SamplerState linear_clamp_sampler;
 
 RWStructuredBuffer<float4> pos_for_get_data;
@@ -95,6 +95,19 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
 }
 
 [numthreads(8,1,1)]
+void kernel_read_data (uint3 id : SV_DispatchThreadID)
+{
+    const int index = id.x;
+    
+    // sample temperature data from texture
+    float3 uv = pos_for_get_data[index].xyz;
+    uv += 0.5f;
+    
+    float4 temperature = texture_for_sample_modules_ambient_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
+    pos_for_get_data[index].w = temperature.w;
+}
+
+[numthreads(8,1,1)]
 void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
@@ -149,7 +162,7 @@ void kernel_diffusion_velocity (uint3 id : SV_DispatchThreadID)
 
         const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
     
-        const float k = delta_time * viscosity_intensity * resolution * resolution; ///////////////////////////////////
+        const float k = delta_time * viscosity_intensity * resolution; ///////////////////////////////////
         const float3 velocity =
         (
             velocity_value
@@ -511,7 +524,7 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                         + temperature_011 * inf_011
                                             + temperature_111 * inf_111;
 
-            //temperature.rgb *= 0.75f;
+            //temperature.rgb *= 0.99f;
             //temperature.a   *= 0.75f;
             
             color_temperature_texture[pixel_id] = temperature;
@@ -572,36 +585,4 @@ void kernel_add_fire (uint3 id : SV_DispatchThreadID)
     {
         velocity_texture[pixel_id] = fire_direction * fire_strength;
     }
-}
-
-[numthreads(8,1,1)]
-void kernel_read_data (uint3 id : SV_DispatchThreadID)
-{
-    const int index = id.x;
-
-    /*
-    float3 uv = pos_for_get_data[index].xyz;
-    uv += 0.5f;
-    uv *= texture_resolution;
-    
-    const float3 position = floor(uv);
-
-    const float4 current_temperature = color_temperature_texture[position];
-
-    pos_for_get_data[index] = current_temperature;
-    */
-
-    ///*
-    // sample temperature data from texture
-    float3 uv = pos_for_get_data[index].xyz;
-    uv += 0.5f;
-    
-    float4 temperature = texture_for_sample_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
-    pos_for_get_data[index].w = temperature.w;
-    
-    // calculate texture position
-    uv *= texture_resolution;
-    uv -= 0.5f;
-    pos_for_get_data[index].xyz = uv;
-    //*/
 }
