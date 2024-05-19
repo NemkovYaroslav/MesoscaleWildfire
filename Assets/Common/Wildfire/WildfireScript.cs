@@ -396,7 +396,7 @@ namespace Common.Wildfire
                         var module = _orderedModuleList[i];
                         var neighbour = _orderedRigidbodyDictionary[module.fixedJoint.connectedBody];
                         
-                        /*
+                        ///*
                         var middleRadius = (module.capsuleCollider.radius + neighbour.capsuleCollider.radius) / 2.0f;
                         var surfaceArea = Mathf.PI * Mathf.Pow(middleRadius, 2);
 
@@ -417,11 +417,11 @@ namespace Common.Wildfire
                             module.temperature += transferredTemperature;
                             neighbour.temperature -= transferredTemperature;
                         }
-                        */
+                        //*/
                         
                         /*
                         var middleTemperature = (module.temperature + neighbour.temperature) / 2.0f;
-                        var transferredTemperature = 0.0001f * middleTemperature;
+                        var transferredTemperature = 0.001f * middleTemperature;
                         if (module.temperature > neighbour.temperature)
                         {
                             module.temperature -= transferredTemperature;
@@ -455,7 +455,7 @@ namespace Common.Wildfire
                             var lostMass = _modules[i].CalculateLostMass();
                             if (!Mathf.Approximately(lostMass, 0))
                             {
-                                var releaseTemperature = (lostMass * 150000.0f) / 1000.0f;
+                                var releaseTemperature = (lostMass * 125000.0f) / 1000.0f;
 
                                 transferAmbientTemperature = releaseTemperature;
                             
@@ -465,10 +465,9 @@ namespace Common.Wildfire
                             }
                         }
                         
-                        updatedAmbientTemperatureArray[i] = transferAmbientTemperature;
-                        
                         // module lost heat by air
-
+                        
+                        /*
                         var ambientTemperature = _ambientTemperatureArray[i];
                         
                         Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
@@ -477,6 +476,30 @@ namespace Common.Wildfire
                         var transferredTemperature = 0.001f * temperatureDifference;
                         
                         _modules[i].temperature += transferredTemperature;
+                        */
+                        
+                        var ambientTemperature = _ambientTemperatureArray[i];
+                        Debug.Log("mod: " + _modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                        if (ambientTemperature > _modules[i].temperature)
+                        {
+                            var temperatureDifference = ambientTemperature - _modules[i].temperature;
+                            var transferredTemperature = 0.01f * temperatureDifference;
+
+                            _modules[i].temperature += transferredTemperature;
+                            transferAmbientTemperature -= transferredTemperature;
+                        }
+                        if (_modules[i].temperature > ambientTemperature)
+                        {
+                            var temperatureDifference = _modules[i].temperature - ambientTemperature;
+                            var transferredTemperature = 0.001f * temperatureDifference;
+
+                            transferAmbientTemperature += transferredTemperature;
+                            _modules[i].temperature -= transferredTemperature;
+                        }
+                        
+                        
+                        updatedAmbientTemperatureArray[i] = transferAmbientTemperature;
+                        
                     }
                     
                     // output
@@ -530,15 +553,15 @@ namespace Common.Wildfire
                 // wind
                 var windForce = winds[0].GetWindForceAtPosition();
                 
-                /*
+                ///*
                 for (var i = 0; i < _moduleRenderer.modulesCount; i++)
                 {
-                    _modules[i].rigidBody.AddForce(windForce * 100.0f, ForceMode.Force);
+                    _modules[i].rigidBody.AddForce(windForce * 1000.0f, ForceMode.Force);
 
                     //var position = _modules[i].rigidBody.position;
                     //Debug.DrawLine(position, position + windForce.normalized * 0.1f, Color.red, 1.0f);
                 }
-                */
+                //*/
                 
                 //var windDirection = windForce.normalized;
                 //var windStrength = windForce.magnitude;
