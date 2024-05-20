@@ -31,7 +31,7 @@ float diffusion_intensity;
 float viscosity_intensity;
 float delta_time;
 
-Texture3D texture_for_sample_modules_ambient_temperature;
+Texture3D texture_for_sample_ambient_temperature;
 SamplerState linear_clamp_sampler;
 
 RWStructuredBuffer<float4> pos_for_get_data;
@@ -103,7 +103,7 @@ void kernel_read_data (uint3 id : SV_DispatchThreadID)
     float3 uv = pos_for_get_data[index].xyz;
     uv += 0.5f;
     
-    float4 temperature = texture_for_sample_modules_ambient_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
+    float4 temperature = texture_for_sample_ambient_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
     pos_for_get_data[index].w = temperature.w;
 }
 

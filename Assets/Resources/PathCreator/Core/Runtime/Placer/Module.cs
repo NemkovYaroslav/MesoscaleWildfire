@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Common.Renderer;
+using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
@@ -18,6 +19,10 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         public Module neighbourModule;
 
+        private ModuleRenderer _moduleRenderer;
+        
+        public bool isPartOfTrunk;
+
         private void Awake()
         {
             transForm       = transform;
@@ -26,11 +31,16 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             fixedJoint      = GetComponent<FixedJoint>();
 
             // get neighbour from joint
-            if (fixedJoint.connectedBody.TryGetComponent(out Module module))
+            if (fixedJoint)
             {
-                neighbourModule = module;
+                if (fixedJoint.connectedBody.TryGetComponent(out Module module))
+                {
+                    neighbourModule = module;
+                }
             }
 
+            _moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
+            
             stopCombustionMass = rigidBody.mass * 0.1f;
         }
         
@@ -68,6 +78,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             rigidBody.mass = mass;
             
             capsuleCollider.radius = Mathf.Sqrt(mass / (Mathf.PI * WoodDensity * capsuleCollider.height));
+        }
+
+        private void OnDestroy()
+        {
+            //var index = _moduleRenderer.orderedModuleList.IndexOf(this);
+            //_moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
+            //_moduleRenderer.orderedModuleList.RemoveAt(index);
         }
     }
 }

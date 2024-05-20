@@ -13,18 +13,33 @@ namespace Common.Renderer
         
         private RenderParams _renderParams;
         
-        public int modulesCount;
-        public TransformAccessArray transformsArray;
-        public NativeArray<Vector3> centers;
-        private NativeArray<float> _heights;
-        
         private static readonly int Matrices = Shader.PropertyToID("matrices");
-        private ComputeBuffer _renderMatricesBuffer;
-        private int _matricesBufferStride;
+        
         
         // TREE HIERARCHY VARIABLES
         public List<Module> orderedModuleList;
+        public int modulesCount;
+        
+        // TRANSFORMS ARRAY (for jobs)
+        public TransformAccessArray transformAccessArray;
+        
+        
+        // MODULE RENDER
+        private NativeArray<Vector3>   _centersArray;
+        private NativeArray<float>     _heightsArray;
+        private NativeArray<float>     _radiiArray;
+        private NativeArray<Matrix4x4> _matricesArray;
+        
+        // MODULE MATRICES BUFFER
+        private ComputeBuffer _renderMatricesBuffer;
+        private int _matricesBufferStride;
+        
+        
+        // LOCAL WILDFIRE AREA MODULE POSITIONS
+        private Matrix4x4 _wildfireAreaWorldToLocal;
+        public NativeArray<Vector4> modulePositionsArray;
 
+        
         private void Start()
         {
             // INITIALIZE TREE HIERARCHY DATA
@@ -42,85 +57,94 @@ namespace Common.Renderer
             }
             modulesCount = orderedModuleList.Count;
             
-            // fill transforms array
-            var transforms = new Transform[modulesCount];
-            for (var i = 0; i < modulesCount; i++)
-            {
-                transforms[i] = orderedModuleList[i].transForm;
-            }
-            transformsArray = new TransformAccessArray(transforms);
-        
-            // fill module centers and heights
-            centers = new NativeArray<Vector3>(
-                modulesCount, 
-                Allocator.Persistent,
-                NativeArrayOptions.UninitializedMemory
-            );
-            _heights = new NativeArray<float>(
-                modulesCount, 
-                Allocator.Persistent,
-                NativeArrayOptions.UninitializedMemory
-            );
-            for (var i = 0; i < modulesCount; i++)
-            {
-                centers[i] = orderedModuleList[i].capsuleCollider.center;
-                _heights[i] = orderedModuleList[i].capsuleCollider.height;
-            }
-
-            var wildfireArea = GameObject.FindWithTag("WildfireArea");
-            var wildfireAreaPosition = wildfireArea.transform.position;
-            var wildfireAreaScale = wildfireArea.transform.lossyScale;
-            _renderParams = new RenderParams(renderMaterial)
-            {
-                worldBounds = new Bounds(wildfireAreaPosition, wildfireAreaScale),
-                matProps = new MaterialPropertyBlock()
-            };
-            
-            _matricesBufferStride = sizeof(float) * 16;
-        }
-
-        private void RenderModules()
-        {
-            var radii 
-                = new NativeArray<float>(
+            _centersArray
+                = new NativeArray<Vector3>(
                     modulesCount, 
-                    Allocator.TempJob,
+                    Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             
-            for (var i = 0; i < modulesCount; i++)
-            {
-                radii[i] = orderedModuleList[i].capsuleCollider.radius;
-            }
+            _heightsArray
+                = new NativeArray<float>(
+                    modulesCount, 
+                    Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory
+                );
             
-            var matrices 
+            _radiiArray
+                = new NativeArray<float>(
+                    modulesCount, 
+                    Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory
+                );
+            
+            _matricesArray
                 = new NativeArray<Matrix4x4>(
                     modulesCount, 
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             
-            var job = new ConstructModuleMatricesJob()
-            {
-                centers = centers,
-                heights = _heights,
-                radii = radii,
-                matrices = matrices
-            };
-            var handle = job.Schedule(transformsArray);
-            handle.Complete();
+            _matricesBufferStride = sizeof(float) * 16;
+            _renderMatricesBuffer = new ComputeBuffer(modulesCount, _matricesBufferStride);
             
-            if (_renderMatricesBuffer == null)
+            // used for schedule jobs
+            var transforms = new Transform[modulesCount];
+            for (var i = 0; i < modulesCount; i++)
             {
-                _renderMatricesBuffer = new ComputeBuffer(modulesCount, _matricesBufferStride);
+                transforms[i] = orderedModuleList[i].transForm;
             }
-            _renderMatricesBuffer.SetData(matrices);
+            transformAccessArray = new TransformAccessArray(transforms);
+
+            var wildfireArea = GameObject.FindWithTag("WildfireArea");
+            var wildfireAreaTransform = wildfireArea.transform;
+            var wildfireAreaPosition = wildfireAreaTransform.position;
+            var wildfireAreaScale = wildfireAreaTransform.lossyScale;
+            _renderParams = new RenderParams(renderMaterial)
+            {
+                worldBounds = new Bounds(wildfireAreaPosition, wildfireAreaScale),
+                matProps = new MaterialPropertyBlock()
+            };
+
+            _wildfireAreaWorldToLocal = wildfireAreaTransform.worldToLocalMatrix;
             
-            _renderParams.matProps.SetBuffer(Matrices, _renderMatricesBuffer);
-            Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
+            modulePositionsArray = new NativeArray<Vector4>(
+                modulesCount,
+                Allocator.Persistent,
+                NativeArrayOptions.UninitializedMemory
+            );
+        }
+
+        private void RenderModules()
+        {
+            if (transformAccessArray.isCreated)
+            {
+                // fill module location params
+                for (var i = 0; i < modulesCount; i++)
+                {
+                    _centersArray[i] = orderedModuleList[i].capsuleCollider.center;
+                    _heightsArray[i] = orderedModuleList[i].capsuleCollider.height;
+                    _radiiArray[i]   = orderedModuleList[i].capsuleCollider.radius;
+                }
             
-            radii.Dispose();
-            matrices.Dispose();
+                // fill common data about modules
+                var job = new FillCommonDataJob()
+                {
+                    centers  = _centersArray,
+                    heights  = _heightsArray,
+                    radii    = _radiiArray,
+                    matrices = _matricesArray,
+                
+                    wildfireAreaWorldToLocal    = _wildfireAreaWorldToLocal,
+                    modulesWildfireAreaPosition = modulePositionsArray,
+                };
+                var handle = job.Schedule(transformAccessArray);
+                handle.Complete();
+            
+                _renderMatricesBuffer.SetData(_matricesArray);
+                _renderParams.matProps.SetBuffer(Matrices, _renderMatricesBuffer);
+                Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
+            }
         }
 
         private void Update()
@@ -140,9 +164,15 @@ namespace Common.Renderer
         private void OnDestroy()
         {
             CleanupComputeBuffer();
-            transformsArray.Dispose();
-            _heights.Dispose();
-            centers.Dispose();
+            
+            transformAccessArray.Dispose();
+            
+            _centersArray.Dispose();
+            _heightsArray.Dispose();
+            _radiiArray.Dispose();
+            _matricesArray.Dispose();
+
+            modulePositionsArray.Dispose();
         }
     }
 }
