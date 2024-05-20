@@ -2,7 +2,7 @@
 #pragma kernel kernel_user_input
 
 #pragma kernel kernel_read_data
-#pragma kernel kernel_modules_influence
+#pragma kernel kernel_write_data
 
 #pragma kernel kernel_diffusion_velocity
 #pragma kernel kernel_divergence;
@@ -34,8 +34,10 @@ float delta_time;
 Texture3D texture_for_sample_ambient_temperature;
 SamplerState linear_clamp_sampler;
 
-RWStructuredBuffer<float4> pos_for_get_data;
-RWStructuredBuffer<float4> pos_for_set_data;
+RWStructuredBuffer<float> get_data;
+RWStructuredBuffer<float> set_data;
+
+RWStructuredBuffer<float3> module_positions;
 
 #define TOP_OFFSET    int3( 0, 1, 0)
 #define BOTTOM_OFFSET int3( 0,-1, 0)
@@ -100,19 +102,19 @@ void kernel_read_data (uint3 id : SV_DispatchThreadID)
     const int index = id.x;
     
     // sample temperature data from texture
-    float3 uv = pos_for_get_data[index].xyz;
+    float3 uv = module_positions[index].xyz;
     uv += 0.5f;
     
     float4 temperature = texture_for_sample_ambient_temperature.SampleLevel(linear_clamp_sampler, uv, 0);
-    pos_for_get_data[index].w = temperature.w;
+    get_data[index] = temperature.w;
 }
 
 [numthreads(8,1,1)]
-void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
+void kernel_write_data (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
 
-    float3 uv = pos_for_set_data[index].xyz;
+    float3 uv = module_positions[index].xyz;
     uv += 0.5f;
     uv *= texture_resolution;
     
@@ -124,7 +126,7 @@ void kernel_modules_influence (uint3 id : SV_DispatchThreadID)
         float4 current_temperature = color_temperature_texture[position];
     
         current_temperature.rgb = float3(1,0,0);
-        current_temperature.a   = clamp(current_temperature.a + pos_for_set_data[index].a, 0, 1);
+        current_temperature.a   = clamp(current_temperature.a + set_data[index], 0, 1);
     
         color_temperature_texture[position] = current_temperature;
     }

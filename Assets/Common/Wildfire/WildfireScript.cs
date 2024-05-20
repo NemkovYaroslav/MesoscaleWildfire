@@ -11,7 +11,7 @@ namespace Common.Wildfire
     public class WildfireScript : MonoBehaviour
     {
         [Header("Common Settings")]
-        [SerializeField] private ComputeShader computeShader;
+        public ComputeShader computeShader;
         [SerializeField] private Vector3 textureResolution;
         [SerializeField] private Material renderMaterial;
         
@@ -31,15 +31,15 @@ namespace Common.Wildfire
         
         
         // BUFFER FOR GET/SET DATA FROM/TO SHADER
-        private ComputeBuffer _modulePositionsForGetDataBuffer;
-        private ComputeBuffer _modulePositionsForSetDataBuffer;
+        private ComputeBuffer _getDataBuffer;
+        private ComputeBuffer _setDataBuffer;
         private int _modulePositionsDataStride;
         
         
         // FLUID SOLVER STEPS
         private int _kernelInit;
         private int _kernelUserInput;
-        private int _kernelModulesInfluence;
+        private int _kernelWriteData;
         private int _kernelDiffusionVelocity;
         private int _kernelDivergence;
         private int _kernelPressure;
@@ -68,16 +68,16 @@ namespace Common.Wildfire
         private static readonly int ShaderTorchPosition                  = Shader.PropertyToID("torch_position");
         private static readonly int ModulesNumber                        = Shader.PropertyToID("modules_number");
         private static readonly int ShaderColorTemperatureTexture        = Shader.PropertyToID("color_temperature_texture");
-        private static readonly int ModulePositionsBuffer                = Shader.PropertyToID("pos_for_get_data");
+        private static readonly int GetDataBuffer                        = Shader.PropertyToID("get_data");
         private static readonly int TextureForSampleAmbientTemperature   = Shader.PropertyToID("texture_for_sample_ambient_temperature");
-        private static readonly int PosForSetDataBuffer                  = Shader.PropertyToID("pos_for_set_data");
+        private static readonly int SetDataBuffer                        = Shader.PropertyToID("set_data");
         private static readonly int ShaderVelocityTexture                = Shader.PropertyToID("velocity_texture");
         private static readonly int ShaderDivergenceTexture              = Shader.PropertyToID("divergence_texture");
         private static readonly int ShaderPressureTexture                = Shader.PropertyToID("pressure_texture");
         
         
         // used to transfer data from grid to modules
-        private NativeArray<Vector4> _transferedAmbientTemperatureDataArray;
+        private NativeArray<Vector4> _transferredAmbientTemperatureDataArray;
         private Texture3D _textureForSampleAmbientTemperature;
         private NativeArray<float> _modulesAmbientTemperatureArray;
         // used to transfer data from modules to grid
@@ -137,7 +137,8 @@ namespace Common.Wildfire
             // FILL MAIN STEPS OF FLUID SOLVER
             _kernelInit                 = computeShader.FindKernel("kernel_init");
             _kernelUserInput            = computeShader.FindKernel("kernel_user_input");
-            _kernelModulesInfluence     = computeShader.FindKernel("kernel_modules_influence");
+            _kernelReadData             = computeShader.FindKernel("kernel_read_data");
+            _kernelWriteData            = computeShader.FindKernel("kernel_write_data");
             _kernelDiffusionVelocity    = computeShader.FindKernel("kernel_diffusion_velocity");
             _kernelDivergence           = computeShader.FindKernel("kernel_divergence");
             _kernelPressure             = computeShader.FindKernel("kernel_pressure");
@@ -146,7 +147,6 @@ namespace Common.Wildfire
             _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
             _kernelDiffusionTemperature = computeShader.FindKernel("kernel_diffusion_temperature");
             _kernelAddFire              = computeShader.FindKernel("kernel_add_fire");
-            _kernelReadData             = computeShader.FindKernel("kernel_read_data");
             
             
             // SET MAIN TEXTURES TO FLUID SOLVER
@@ -155,7 +155,8 @@ namespace Common.Wildfire
             computeShader.SetTexture(_kernelInit, ShaderDivergenceTexture, _divergenceTexture);
             computeShader.SetTexture(_kernelInit, ShaderPressureTexture, _pressureTexture);
             computeShader.SetTexture(_kernelUserInput, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelModulesInfluence, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            computeShader.SetTexture(_kernelWriteData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            computeShader.SetTexture(_kernelReadData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             computeShader.SetTexture(_kernelDiffusionVelocity, ShaderVelocityTexture, _velocityTexture);
             computeShader.SetTexture(_kernelDivergence, ShaderDivergenceTexture, _divergenceTexture);
             computeShader.SetTexture(_kernelDivergence, ShaderPressureTexture, _pressureTexture);
@@ -170,7 +171,6 @@ namespace Common.Wildfire
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             computeShader.SetTexture(_kernelDiffusionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             computeShader.SetTexture(_kernelAddFire, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelReadData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             
             
             // INITIALIZE COMMON VARIABLES
@@ -184,7 +184,7 @@ namespace Common.Wildfire
             
             
             // ARRAY FOR ASYNC GET DATA FROM FLUID SOLVER
-            _transferedAmbientTemperatureDataArray
+            _transferredAmbientTemperatureDataArray
                 = new NativeArray<Vector4>(
                     (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
                     Allocator.Persistent
@@ -199,9 +199,8 @@ namespace Common.Wildfire
             
             
             // GET/SET TEMPERATURE FROM/TO GRID
-            _modulePositionsDataStride       = sizeof(float) * 4;
-            _modulePositionsForGetDataBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, _modulePositionsDataStride);
-            _modulePositionsForSetDataBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, _modulePositionsDataStride);
+            _getDataBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, sizeof(float));
+            _setDataBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, sizeof(float));
             
             
             _modulesAmbientTemperatureArray 
@@ -219,7 +218,7 @@ namespace Common.Wildfire
             
             AsyncGPUReadbackCallback += ReadDataFromGrid;
             AsyncGPUReadback.RequestIntoNativeArray(
-                ref _transferedAmbientTemperatureDataArray,
+                ref _transferredAmbientTemperatureDataArray,
                 _colorTemperatureTexture,
                 0,
                 AsyncGPUReadbackCallback
@@ -237,33 +236,32 @@ namespace Common.Wildfire
         {
             if (_moduleRenderer)
             {
-                if (_textureForSampleAmbientTemperature && _modulePositionsForGetDataBuffer.count > 0)
+                if (_textureForSampleAmbientTemperature && _getDataBuffer.count > 0)
                 {
                     // need for more accurate reading data (use texture sampler)
-                    _textureForSampleAmbientTemperature.SetPixelData(_transferedAmbientTemperatureDataArray, 0);
+                    _textureForSampleAmbientTemperature.SetPixelData(_transferredAmbientTemperatureDataArray, 0);
                     _textureForSampleAmbientTemperature.Apply(updateMipmaps: false, makeNoLongerReadable: false);
                     computeShader.SetTexture(_kernelReadData, TextureForSampleAmbientTemperature, _textureForSampleAmbientTemperature);
                     
-                    // set modules position to buffer
-                    var modulePositions = _moduleRenderer.modulePositionsArray;
-                    _modulePositionsForGetDataBuffer.SetData(modulePositions);
-                    computeShader.SetBuffer(_kernelReadData, ModulePositionsBuffer, _modulePositionsForGetDataBuffer);
+                    // set read buffer
+                    computeShader.SetBuffer(_kernelReadData, GetDataBuffer, _getDataBuffer);
                     
+                    // dispatch
                     computeShader.Dispatch(
                         _kernelReadData,
-                        modulePositions.Length / 8,
+                        _moduleRenderer.modulesCount / 8,
                         1,
                         1
                     );
                     
-                    // GET AMBIENT TEMPERATURE DATA FROM GRID
-                    var receivedData = new Vector4[modulePositions.Length];
-                    _modulePositionsForGetDataBuffer.GetData(receivedData);
+                    // copy transferred data
+                    var receivedData = new float[_moduleRenderer.modulesCount];
+                    _getDataBuffer.GetData(receivedData);
 
-                    // TRANSFER DATA TO AMBIENT TEMPERATURE ARRAY
+                    // set transferred data
                     for (var i = 0; i < receivedData.Length; i++)
                     {
-                        _modulesAmbientTemperatureArray[i] = receivedData[i].w;
+                        _modulesAmbientTemperatureArray[i] = receivedData[i];
                     }
                 }
             }
@@ -280,7 +278,7 @@ namespace Common.Wildfire
                     
                     // the event triggers itself upon completion
                     AsyncGPUReadback.RequestIntoNativeArray(
-                        ref _transferedAmbientTemperatureDataArray,
+                        ref _transferredAmbientTemperatureDataArray,
                         _colorTemperatureTexture,
                         0,
                         AsyncGPUReadbackCallback
@@ -375,21 +373,11 @@ namespace Common.Wildfire
                         updatedAmbientTemperatureArray[i] = transferAmbientTemperature;
                     }
                     
-                    
-                    var job = new SetModulesTemperatureDataJob()
-                    {
-                        modulePositionsArray                        = _moduleRenderer.modulePositionsArray,
-                        releaseTemperatureArray                     = updatedAmbientTemperatureArray,
-                        modulesWildfireAreaPositionTemperatureArray = _modulesGeneratedTemperatureArray
-                    };
-                    var handle = job.Schedule(_moduleRenderer.transformAccessArray);
-                    handle.Complete();
-                    
-                    _modulePositionsForSetDataBuffer.SetData(_modulesGeneratedTemperatureArray);
-                    computeShader.SetBuffer(_kernelModulesInfluence, PosForSetDataBuffer, _modulePositionsForSetDataBuffer);
+                    _setDataBuffer.SetData(updatedAmbientTemperatureArray);
+                    computeShader.SetBuffer(_kernelWriteData, SetDataBuffer, _setDataBuffer);
                     
                     computeShader.Dispatch(
-                        _kernelModulesInfluence,
+                        _kernelWriteData,
                         _moduleRenderer.modulesCount / 8,
                         1,
                         1
@@ -497,7 +485,7 @@ namespace Common.Wildfire
             
             
             // READ DATA
-            if (_modulePositionsForGetDataBuffer != null)
+            if (_getDataBuffer != null)
             {
                 ShaderDispatch(_kernelReadData);
             }
@@ -505,20 +493,20 @@ namespace Common.Wildfire
         
         private void CleanupPosForGetData()
         {
-            if (_modulePositionsForGetDataBuffer != null)
+            if (_getDataBuffer != null)
             {
-                _modulePositionsForGetDataBuffer.Release();
+                _getDataBuffer.Release();
             }
-            _modulePositionsForGetDataBuffer = null;
+            _getDataBuffer = null;
         }
         
         private void CleanupPosForSetData()
         {
-            if (_modulePositionsForSetDataBuffer != null)
+            if (_setDataBuffer != null)
             {
-                _modulePositionsForSetDataBuffer.Release();
+                _setDataBuffer.Release();
             }
-            _modulePositionsForSetDataBuffer = null;
+            _setDataBuffer = null;
         }
         
         private void OnDestroy()
