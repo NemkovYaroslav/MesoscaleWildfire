@@ -1,10 +1,12 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
 
 namespace Common.Renderer
 {
-    public struct FillCommonDataJob : IJobParallelForTransform
+    [BurstCompile]
+    public struct FillMatricesAndPositionsDataJob : IJobParallelForTransform
     {
         [ReadOnly] public NativeArray<Vector3> centers;
         [ReadOnly] public NativeArray<float> heights;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Common.Wildfire;
 using Resources.PathCreator.Core.Runtime.Placer;
 using Unity.Collections;
 using UnityEngine;
@@ -9,6 +8,7 @@ namespace Common.Renderer
 {
     public class ModuleRenderer : MonoBehaviour
     {
+        [SerializeField] private ComputeShader computeShader;
         [SerializeField] private Material renderMaterial;
         [SerializeField] private Mesh renderMesh;
         
@@ -29,10 +29,7 @@ namespace Common.Renderer
         private NativeArray<float>     _heightsArray;
         private NativeArray<float>     _radiiArray;
         private NativeArray<Matrix4x4> _matricesArray;
-        
-        // MODULE MATRICES BUFFER
         private ComputeBuffer _matricesBuffer;
-        private int _matricesBufferStride;
         
         
         // LOCAL WILDFIRE AREA MODULE POSITIONS
@@ -40,8 +37,7 @@ namespace Common.Renderer
         private NativeArray<Vector4> _modulePositionsArray;
         
         
-        // GRID SHADER
-        private ComputeShader _computeShader;
+        // MODULE POSITIONS
         private ComputeBuffer _modulePositionsBuffer;
         private int _kernelReadData;
         private int _kernelWriteData;
@@ -49,8 +45,13 @@ namespace Common.Renderer
 
         private void Start()
         {
-            // TREE HIERARCHY
+            var wildfireArea = GameObject.FindWithTag("WildfireArea");
             var trees = GameObject.FindGameObjectsWithTag("Tree");
+            
+            _kernelReadData  = computeShader.FindKernel("kernel_read_data");
+            _kernelWriteData = computeShader.FindKernel("kernel_write_data");
+            
+            // TREE HIERARCHY
             orderedModuleList = new List<Module>();
             foreach (var tree in trees)
             {
@@ -62,15 +63,6 @@ namespace Common.Renderer
                 }
             }
             modulesCount = orderedModuleList.Count;
-            
-            
-            // JOBS SCHEDULE
-            var transforms = new Transform[modulesCount];
-            for (var i = 0; i < modulesCount; i++)
-            {
-                transforms[i] = orderedModuleList[i].transForm;
-            }
-            transformAccessArray = new TransformAccessArray(transforms);
             
             
             // RENDER MODULES
@@ -102,13 +94,15 @@ namespace Common.Renderer
                     NativeArrayOptions.UninitializedMemory
                 );
             
-            _matricesBufferStride = sizeof(float) * 16;
-            _matricesBuffer = new ComputeBuffer(modulesCount, _matricesBufferStride);
+            _matricesBuffer 
+                = new ComputeBuffer(
+                    modulesCount, 
+                    sizeof(float) * 16
+                );
             
-            var wildfireArea = GameObject.FindWithTag("WildfireArea");
-            var wildfireAreaTransform = wildfireArea.transform;
+            var wildfireAreaTransform      = wildfireArea.transform;
             var wildfireAreaPosition = wildfireAreaTransform.position;
-            var wildfireAreaScale = wildfireAreaTransform.lossyScale;
+            var wildfireAreaScale    = wildfireAreaTransform.lossyScale;
             _renderParams = new RenderParams(renderMaterial)
             {
                 worldBounds = new Bounds(wildfireAreaPosition, wildfireAreaScale),
@@ -116,25 +110,34 @@ namespace Common.Renderer
             };
 
             
+            // JOBS SCHEDULE
+            var transforms = new Transform[modulesCount];
+            for (var i = 0; i < modulesCount; i++)
+            {
+                transforms[i] = orderedModuleList[i].transForm;
+            }
+            transformAccessArray = new TransformAccessArray(transforms);
+            
+            
             // MODULES POSITIONS
+            _modulePositionsArray 
+                = new NativeArray<Vector4>(
+                    modulesCount,
+                    Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory
+                );
+            _modulePositionsBuffer 
+                = new ComputeBuffer(
+                    modulesCount, 
+                    sizeof(float) * 4
+                );
+            
             _wildfireAreaWorldToLocal = wildfireAreaTransform.worldToLocalMatrix;
-            
-            _modulePositionsArray = new NativeArray<Vector4>(
-                modulesCount,
-                Allocator.Persistent,
-                NativeArrayOptions.UninitializedMemory
-            );
-            
-            _modulePositionsBuffer = new ComputeBuffer(modulesCount, sizeof(float) * 4);
-            
-            _computeShader = wildfireArea.GetComponent<WildfireScript>().computeShader;
-            _kernelReadData  = _computeShader.FindKernel("kernel_read_data");
-            _kernelWriteData = _computeShader.FindKernel("kernel_write_data");
         }
 
         private void FillCommonData()
         {
-            if (transformAccessArray.length > 0)
+            if (transformAccessArray.isCreated)
             {
                 for (var i = 0; i < modulesCount; i++)
                 {
@@ -143,7 +146,7 @@ namespace Common.Renderer
                     _radiiArray[i]   = orderedModuleList[i].capsuleCollider.radius;
                 }
                 
-                var job = new FillCommonDataJob()
+                var job = new FillMatricesAndPositionsDataJob()
                 {
                     centers  = _centersArray,
                     heights  = _heightsArray,
@@ -156,20 +159,23 @@ namespace Common.Renderer
                 var handle = job.Schedule(transformAccessArray);
                 handle.Complete();
 
-                if (_computeShader)
+                if (_modulePositionsArray.Length > 0 && _modulePositionsBuffer.IsValid())
                 {
                     _modulePositionsBuffer.SetData(_modulePositionsArray);
-                    _computeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
-                    _computeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
+                    computeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
+                    computeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
                 }
             }
         }
         
         private void RenderModules()
         {
-            _matricesBuffer.SetData(_matricesArray);
-            _renderParams.matProps.SetBuffer(Matrices, _matricesBuffer);
-            Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
+            if (_matricesArray.Length > 0 && _matricesBuffer.IsValid())
+            {
+                _matricesBuffer.SetData(_matricesArray);
+                _renderParams.matProps.SetBuffer(Matrices, _matricesBuffer);
+                Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
+            }
         }
 
         private void Update()

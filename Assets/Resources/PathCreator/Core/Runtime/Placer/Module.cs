@@ -21,7 +21,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         private ModuleRenderer _moduleRenderer;
         
-        public bool isPartOfTrunk;
+        public bool isTrunk;
 
         private void Awake()
         {
