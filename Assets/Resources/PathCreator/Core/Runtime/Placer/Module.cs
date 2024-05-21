@@ -54,7 +54,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             {
                 reactionRate = 0.0f;
             }
-            if (temperature >= IgnitionTemperature && temperature <= AttenuationTemperature)
+            if (temperature > IgnitionTemperature && temperature < AttenuationTemperature)
             {
                 var argument = (temperature - IgnitionTemperature) / (AttenuationTemperature - IgnitionTemperature);
                 reactionRate = 3.0f * Mathf.Pow(argument, 2.0f) - 2.0f * Mathf.Pow(argument, 3.0f);

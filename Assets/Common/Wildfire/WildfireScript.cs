@@ -1,7 +1,6 @@
 using System;
 using Common.Renderer;
 using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
@@ -238,48 +237,45 @@ namespace Common.Wildfire
 
         private void TransferDataFromGridToModules()
         {
-            if (_moduleRenderer)
+            if (_textureForSampleAmbientTemperature)
             {
-                if (_textureForSampleAmbientTemperature && _getDataBuffer.IsValid())
-                {
-                    // need for more accurate reading data (use texture sampler)
-                    _textureForSampleAmbientTemperature.SetPixelData(_transferredAmbientTemperatureDataArray, 0);
-                    _textureForSampleAmbientTemperature.Apply(updateMipmaps: false, makeNoLongerReadable: false);
-                    computeShader.SetTexture(_kernelReadData, TextureForSampleAmbientTemperature, _textureForSampleAmbientTemperature);
-                    
-                    // set read buffer
-                    computeShader.SetBuffer(_kernelReadData, GetDataBuffer, _getDataBuffer);
-                    
-                    // read data from grid
-                    computeShader.Dispatch(
-                        _kernelReadData,
-                        _moduleRenderer.modulesCount / 8,
-                        1,
-                        1
-                    );
-                    
-                    // copy received data
-                    var receivedData = new float[_moduleRenderer.modulesCount];
-                    _getDataBuffer.GetData(receivedData);
+                // need for more accurate reading data (use texture sampler)
+                _textureForSampleAmbientTemperature.SetPixelData(_transferredAmbientTemperatureDataArray, 0);
+                _textureForSampleAmbientTemperature.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+                computeShader.SetTexture(_kernelReadData, TextureForSampleAmbientTemperature, _textureForSampleAmbientTemperature);
+            
+                // set read buffer
+                computeShader.SetBuffer(_kernelReadData, GetDataBuffer, _getDataBuffer);
+            
+                // read data from grid
+                computeShader.Dispatch(
+                    _kernelReadData,
+                    _moduleRenderer.modulesCount / 8,
+                    1,
+                    1
+                );
+            
+                // copy received data
+                var receivedData = new float[_moduleRenderer.modulesCount];
+                _getDataBuffer.GetData(receivedData);
 
-                    // set received data
-                    for (var i = 0; i < receivedData.Length; i++)
-                    {
-                        _modulesAmbientTemperatureArray[i] = receivedData[i];
-                    }
+                // set received data
+                for (var i = 0; i < receivedData.Length; i++)
+                {
+                    _modulesAmbientTemperatureArray[i] = receivedData[i];
                 }
             }
         }
         
         private void ReadDataFromGrid(AsyncGPUReadbackRequest request)
         {
-            if (request.done && !request.hasError)
+            if (request.done)
             {
-                if (_colorTemperatureTexture != null)
+                if (_colorTemperatureTexture)
                 {
                     // transfer data from fluid solver to modules
                     TransferDataFromGridToModules();
-                    
+                
                     // the event triggers itself upon completion
                     AsyncGPUReadback.RequestIntoNativeArray(
                         ref _transferredAmbientTemperatureDataArray,
@@ -295,131 +291,116 @@ namespace Common.Wildfire
         // simulate combustion process
         private void SimulateCombustionProcess()
         {
-            if (_moduleRenderer)
+            // ITERATE THROUGH MODULES
+            var modules = _moduleRenderer.orderedModuleList.ToArray();
+            
+            for (var i = modules.Length - 1; i >= 0; i--)
             {
-                if (_moduleRenderer.orderedModuleList.Count > 0)
+                var module = modules[i];
+                
+                // SIMULATE DIFFUSION IN TREE HIERARCHY
+                const float moduleDiffusionFactor = 0.001f;
+                var connectedModule = module.neighbourModule;
+                if (connectedModule)
                 {
-                    // ITERATE THROUGH MODULES
-                    var modules = _moduleRenderer.orderedModuleList.ToArray();
-                    for (var i = modules.Length - 1; i > 0; i--)
+                    var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
+                    var transferredTemperature = moduleDiffusionFactor * middleTemperature;
+                    if (module.temperature > connectedModule.temperature)
                     {
-                        var module = modules[i];
-                        
-                        
-                        // SIMULATE DIFFUSION IN TREE HIERARCHY
-                        const float moduleDiffusionFactor = 0.001f;
-                        var connectedModule = module.neighbourModule;
-                        if (connectedModule)
-                        {
-                            var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
-                            var transferredTemperature = moduleDiffusionFactor * middleTemperature;
-                            if (module.temperature > connectedModule.temperature)
-                            {
-                                module.temperature -= transferredTemperature;
-                                connectedModule.temperature += transferredTemperature;
-                            }
-                            if (module.temperature < connectedModule.temperature)
-                            {
-                                connectedModule.temperature -= transferredTemperature;
-                                module.temperature += transferredTemperature;
-                            }
-                        }
-                        
-                        
-                        var transferAmbientTemperature = 0.0f;
-                        
-                        
-                        // SIMULATE COMBUSTION
-                        const float releaseTemperatureFactor = 75000.0f;
-                        if (module.rigidBody.mass > module.stopCombustionMass)
-                        {
-                            var lostMass = module.CalculateLostMass();
-                            if (!Mathf.Approximately(lostMass, 0))
-                            {
-                                var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
-                                transferAmbientTemperature = releaseTemperature;
-                                module.RecalculateCharacteristics(lostMass);
-                            }
-                        }
-                        
-                        
-                        // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
-                        const float airToModuleTransferFactor = 0.01f;
-                        const float moduleToAirTransferFactor = 0.001f;
-                        var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                        //Debug.Log("mod: " + modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
-                        if (ambientTemperature > module.temperature)
-                        {
-                            var temperatureDifference = ambientTemperature - module.temperature;
-                            var transferredTemperature = airToModuleTransferFactor * temperatureDifference;
-
-                            module.temperature += transferredTemperature;
-                            transferAmbientTemperature -= transferredTemperature;
-                        }
-                        if (module.temperature > ambientTemperature)
-                        {
-                            var temperatureDifference = module.temperature - ambientTemperature;
-                            var transferredTemperature = moduleToAirTransferFactor * temperatureDifference;
-
-                            transferAmbientTemperature += transferredTemperature;
-                            module.temperature -= transferredTemperature;
-                        }
-                        
-                        
-                        _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
+                        module.temperature -= transferredTemperature;
+                        connectedModule.temperature += transferredTemperature;
+                    }
+                    if (module.temperature < connectedModule.temperature)
+                    {
+                        connectedModule.temperature -= transferredTemperature;
+                        module.temperature += transferredTemperature;
                     }
                 }
+                
+                
+                var transferAmbientTemperature = 0.0f;
+                
+                
+                // SIMULATE COMBUSTION
+                const float releaseTemperatureFactor = 75000.0f;
+                if (module.rigidBody.mass > module.stopCombustionMass)
+                {
+                    var lostMass = module.CalculateLostMass();
+                    if (!Mathf.Approximately(lostMass, 0))
+                    {
+                        var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
+                        transferAmbientTemperature = releaseTemperature;
+                        module.RecalculateCharacteristics(lostMass);
+                    }
+                }
+                
+                
+                // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
+                const float airToModuleTransferFactor = 0.01f;
+                const float moduleToAirTransferFactor = 0.001f;
+                var ambientTemperature = _modulesAmbientTemperatureArray[i];
+                //Debug.Log("mod: " + modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
+                if (ambientTemperature > module.temperature)
+                {
+                    var temperatureDifference = ambientTemperature - module.temperature;
+                    var transferredTemperature = airToModuleTransferFactor * temperatureDifference;
+
+                    module.temperature += transferredTemperature;
+                    transferAmbientTemperature -= transferredTemperature;
+                }
+                if (module.temperature > ambientTemperature)
+                {
+                    var temperatureDifference = module.temperature - ambientTemperature;
+                    var transferredTemperature = moduleToAirTransferFactor * temperatureDifference;
+
+                    transferAmbientTemperature += transferredTemperature;
+                    module.temperature -= transferredTemperature;
+                }
+                
+                
+                _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
             }
         }
         
         // transfer data from modules to grid
         private void TransferDataFromModulesToGrid()
         {
-            if (_moduleRenderer)
-            {
-                if (_modulesUpdatedAmbientTemperatureArray.Length > 0 && _setDataBuffer.IsValid())
-                {
-                    _setDataBuffer.SetData(_modulesUpdatedAmbientTemperatureArray);
-                    computeShader.SetBuffer(_kernelWriteData, SetDataBuffer, _setDataBuffer);
-                    
-                    computeShader.Dispatch(
-                        _kernelWriteData,
-                        _moduleRenderer.modulesCount / 8,
-                        1,
-                        1
-                    );
-                }
-            }
+            _setDataBuffer.SetData(_modulesUpdatedAmbientTemperatureArray);
+            computeShader.SetBuffer(_kernelWriteData, SetDataBuffer, _setDataBuffer);
+            
+            computeShader.Dispatch(
+                _kernelWriteData,
+                _moduleRenderer.modulesCount / 8,
+                1,
+                1
+            );
         }
 
         private void SimulateTreesDynamics()
         {
-            if (winds.Length > 0 && _moduleRenderer)
+            var modules = _moduleRenderer.orderedModuleList.ToArray();
+            
+            // wind
+            var windForce = winds[0].GetWindForceAtPosition();
+            
+            for (var i = 0; i < _moduleRenderer.modulesCount; i++)
             {
-                var modules = _moduleRenderer.orderedModuleList.ToArray();
-                
-                // wind
-                var windForce = winds[0].GetWindForceAtPosition();
-                
-                for (var i = 0; i < _moduleRenderer.modulesCount; i++)
-                {
-                    modules[i].rigidBody.AddForce(windForce, ForceMode.Force);
+                modules[i].rigidBody.AddForce(windForce, ForceMode.Force);
 
-                    //var position = _modules[i].rigidBody.position;
-                    //Debug.DrawLine(position, position + windForce.normalized * 0.1f, Color.red, 1.0f);
-                }
-
-                // fire
-                var fireForce = winds[1].GetWindForceAtPosition();
-                
-                var fireDirection = fireForce.normalized;
-                var fireStrength = fireForce.magnitude;
-                
-                computeShader.SetVector(ShaderFireDirection, fireDirection);
-                computeShader.SetFloat(ShaderFireStrength, fireStrength);
-                
-                ShaderDispatch(_kernelAddFire);
+                //var position = _modules[i].rigidBody.position;
+                //Debug.DrawLine(position, position + windForce.normalized * 0.1f, Color.red, 1.0f);
             }
+
+            // fire
+            var fireForce = winds[1].GetWindForceAtPosition();
+            
+            var fireDirection = fireForce.normalized;
+            var fireStrength = fireForce.magnitude;
+            
+            computeShader.SetVector(ShaderFireDirection, fireDirection);
+            computeShader.SetFloat(ShaderFireStrength, fireStrength);
+            
+            ShaderDispatch(_kernelAddFire);
         }
 
         private void FixedUpdate()
