@@ -20,9 +20,11 @@ namespace Common.Wildfire
         [SerializeField] private float viscosityIntensity;
         [SerializeField] private int   solverIterations;
         
-        [Header("Wind Settings")]
-        [SerializeField] private Wind.Wind[] winds;
+        [Header("Wind Simulation Settings")]
+        [SerializeField] private Wind.Wind wind;
         
+        [Header("Fire Simulation Settings")]
+        [SerializeField] private float fireLiftingPower = 0.005f;
         
         // COMMON VARIABLES
         private ModuleRenderer _moduleRenderer;
@@ -38,6 +40,7 @@ namespace Common.Wildfire
         // FLUID SOLVER STEPS
         private int _kernelInit;
         private int _kernelUserInput;
+        private int _kernelReadData;
         private int _kernelWriteData;
         private int _kernelDiffusionVelocity;
         private int _kernelDivergence;
@@ -46,8 +49,8 @@ namespace Common.Wildfire
         private int _kernelAdvectionVelocity;
         private int _kernelAdvectionTemperature;
         private int _kernelDiffusionTemperature;
-        private int _kernelAddFire;
-        private int _kernelReadData;
+        private int _kernelSimulateFire;
+        private int _kernelSimulateWind;
         
         
         // FLUID SOLVER VARIABLES
@@ -84,10 +87,9 @@ namespace Common.Wildfire
         
         
         // WIND VARIABLES
-        //private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
-        //private static readonly int ShaderWindStrength = Shader.PropertyToID("wind_strength");
-        private static readonly int ShaderFireDirection = Shader.PropertyToID("fire_direction");
-        private static readonly int ShaderFireStrength = Shader.PropertyToID("fire_strength");
+        private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
+        private static readonly int ShaderWindIntensity = Shader.PropertyToID("wind_intensity");
+        private static readonly int ShaderFireLiftingPower = Shader.PropertyToID("fire_lifting_power");
         
         
         // create render texture in 3D format
@@ -145,7 +147,8 @@ namespace Common.Wildfire
             _kernelAdvectionVelocity    = computeShader.FindKernel("kernel_advection_velocity");
             _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
             _kernelDiffusionTemperature = computeShader.FindKernel("kernel_diffusion_temperature");
-            _kernelAddFire              = computeShader.FindKernel("kernel_add_fire");
+            _kernelSimulateFire         = computeShader.FindKernel("kernel_simulate_fire");
+            _kernelSimulateWind         = computeShader.FindKernel("kernel_simulate_wind");
             
             
             // SET MAIN TEXTURES TO FLUID SOLVER
@@ -169,8 +172,8 @@ namespace Common.Wildfire
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             computeShader.SetTexture(_kernelDiffusionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelAddFire, ShaderVelocityTexture, _velocityTexture);
-            
+            computeShader.SetTexture(_kernelSimulateFire, ShaderVelocityTexture, _velocityTexture);
+            computeShader.SetTexture(_kernelSimulateWind, ShaderVelocityTexture, _velocityTexture);
             
             // INITIALIZE COMMON VARIABLES
             _torch          = GameObject.FindWithTag("Torch");
@@ -246,7 +249,7 @@ namespace Common.Wildfire
             
                 // set read buffer
                 computeShader.SetBuffer(_kernelReadData, GetDataBuffer, _getDataBuffer);
-            
+                
                 // read data from grid
                 computeShader.Dispatch(
                     _kernelReadData,
@@ -254,6 +257,7 @@ namespace Common.Wildfire
                     1,
                     1
                 );
+                
             
                 // copy received data
                 var receivedData = new float[_moduleRenderer.modulesCount];
@@ -380,58 +384,39 @@ namespace Common.Wildfire
         {
             var modules = _moduleRenderer.orderedModuleList.ToArray();
             
-            // wind
-            var windForce = winds[0].GetWindForceAtPosition();
             
-            for (var i = 0; i < _moduleRenderer.modulesCount; i++)
+            // SIMULATE WIND BEHAVIOUR
+            computeShader.SetVector(ShaderWindDirection, wind.direction);
+            computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
+            
+            ShaderDispatch(_kernelSimulateWind);
+            
+            // SIMULATE TREE DYNAMICS
+            for (var i = modules.Length - 1; i >= 0; i--)
             {
-                modules[i].rigidBody.AddForce(windForce, ForceMode.Force);
+                var module = modules[i];
 
-                //var position = _modules[i].rigidBody.position;
-                //Debug.DrawLine(position, position + windForce.normalized * 0.1f, Color.red, 1.0f);
+                const float airDensity = 1.2f;
+                
+                var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
+                var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
+                module.rigidBody.AddForce(windForce, ForceMode.Force);
             }
-
-            // fire
-            var fireForce = winds[1].GetWindForceAtPosition();
             
-            var fireDirection = fireForce.normalized;
-            var fireStrength = fireForce.magnitude;
             
-            computeShader.SetVector(ShaderFireDirection, fireDirection);
-            computeShader.SetFloat(ShaderFireStrength, fireStrength);
+            // SIMULATE FIRE BEHAVIOR
+            computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower);
             
-            ShaderDispatch(_kernelAddFire);
+            computeShader.Dispatch(
+                _kernelSimulateFire,
+                _moduleRenderer.modulesCount / 8,
+                1,
+                1
+            );
         }
 
-        private void FixedUpdate()
+        private void SimulateFluid()
         {
-            computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
-            computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
-            computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
-            
-            if (Input.GetMouseButton(0))
-            {
-                computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
-                
-                var torchPosition = transform.InverseTransformPoint(_torch.transform.position);
-                computeShader.SetVector(ShaderTorchPosition, torchPosition);
-                
-                computeShader.Dispatch(
-                    _kernelUserInput,
-                    1,
-                    1,
-                    1
-                );
-            }
-            
-            
-            // WILDFIRE SIMULATION
-            SimulateTreesDynamics();
-            SimulateCombustionProcess();
-            TransferDataFromModulesToGrid();
-            
-            
-            // FLUID SOLVER STEPS
             // diffuse velocity
             for (var i = 0; i < solverIterations; i++)
             {
@@ -460,13 +445,34 @@ namespace Common.Wildfire
             }
             // advect temperature
             ShaderDispatch(_kernelAdvectionTemperature);
+        }
+        
+        private void FixedUpdate()
+        {
+            computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
+            computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
+            computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
             
-            
-            // READ DATA
-            if (_getDataBuffer != null)
+            if (Input.GetMouseButton(0))
             {
-                ShaderDispatch(_kernelReadData);
+                computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
+                
+                var torchPosition = transform.InverseTransformPoint(_torch.transform.position);
+                computeShader.SetVector(ShaderTorchPosition, torchPosition);
+                
+                computeShader.Dispatch(
+                    _kernelUserInput,
+                    1,
+                    1,
+                    1
+                );
             }
+            
+            // MAIN SIMULATION
+            SimulateTreesDynamics();
+            SimulateCombustionProcess();
+            TransferDataFromModulesToGrid();
+            SimulateFluid();
         }
         
         private void CleanupPosForGetData()

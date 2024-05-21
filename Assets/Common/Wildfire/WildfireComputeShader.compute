@@ -1,18 +1,19 @@
-#pragma kernel kernel_init
-#pragma kernel kernel_user_input
+#pragma kernel kernel_init // 0
+#pragma kernel kernel_user_input // 1
 
-#pragma kernel kernel_read_data
-#pragma kernel kernel_write_data
+#pragma kernel kernel_read_data // 2
+#pragma kernel kernel_write_data // 3
 
-#pragma kernel kernel_diffusion_velocity
-#pragma kernel kernel_divergence;
-#pragma kernel kernel_pressure;
-#pragma kernel kernel_subtract_gradient
-#pragma kernel kernel_advection_velocity
-#pragma kernel kernel_advection_temperature
-#pragma kernel kernel_diffusion_temperature
+#pragma kernel kernel_diffusion_velocity // 4
+#pragma kernel kernel_divergence; // 5
+#pragma kernel kernel_pressure; // 6
+#pragma kernel kernel_subtract_gradient // 7
+#pragma kernel kernel_advection_velocity // 8
+#pragma kernel kernel_advection_temperature // 9
+#pragma kernel kernel_diffusion_temperature // 10
 
-#pragma kernel kernel_add_fire
+#pragma kernel kernel_simulate_fire // 11
+#pragma kernel kernel_simulate_wind // 12
 
 RWTexture3D<float4> color_temperature_texture;
 RWTexture3D<float3> velocity_texture;
@@ -21,15 +22,17 @@ RWTexture3D<float> pressure_texture;
 
 float3 texture_resolution;
 
-float3 fire_direction;
-float fire_strength;
-
 float3 torch_position;
 
 float torch_intensity;
 float diffusion_intensity;
 float viscosity_intensity;
 float delta_time;
+
+float3 wind_direction;
+float  wind_intensity;
+
+float fire_lifting_power;
 
 Texture3D texture_for_sample_ambient_temperature;
 SamplerState linear_clamp_sampler;
@@ -70,9 +73,6 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
     velocity_texture[pixel_id]          = 0;
     divergence_texture[pixel_id]        = 0;
     pressure_texture[pixel_id]          = 0;
-
-    fire_direction = float3(0, 0, 0);
-    fire_strength  = 0;
 }
 
 [numthreads(1,1,1)]
@@ -417,7 +417,7 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
                                         + velocity_011 * inf_011
                                             + velocity_111 * inf_111;
 
-            //velocity *= 0.9f;
+            velocity *= 0.25f;
 
             velocity_texture[pixel_id] = velocity;
         }
@@ -527,7 +527,7 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                             + temperature_111 * inf_111;
 
             //temperature.rgb *= 0.99f;
-            //temperature.a   *= 0.75f;
+            temperature.a   *= 0.999f;
             
             color_temperature_texture[pixel_id] = temperature;
         }
@@ -578,13 +578,31 @@ void kernel_diffusion_temperature (uint3 id : SV_DispatchThreadID)
     }
 }
 
+[numthreads(8,1,1)]
+void kernel_simulate_fire (uint3 id : SV_DispatchThreadID)
+{
+    const int index = id.x;
+
+    float3 uv = module_positions[index].xyz;
+    uv += 0.5f;
+    uv *= texture_resolution;
+    
+    const float3 position = floor(uv);
+
+    float3 velocity = velocity_texture[position];
+    if (velocity.y < fire_lifting_power)
+    {
+        velocity.y = fire_lifting_power;
+    }
+    velocity_texture[position] = velocity;
+}
+
 [numthreads(8,8,8)]
-void kernel_add_fire (uint3 id : SV_DispatchThreadID)
+void kernel_simulate_wind (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
 
-    if (fire_direction.x > 0 || fire_direction.y > 0 || fire_direction.z > 0)
-    {
-        velocity_texture[pixel_id] = fire_direction * fire_strength;
-    }
+    float3 velocity = velocity_texture[pixel_id];
+    velocity = clamp(velocity + wind_direction * wind_intensity, -wind_intensity, wind_intensity);
+    velocity_texture[pixel_id] = velocity;
 }

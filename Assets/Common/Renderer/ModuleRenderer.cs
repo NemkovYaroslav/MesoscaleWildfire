@@ -34,24 +34,26 @@ namespace Common.Renderer
         
         // LOCAL WILDFIRE AREA MODULE POSITIONS
         private Matrix4x4 _wildfireAreaWorldToLocal;
-        private NativeArray<Vector4> _modulePositionsArray;
+        public NativeArray<Vector4> modulePositionsArray;
         
         
         // MODULE POSITIONS
         private ComputeBuffer _modulePositionsBuffer;
         private int _kernelReadData;
         private int _kernelWriteData;
+        private int _kernelSimulateFire;
         private static readonly int ModulePositions = Shader.PropertyToID("module_positions");
 
         private void Start()
         {
             var wildfireArea = GameObject.FindWithTag("WildfireArea");
-            var trees = GameObject.FindGameObjectsWithTag("Tree");
             
-            _kernelReadData  = computeShader.FindKernel("kernel_read_data");
-            _kernelWriteData = computeShader.FindKernel("kernel_write_data");
+            _kernelReadData     = computeShader.FindKernel("kernel_read_data");
+            _kernelWriteData    = computeShader.FindKernel("kernel_write_data");
+            _kernelSimulateFire = computeShader.FindKernel("kernel_simulate_fire");
             
             // TREE HIERARCHY
+            var trees = GameObject.FindGameObjectsWithTag("Tree");
             orderedModuleList = new List<Module>();
             foreach (var tree in trees)
             {
@@ -63,7 +65,6 @@ namespace Common.Renderer
                 }
             }
             modulesCount = orderedModuleList.Count;
-            
             
             // RENDER MODULES
             _centersArray
@@ -120,7 +121,7 @@ namespace Common.Renderer
             
             
             // MODULES POSITIONS
-            _modulePositionsArray 
+            modulePositionsArray 
                 = new NativeArray<Vector4>(
                     modulesCount,
                     Allocator.Persistent,
@@ -152,14 +153,15 @@ namespace Common.Renderer
                 matrices = _matricesArray,
             
                 wildfireAreaWorldToLocal    = _wildfireAreaWorldToLocal,
-                modulesWildfireAreaPosition = _modulePositionsArray,
+                modulesWildfireAreaPosition = modulePositionsArray,
             };
             var handle = job.Schedule(transformAccessArray);
             handle.Complete();
             
-            _modulePositionsBuffer.SetData(_modulePositionsArray);
+            _modulePositionsBuffer.SetData(modulePositionsArray);
             computeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
             computeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
+            computeShader.SetBuffer(_kernelSimulateFire, ModulePositions, _modulePositionsBuffer);
         }
         
         private void RenderModules()
@@ -202,7 +204,7 @@ namespace Common.Renderer
             _radiiArray.Dispose();
             _matricesArray.Dispose();
 
-            _modulePositionsArray.Dispose();
+            modulePositionsArray.Dispose();
         }
     }
 }
