@@ -21,7 +21,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
 
         private ModuleRenderer _moduleRenderer;
         
-        public bool isTrunk;
+        //public bool isTrunk;
 
         private void Awake()
         {
@@ -39,7 +39,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 }
             }
 
-            _moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
+            //_moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
             
             stopCombustionMass = rigidBody.mass * 0.1f;
         }
@@ -80,11 +80,13 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             capsuleCollider.radius = Mathf.Sqrt(mass / (Mathf.PI * WoodDensity * capsuleCollider.height));
         }
 
+        /*
         private void OnDestroy()
         {
-            //var index = _moduleRenderer.orderedModuleList.IndexOf(this);
-            //_moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
-            //_moduleRenderer.orderedModuleList.RemoveAt(index);
+            var index = _moduleRenderer.orderedModuleList.IndexOf(this);
+            _moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
+            _moduleRenderer.orderedModuleList.RemoveAt(index);
         }
+        */
     }
 }

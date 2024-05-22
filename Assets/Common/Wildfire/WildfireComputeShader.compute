@@ -417,7 +417,7 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
                                         + velocity_011 * inf_011
                                             + velocity_111 * inf_111;
 
-            velocity *= 0.25f;
+            velocity *= 0.997f;
 
             velocity_texture[pixel_id] = velocity;
         }
@@ -527,7 +527,7 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                             + temperature_111 * inf_111;
 
             //temperature.rgb *= 0.99f;
-            temperature.a   *= 0.999f;
+            temperature.a   *= 0.997f;
             
             color_temperature_texture[pixel_id] = temperature;
         }
@@ -602,7 +602,8 @@ void kernel_simulate_wind (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
 
-    float3 velocity = velocity_texture[pixel_id];
-    velocity = clamp(velocity + wind_direction * wind_intensity, -wind_intensity, wind_intensity);
+    //float3 velocity = velocity_texture[pixel_id];
+    //velocity = clamp(velocity + wind_direction * wind_intensity, -wind_intensity, wind_intensity);
+    const float3 velocity = wind_direction * wind_intensity;
     velocity_texture[pixel_id] = velocity;
 }

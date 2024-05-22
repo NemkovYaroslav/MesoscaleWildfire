@@ -189,7 +189,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2633280
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -309,7 +308,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &8077049
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -324,7 +322,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &8077050
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -422,14 +420,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &43312116
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -444,7 +441,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &43312117
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -549,7 +546,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &43918337
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -564,7 +560,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &43918338
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -669,7 +665,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &53678868
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -684,7 +679,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &53678869
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -782,14 +777,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &55086677
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -804,7 +798,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &55086678
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -909,7 +903,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &63448005
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -924,7 +917,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &63448006
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1029,7 +1022,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &80730960
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1137,7 +1129,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &81101035
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1360,7 +1351,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &89609625
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1485,14 +1475,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &103690674
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1507,7 +1496,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &103690675
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1612,7 +1601,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &106947754
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1732,7 +1720,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &154484140
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1747,7 +1734,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &154484141
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1852,7 +1839,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &158613805
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1972,7 +1958,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &161058181
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -1987,7 +1972,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &161058182
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2092,7 +2077,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &180537118
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2212,7 +2196,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &258770459
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2332,7 +2315,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &272003709
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2347,7 +2329,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &272003710
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2445,14 +2427,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &274734461
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2467,7 +2448,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &274734462
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2572,7 +2553,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &274800232
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2692,7 +2672,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &284294469
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2805,14 +2784,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &292829412
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -2827,7 +2805,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &292829413
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2932,7 +2910,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &328328920
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3052,7 +3029,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &333809260
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3067,7 +3043,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &333809261
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3172,7 +3148,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &333993330
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3292,7 +3267,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &354304696
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3412,7 +3386,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &361895642
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3520,7 +3493,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &373648001
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3652,7 +3624,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &380782780
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3667,7 +3638,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &380782781
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3760,7 +3731,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &386138505
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3842,7 +3812,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &393746495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3941,7 +3911,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &408757118
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -3956,7 +3925,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &408757119
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4061,7 +4030,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &413598397
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4181,7 +4149,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &418105571
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4196,7 +4163,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &418105572
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4301,7 +4268,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &422462867
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4421,7 +4387,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &425337411
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4534,14 +4499,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &427516600
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4556,7 +4520,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &427516601
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4654,14 +4618,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &428209352
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4676,7 +4639,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &428209353
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4769,7 +4732,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &442571734
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -4901,7 +4863,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &449127437
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5021,7 +4982,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &452931141
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5141,7 +5101,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &459139097
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5156,7 +5115,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &459139098
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5254,14 +5213,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &460050731
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5276,7 +5234,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &460050732
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5381,7 +5339,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &510264202
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5501,7 +5458,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &520624799
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5621,7 +5577,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &533786884
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5636,7 +5591,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &533786885
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5741,7 +5696,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &542029374
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5861,7 +5815,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &549723739
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -5876,7 +5829,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &549723740
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5981,7 +5934,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &566134773
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6101,7 +6053,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &566268380
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6221,7 +6172,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &584599912
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6236,7 +6186,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &584599913
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6334,14 +6284,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &587706183
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6356,7 +6305,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &587706184
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6454,14 +6403,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &590547054
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6476,7 +6424,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &590547055
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6569,7 +6517,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &607672095
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6584,7 +6531,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &607672096
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6689,7 +6636,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &625306589
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6814,14 +6760,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &632764382
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -6836,7 +6781,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &632764383
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6941,7 +6886,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &639424279
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7061,7 +7005,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &640893258
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7174,14 +7117,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &644250119
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7196,7 +7138,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &644250120
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7426,7 +7368,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &668740311
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7558,7 +7499,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &677574285
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7781,7 +7721,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &701835776
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7901,7 +7840,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &702235339
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -7916,7 +7854,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &702235340
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8014,14 +7952,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &708793790
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8036,7 +7973,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &708793791
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8134,14 +8071,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &716253517
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8156,7 +8092,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &716253518
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8261,7 +8197,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &740738672
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8381,7 +8316,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &766333454
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8501,7 +8435,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &807221752
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8621,7 +8554,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &811096889
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8741,7 +8673,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &812143831
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8861,7 +8792,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &815049082
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8981,7 +8911,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &835407172
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -8996,7 +8925,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &835407173
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -9101,7 +9030,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &848937271
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9214,14 +9142,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &857769570
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9236,7 +9163,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &857769571
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -9341,7 +9268,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &866314083
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9449,7 +9375,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &885969292
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9581,7 +9506,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &904986685
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9701,7 +9625,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &922867728
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9821,7 +9744,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &953940184
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -9836,7 +9758,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &953940185
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -9941,7 +9863,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &966272379
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10049,7 +9970,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &970899655
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10064,7 +9984,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &970899656
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10181,7 +10101,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &977701530
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10301,7 +10220,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &986904504
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10421,7 +10339,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1014073535
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10541,7 +10458,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1025020624
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10556,7 +10472,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1025020625
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -10654,14 +10570,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1037102365
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10676,7 +10591,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1037102366
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -10762,14 +10677,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1041256625
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -10784,7 +10698,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1041256626
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10901,7 +10815,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1045676536
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11014,14 +10927,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1057267232
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11036,7 +10948,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1057267233
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11141,7 +11053,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1068738930
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11156,7 +11067,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1068738931
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11261,7 +11172,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1069526742
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11276,7 +11186,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1069526743
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11381,7 +11291,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1087126279
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11396,7 +11305,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1087126280
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11489,7 +11398,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1089750108
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11504,7 +11412,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1089750109
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -11621,7 +11529,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1095797161
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11636,7 +11543,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1095797162
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11734,14 +11641,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1095966156
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11756,7 +11662,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1095966157
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11861,7 +11767,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1098130281
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -11969,7 +11874,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1122349231
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -12094,14 +11998,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1125844206
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -12116,7 +12019,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1125844207
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -12167,6 +12070,9 @@ GameObject:
   - component: {fileID: 1140793607}
   - component: {fileID: 1140793606}
   - component: {fileID: 1140793605}
+  - component: {fileID: 1140793609}
+  - component: {fileID: 1140793611}
+  - component: {fileID: 1140793610}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -12261,6 +12167,94 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1140793609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140793604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df1da9ce12b99e34d9975fd83a760059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabToSpawn: {fileID: 4908773651078697542, guid: 5d7de4852f78c2946bb78b4fc104f616,
+    type: 3}
+  numToSpawn: 200
+  spawnZone: {fileID: 1140793604}
+  on2DBoundsCalculated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1140793610}
+        m_TargetAssemblyTypeName: QuadTree.QuadTreeBridge, Assembly-CSharp
+        m_MethodName: On2DBoundsCalculated
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onItemSpawned:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1140793610}
+        m_TargetAssemblyTypeName: QuadTree.QuadTreeBridge, Assembly-CSharp
+        m_MethodName: OnItemSpawned
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onAllItemsSpawned:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1140793610}
+        m_TargetAssemblyTypeName: QuadTree.QuadTreeBridge, Assembly-CSharp
+        m_MethodName: OnAllItemsSpawned
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1140793610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140793604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cfc9bcb1f061c649a400220756948f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linkedQuadTree: {fileID: 1140793611}
+--- !u!114 &1140793611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140793604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d160ca3ac7dd97e48a3c0639e1dfdbfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <PreferredMaxDataPerNode>k__BackingField: 50
+  <MinimumNodeSize>k__BackingField: 2
 --- !u!1 &1156200240
 GameObject:
   m_ObjectHideFlags: 0
@@ -12327,7 +12321,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1156200243
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -12447,7 +12440,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1170949865
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -12462,7 +12454,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1170949866
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -12567,7 +12559,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1176113746
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -12637,7 +12628,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &1185918024
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -12674,7 +12665,7 @@ Transform:
   m_GameObject: {fileID: 1185918023}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.59935206, z: -0, w: 0.8004856}
-  m_LocalPosition: {x: 5, y: -6.5, z: 1.5}
+  m_LocalPosition: {x: 6, y: -6.5, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12790,7 +12781,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1187300739
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -12805,7 +12795,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1187300740
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -12910,7 +12900,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1190518018
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13030,7 +13019,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1196642909
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13131,14 +13119,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1209063810
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13153,7 +13140,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1209063811
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -13388,7 +13375,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1249349570
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13508,7 +13494,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1251496129
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13621,14 +13606,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1252763669
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13643,7 +13627,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1252763670
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -13748,7 +13732,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1264003720
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13868,7 +13851,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1290799446
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13969,14 +13951,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1310660278
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -13991,7 +13972,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1310660279
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -14108,7 +14089,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1319941469
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -14221,14 +14201,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1333986846
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -14243,7 +14222,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1333986847
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -14341,14 +14320,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1338504707
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -14363,7 +14341,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1338504708
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -14468,7 +14446,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1350816732
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -14588,7 +14565,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1350994357
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -14673,14 +14649,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0.24
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!136 &1355467405
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -14740,7 +14715,7 @@ Transform:
   m_GameObject: {fileID: 1355467403}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.4, y: -1.75, z: 0.25}
+  m_LocalPosition: {x: 0.75, y: -1.25, z: 0.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14800,7 +14775,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1362778715
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -14932,7 +14906,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1363676148
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15045,14 +15018,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1381432472
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15067,7 +15039,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1381432473
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -15172,7 +15144,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1383390603
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15273,14 +15244,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1402403424
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15295,7 +15265,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1402403425
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15412,7 +15382,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1404248593
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15532,7 +15501,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1411866830
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15547,7 +15515,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1411866831
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -15645,14 +15613,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1414326633
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15667,7 +15634,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1414326634
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -15753,14 +15720,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1416686364
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15775,7 +15741,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1416686365
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15885,14 +15851,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1424482213
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -15907,7 +15872,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1424482214
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -16012,7 +15977,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1454442240
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16027,7 +15991,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1454442241
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -16132,7 +16096,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1456634902
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16147,7 +16110,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1456634903
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -16252,7 +16215,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1460389984
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16372,7 +16334,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1472392720
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16492,7 +16453,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1488374097
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16563,7 +16523,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1500573609
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -16623,7 +16583,7 @@ Transform:
   m_GameObject: {fileID: 1500573608}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.5, y: -6.5, z: 1.5}
+  m_LocalPosition: {x: 0, y: -6.5, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16688,14 +16648,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1521543155
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16710,7 +16669,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1521543156
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -16803,7 +16762,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1543246068
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16818,7 +16776,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1543246069
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -16935,7 +16893,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1561067434
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -16950,7 +16907,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1561067435
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17048,14 +17005,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1569836812
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17070,7 +17026,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1569836813
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17168,14 +17124,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1584715144
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17190,7 +17145,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1584715145
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17295,7 +17250,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1585799013
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17310,7 +17264,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1585799014
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17408,14 +17362,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1608963069
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17430,7 +17383,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1608963070
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17528,14 +17481,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1629871516
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17550,7 +17502,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1629871517
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17655,7 +17607,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1657939894
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17670,7 +17621,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1657939895
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17775,7 +17726,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1665203584
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17790,7 +17740,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1665203585
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -17888,14 +17838,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1691013861
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -17910,7 +17859,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1691013862
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -18015,7 +17964,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1697514515
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18030,7 +17978,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1697514516
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -18128,14 +18076,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1713334525
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18150,7 +18097,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1713334526
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -18255,7 +18202,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1718266719
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18270,7 +18216,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1718266720
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -18375,7 +18321,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1720216295
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18488,14 +18433,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1721810988
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18510,7 +18454,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1721810989
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -18615,7 +18559,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1734174346
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18735,7 +18678,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1758448850
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18855,7 +18797,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1762571867
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18968,14 +18909,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1777547042
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -18990,7 +18930,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1777547043
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -19083,7 +19023,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1778316595
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19196,14 +19135,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1795994540
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19218,7 +19156,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1795994541
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -19335,7 +19273,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1798267488
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19350,7 +19287,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1798267489
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -19455,7 +19392,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1808769541
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19470,7 +19406,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1808769542
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -19575,7 +19511,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1810236703
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19695,7 +19630,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1815032231
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19815,7 +19749,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1820665486
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19928,14 +19861,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1829912957
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -19950,7 +19882,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1829912958
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -20043,7 +19975,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1845510683
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -20058,7 +19989,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &1845510684
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -20168,14 +20099,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 1
 --- !u!138 &1874508351
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -20190,7 +20120,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1874508352
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -20288,14 +20218,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0
+  temperature: 0.25
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1874805287
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -20310,7 +20239,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &1874805288
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -20365,7 +20294,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &1887216581
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -20402,7 +20331,7 @@ Transform:
   m_GameObject: {fileID: 1887216580}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.59935206, z: 0, w: 0.8004856}
-  m_LocalPosition: {x: -1.38, y: -6.5, z: 0.73}
+  m_LocalPosition: {x: -6, y: -6.5, z: 0.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20518,7 +20447,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1887937779
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -20638,7 +20566,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1911136485
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -20730,7 +20657,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!136 &1930730821
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -20862,7 +20788,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1954350587
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -20982,7 +20907,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &1997423211
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21102,7 +21026,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2007697678
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21210,7 +21133,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2009569599
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21342,7 +21264,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2030644484
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21357,7 +21278,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &2030644485
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -21462,7 +21383,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2041288774
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21582,7 +21502,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2057784607
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21597,7 +21516,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &2057784608
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -21702,7 +21621,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2066842064
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21822,7 +21740,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2080179011
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -21837,7 +21754,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!136 &2080179012
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -21942,7 +21859,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2085815666
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -22062,7 +21978,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2112372660
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -22182,7 +22097,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2113547166
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -22254,7 +22168,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2116884306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22274,17 +22188,10 @@ MonoBehaviour:
   diffusionIntensity: 0.0001
   viscosityIntensity: 10
   solverIterations: 25
-  winds:
-  - strength: 0.05
-    turbulence: 0
-    direction: {x: -1, y: 1, z: 0}
-    windDirectionRandomization: 0.5
-    directionChangeSpeed: 1
-  - strength: 0.05
-    turbulence: 0
-    direction: {x: -1, y: 1, z: 0}
-    windDirectionRandomization: 0.5
-    directionChangeSpeed: 1
+  wind:
+    intensity: 5
+    direction: {x: -1, y: 0, z: 0}
+  fireLiftingPower: 1
 --- !u!23 &2116884307
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -22404,7 +22311,6 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
-  isTrunk: 0
 --- !u!138 &2119448050
 FixedJoint:
   m_ObjectHideFlags: 0
@@ -22419,7 +22325,7 @@ FixedJoint:
   m_EnableCollision: 0
   m_EnablePreprocessing: 1
   m_MassScale: 1
-  m_ConnectedMassScale: 1
+  m_ConnectedMassScale: 0.75
 --- !u!54 &2119448051
 Rigidbody:
   m_ObjectHideFlags: 0

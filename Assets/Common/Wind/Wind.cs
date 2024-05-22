@@ -5,7 +5,7 @@ namespace Common.Wind
     [System.Serializable]
     public class Wind
     {
-        [Range(0.0f, 30.0f)] public float intensity = 0.0f;
+        [Range(0.0f, 15.0f)] public float intensity = 0.0f;
         //[Range(0.01f, 20.0f)] public float turbulence = 5.0f;
     
         public Vector3 direction = Vector3.forward;

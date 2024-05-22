@@ -137,7 +137,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                         //rootPrototype.AddComponent<Tree>();
                         
                         // add tag to root
-                        //rootPrototype.tag = "Tree";
+                        rootPrototype.tag = "Tree";
                     }
                 }
             }
