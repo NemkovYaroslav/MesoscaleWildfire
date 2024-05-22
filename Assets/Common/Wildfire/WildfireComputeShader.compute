@@ -12,8 +12,7 @@
 #pragma kernel kernel_advection_temperature // 9
 #pragma kernel kernel_diffusion_temperature // 10
 
-#pragma kernel kernel_simulate_fire // 11
-#pragma kernel kernel_simulate_wind // 12
+#pragma kernel kernel_simulate_wind // 11
 
 RWTexture3D<float4> color_temperature_texture;
 RWTexture3D<float3> velocity_texture;
@@ -578,25 +577,6 @@ void kernel_diffusion_temperature (uint3 id : SV_DispatchThreadID)
     }
 }
 
-[numthreads(8,1,1)]
-void kernel_simulate_fire (uint3 id : SV_DispatchThreadID)
-{
-    const int index = id.x;
-
-    float3 uv = module_positions[index].xyz;
-    uv += 0.5f;
-    uv *= texture_resolution;
-    
-    const float3 position = floor(uv);
-
-    float3 velocity = velocity_texture[position];
-    if (velocity.y < fire_lifting_power)
-    {
-        velocity.y = fire_lifting_power;
-    }
-    velocity_texture[position] = velocity;
-}
-
 [numthreads(8,8,8)]
 void kernel_simulate_wind (uint3 id : SV_DispatchThreadID)
 {
@@ -604,6 +584,10 @@ void kernel_simulate_wind (uint3 id : SV_DispatchThreadID)
 
     //float3 velocity = velocity_texture[pixel_id];
     //velocity = clamp(velocity + wind_direction * wind_intensity, -wind_intensity, wind_intensity);
-    const float3 velocity = wind_direction * wind_intensity;
+    float3 velocity = wind_direction * wind_intensity;
+    if (velocity.y < fire_lifting_power)
+    {
+        velocity.y = fire_lifting_power;
+    }
     velocity_texture[pixel_id] = velocity;
 }

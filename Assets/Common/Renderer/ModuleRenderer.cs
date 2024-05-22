@@ -41,7 +41,7 @@ namespace Common.Renderer
         private ComputeBuffer _modulePositionsBuffer;
         private int _kernelReadData;
         private int _kernelWriteData;
-        private int _kernelSimulateFire;
+        //private int _kernelSimulateFire;
         private static readonly int ModulePositions = Shader.PropertyToID("module_positions");
 
         private void Start()
@@ -50,7 +50,6 @@ namespace Common.Renderer
             
             _kernelReadData     = computeShader.FindKernel("kernel_read_data");
             _kernelWriteData    = computeShader.FindKernel("kernel_write_data");
-            _kernelSimulateFire = computeShader.FindKernel("kernel_simulate_fire");
             
             // TREE HIERARCHY
             var trees = GameObject.FindGameObjectsWithTag("Tree");
@@ -161,7 +160,6 @@ namespace Common.Renderer
             _modulePositionsBuffer.SetData(modulePositionsArray);
             computeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
             computeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
-            computeShader.SetBuffer(_kernelSimulateFire, ModulePositions, _modulePositionsBuffer);
         }
         
         private void RenderModules()

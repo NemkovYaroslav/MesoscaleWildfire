@@ -26,6 +26,13 @@ namespace Common.Wildfire
         [Header("Fire Simulation Settings")]
         [SerializeField] private float fireLiftingPower = 0.005f;
         
+        [Header("Factors Settings")]
+        [SerializeField] private float moduleDiffusionFactor     = 0.001f;
+        [SerializeField] private float releaseTemperatureFactor  = 75000.0f;
+        [SerializeField] private float airToModuleTransferFactor = 0.01f;
+        [SerializeField] private float moduleToAirTransferFactor = 0.001f;
+        
+        
         // COMMON VARIABLES
         private ModuleRenderer _moduleRenderer;
         private GameObject _torch;
@@ -49,7 +56,6 @@ namespace Common.Wildfire
         private int _kernelAdvectionVelocity;
         private int _kernelAdvectionTemperature;
         private int _kernelDiffusionTemperature;
-        private int _kernelSimulateFire;
         private int _kernelSimulateWind;
         
         
@@ -147,7 +153,7 @@ namespace Common.Wildfire
             _kernelAdvectionVelocity    = computeShader.FindKernel("kernel_advection_velocity");
             _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
             _kernelDiffusionTemperature = computeShader.FindKernel("kernel_diffusion_temperature");
-            _kernelSimulateFire         = computeShader.FindKernel("kernel_simulate_fire");
+            //_kernelSimulateFire         = computeShader.FindKernel("kernel_simulate_fire");
             _kernelSimulateWind         = computeShader.FindKernel("kernel_simulate_wind");
             
             
@@ -172,7 +178,6 @@ namespace Common.Wildfire
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
             computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
             computeShader.SetTexture(_kernelDiffusionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelSimulateFire, ShaderVelocityTexture, _velocityTexture);
             computeShader.SetTexture(_kernelSimulateWind, ShaderVelocityTexture, _velocityTexture);
             
             // INITIALIZE COMMON VARIABLES
@@ -303,7 +308,6 @@ namespace Common.Wildfire
                 var module = modules[i];
                 
                 // SIMULATE DIFFUSION IN TREE HIERARCHY
-                const float moduleDiffusionFactor = 0.001f;
                 var connectedModule = module.neighbourModule;
                 if (connectedModule)
                 {
@@ -320,13 +324,19 @@ namespace Common.Wildfire
                         module.temperature += transferredTemperature;
                     }
                 }
+
+                /*
+                if (module.rigidBody.mass < module.stopCombustionMass && !connectedModule.isTrunk)
+                {
+                    Destroy(module.fixedJoint);
+                }
+                */
                 
                 
                 var transferAmbientTemperature = 0.0f;
                 
                 
                 // SIMULATE COMBUSTION
-                const float releaseTemperatureFactor = 75000.0f;
                 if (module.rigidBody.mass > module.stopCombustionMass)
                 {
                     var lostMass = module.CalculateLostMass();
@@ -340,10 +350,7 @@ namespace Common.Wildfire
                 
                 
                 // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
-                const float airToModuleTransferFactor = 0.01f;
-                const float moduleToAirTransferFactor = 0.001f;
                 var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                //Debug.Log("mod: " + modules[i].temperature * 1000.0f + " amb: " + ambientTemperature * 1000.0f);
                 if (ambientTemperature > module.temperature)
                 {
                     var temperatureDifference = ambientTemperature - module.temperature;
@@ -388,8 +395,9 @@ namespace Common.Wildfire
             // SIMULATE WIND BEHAVIOUR
             computeShader.SetVector(ShaderWindDirection, wind.direction);
             computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
-            
+            computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
             ShaderDispatch(_kernelSimulateWind);
+            
             
             // SIMULATE TREE DYNAMICS
             for (var i = modules.Length - 1; i >= 0; i--)
@@ -402,17 +410,6 @@ namespace Common.Wildfire
                 var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
                 module.rigidBody.AddForce(windForce, ForceMode.Force);
             }
-            
-            
-            // SIMULATE FIRE BEHAVIOR
-            computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower);
-            
-            computeShader.Dispatch(
-                _kernelSimulateFire,
-                _moduleRenderer.modulesCount / 8,
-                1,
-                1
-            );
         }
 
         private void SimulateFluid()
