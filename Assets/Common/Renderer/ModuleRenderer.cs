@@ -51,6 +51,7 @@ namespace Common.Renderer
             _kernelReadData     = computeShader.FindKernel("kernel_read_data");
             _kernelWriteData    = computeShader.FindKernel("kernel_write_data");
             
+            
             // TREE HIERARCHY
             var trees = GameObject.FindGameObjectsWithTag("Tree");
             orderedModuleList = new List<Module>();

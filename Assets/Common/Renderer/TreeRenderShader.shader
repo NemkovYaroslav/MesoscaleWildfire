@@ -2,6 +2,10 @@
 
 Shader "Unlit/TreeRenderShader"
 {
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+    }
     SubShader
     {
         Tags { "RenderType" = "Opaque" "Queue" = "Geometry" }
@@ -18,15 +22,18 @@ Shader "Unlit/TreeRenderShader"
             struct vert_input
             {
                 float4 position : POSITION;
-                float3 normal : NORMAL;
+                float2 uv       : TEXCOORD0;
             };
             
             struct frag_input
             {
                 float4 position : SV_POSITION;
-                float4 color : COLOR;
+                float2 uv       : TEXCOORD0;
             };
 
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            
             StructuredBuffer<float4x4> matrices;
 
             frag_input vert (const vert_input v, const uint instance_id : SV_InstanceID)
@@ -34,17 +41,17 @@ Shader "Unlit/TreeRenderShader"
                 frag_input o;
                 
                 const float4 position = mul(matrices[instance_id], v.position);
-                const float3 normal = normalize(mul(matrices[instance_id], v.normal));
                 
                 o.position = UnityObjectToClipPos(position);
-                o.color = float4(normal, 1);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 
                 return o;
             }
 
             fixed4 frag (frag_input i) : SV_Target
             {
-                return i.color;
+                fixed4 col = tex2D(_MainTex, i.uv);
+                return col;
             }
             
             ENDCG

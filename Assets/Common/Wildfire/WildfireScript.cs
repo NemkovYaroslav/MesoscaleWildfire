@@ -3,6 +3,7 @@ using Common.Renderer;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace Common.Wildfire
@@ -153,7 +154,6 @@ namespace Common.Wildfire
             _kernelAdvectionVelocity    = computeShader.FindKernel("kernel_advection_velocity");
             _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
             _kernelDiffusionTemperature = computeShader.FindKernel("kernel_diffusion_temperature");
-            //_kernelSimulateFire         = computeShader.FindKernel("kernel_simulate_fire");
             _kernelSimulateWind         = computeShader.FindKernel("kernel_simulate_wind");
             
             
@@ -324,14 +324,6 @@ namespace Common.Wildfire
                         module.temperature += transferredTemperature;
                     }
                 }
-
-                /*
-                if (module.rigidBody.mass < module.stopCombustionMass && !connectedModule.isTrunk)
-                {
-                    Destroy(module.fixedJoint);
-                }
-                */
-                
                 
                 var transferAmbientTemperature = 0.0f;
                 
@@ -397,7 +389,6 @@ namespace Common.Wildfire
             computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
             computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
             ShaderDispatch(_kernelSimulateWind);
-            
             
             // SIMULATE TREE DYNAMICS
             for (var i = modules.Length - 1; i >= 0; i--)
@@ -465,11 +456,13 @@ namespace Common.Wildfire
                 );
             }
             
+            Profiler.BeginSample("MyWildfire");
             // MAIN SIMULATION
             SimulateTreesDynamics();
             SimulateCombustionProcess();
             TransferDataFromModulesToGrid();
             SimulateFluid();
+            Profiler.EndSample();
         }
         
         private void CleanupPosForGetData()
