@@ -95,7 +95,7 @@ void kernel_user_input (uint3 id : SV_DispatchThreadID)
     }
 }
 
-[numthreads(8,1,1)]
+[numthreads(1,1,1)]
 void kernel_read_data (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
@@ -108,7 +108,7 @@ void kernel_read_data (uint3 id : SV_DispatchThreadID)
     get_data[index] = temperature.w;
 }
 
-[numthreads(8,1,1)]
+[numthreads(1,1,1)]
 void kernel_write_data (uint3 id : SV_DispatchThreadID)
 {
     const int index = id.x;
@@ -525,7 +525,7 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                         + temperature_011 * inf_011
                                             + temperature_111 * inf_111;
 
-            temperature.rgb *= 0.985f;
+            //temperature.rgb *= 0.985f;
             temperature.a   *= 0.999f;
             
             color_temperature_texture[pixel_id] = temperature;

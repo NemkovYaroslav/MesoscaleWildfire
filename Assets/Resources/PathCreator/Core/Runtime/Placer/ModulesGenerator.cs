@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using UnityEditor.Presets;
+using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
@@ -6,7 +8,9 @@ namespace Resources.PathCreator.Core.Runtime.Placer
     {
         private ModulePrototypesGenerator _modulePrototypesGenerator;
 
-        [HideInInspector] public float woodDensity = 800.0f;
+        public float woodDensity = 800.0f;
+
+        public Preset visualEffectPreset;
         
         private void OnDrawGizmos()
         {
@@ -170,6 +174,25 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                             currentPrototypeJoint.connectedBody = previousPrototypeRigidbody;
                             currentPrototypeJoint.connectedMassScale = 0.75f;
                         }
+                    }
+                }
+            }
+            
+            // add particle system
+            foreach (var child in children)
+            {
+                if (child.childCount > 0)
+                {
+                    for (var i = child.childCount - 1; i > 0; i--)
+                    {
+                        var currentPrototype = child.GetChild(i).gameObject;
+                        var visualEffect = currentPrototype.AddComponent<VisualEffect>();
+                        visualEffectPreset.ApplyTo(visualEffect);
+
+                        var capsuleCollider = currentPrototype.GetComponent<CapsuleCollider>();
+                        
+                        visualEffect.SetFloat("cone radius", capsuleCollider.radius);
+                        visualEffect.SetFloat("cone height", capsuleCollider.height);
                     }
                 }
             }

@@ -1,8 +1,10 @@
 using System;
 using Common.Renderer;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Jobs;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
@@ -262,12 +264,11 @@ namespace Common.Wildfire
                     1,
                     1
                 );
-                
             
                 // copy received data
                 var receivedData = new float[_moduleRenderer.modulesCount];
                 _getDataBuffer.GetData(receivedData);
-
+                
                 // set received data
                 for (var i = 0; i < receivedData.Length; i++)
                 {
@@ -298,15 +299,36 @@ namespace Common.Wildfire
         
         
         // simulate combustion process
-        private void SimulateCombustionProcess()
+        private void ProcessMainSimulationLoop()
         {
             // ITERATE THROUGH MODULES
-            var modules = _moduleRenderer.orderedModuleList.ToArray();
             
-            for (var i = modules.Length - 1; i >= 0; i--)
+            for (var i = _moduleRenderer.orderedModuleList.Count - 1; i >= 0; i--)
             {
-                var module = modules[i];
+                var module = _moduleRenderer.orderedModuleList[i];
                 
+                // SIMULATE WIND BEHAVIOUR
+                computeShader.SetVector(ShaderWindDirection, wind.direction);
+                computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
+                computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
+                ShaderDispatch(_kernelSimulateWind);
+                
+                /*
+                // SIMULATE TREE DYNAMICS
+                for (var i = modules.Length - 1; i >= 0; i--)
+                {
+                    var module = modules[i];
+
+                    const float airDensity = 1.2f;
+
+                    var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
+                    var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
+                    module.rigidBody.AddForce(windForce, ForceMode.Force);
+                }
+                */
+                
+                
+                /*
                 // SIMULATE DIFFUSION IN TREE HIERARCHY
                 var connectedModule = module.neighbourModule;
                 if (connectedModule)
@@ -324,6 +346,7 @@ namespace Common.Wildfire
                         module.temperature += transferredTemperature;
                     }
                 }
+                */
                 
                 var transferAmbientTemperature = 0.0f;
                 
@@ -340,7 +363,7 @@ namespace Common.Wildfire
                     }
                 }
                 
-                
+                /*
                 // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
                 var ambientTemperature = _modulesAmbientTemperatureArray[i];
                 if (ambientTemperature > module.temperature)
@@ -359,7 +382,7 @@ namespace Common.Wildfire
                     transferAmbientTemperature += transferredTemperature;
                     module.temperature -= transferredTemperature;
                 }
-                
+                */
                 
                 _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
             }
@@ -377,30 +400,6 @@ namespace Common.Wildfire
                 1,
                 1
             );
-        }
-
-        private void SimulateTreesDynamics()
-        {
-            var modules = _moduleRenderer.orderedModuleList.ToArray();
-            
-            
-            // SIMULATE WIND BEHAVIOUR
-            computeShader.SetVector(ShaderWindDirection, wind.direction);
-            computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
-            computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
-            ShaderDispatch(_kernelSimulateWind);
-            
-            // SIMULATE TREE DYNAMICS
-            for (var i = modules.Length - 1; i >= 0; i--)
-            {
-                var module = modules[i];
-
-                const float airDensity = 1.2f;
-                
-                var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
-                var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
-                module.rigidBody.AddForce(windForce, ForceMode.Force);
-            }
         }
 
         private void SimulateFluid()
@@ -441,6 +440,7 @@ namespace Common.Wildfire
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
             
+            /*
             if (Input.GetMouseButton(0))
             {
                 computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
@@ -455,11 +455,11 @@ namespace Common.Wildfire
                     1
                 );
             }
+            */
             
+            // MAIN SIMULATION LOOP
             Profiler.BeginSample("MyWildfire");
-            // MAIN SIMULATION
-            SimulateTreesDynamics();
-            SimulateCombustionProcess();
+            ProcessMainSimulationLoop();
             TransferDataFromModulesToGrid();
             SimulateFluid();
             Profiler.EndSample();

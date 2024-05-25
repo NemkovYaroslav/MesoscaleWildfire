@@ -1,5 +1,8 @@
-﻿using Common.Renderer;
+﻿using System;
+using Common.Renderer;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
 {
@@ -20,12 +23,14 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         public Module neighbourModule;
 
         private ModuleRenderer _moduleRenderer;
+
+        public VisualEffect cachedVisualEffect;
         
         public bool isTrunk;
 
         private void Awake()
         {
-            transForm       = transform;
+            transForm       = GetComponent<Transform>();
             rigidBody       = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
             fixedJoint      = GetComponent<FixedJoint>();
@@ -39,9 +44,12 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                 }
             }
 
-            //_moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
+            _moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
             
             stopCombustionMass = rigidBody.mass * 0.1f;
+
+            //cachedVisualEffect = GetComponent<VisualEffect>();
+            //cachedVisualEffect.enabled = true;
         }
         
         public float CalculateLostMass()
@@ -54,7 +62,7 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             {
                 reactionRate = 0.0f;
             }
-            if (temperature > IgnitionTemperature && temperature < AttenuationTemperature)
+            if (temperature is > IgnitionTemperature and < AttenuationTemperature)
             {
                 var argument = (temperature - IgnitionTemperature) / (AttenuationTemperature - IgnitionTemperature);
                 reactionRate = 3.0f * Mathf.Pow(argument, 2.0f) - 2.0f * Mathf.Pow(argument, 3.0f);

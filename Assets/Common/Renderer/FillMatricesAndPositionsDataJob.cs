@@ -5,7 +5,6 @@ using UnityEngine.Jobs;
 
 namespace Common.Renderer
 {
-    [BurstCompile]
     public struct FillMatricesAndPositionsDataJob : IJobParallelForTransform
     {
         [ReadOnly] public NativeArray<Vector3> centers;

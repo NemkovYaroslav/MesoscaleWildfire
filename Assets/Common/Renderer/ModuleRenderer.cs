@@ -51,7 +51,7 @@ namespace Common.Renderer
             _kernelReadData     = computeShader.FindKernel("kernel_read_data");
             _kernelWriteData    = computeShader.FindKernel("kernel_write_data");
             
-            
+            ///*
             // TREE HIERARCHY
             var trees = GameObject.FindGameObjectsWithTag("Tree");
             orderedModuleList = new List<Module>();
@@ -65,6 +65,17 @@ namespace Common.Renderer
                 }
             }
             modulesCount = orderedModuleList.Count;
+            //*/
+
+            /*
+            orderedModuleList = new List<Module>();
+            var modules = GameObject.FindGameObjectsWithTag("Module");
+            foreach (var module in modules)
+            {
+                orderedModuleList.Add(module.GetComponent<Module>());
+            }
+            modulesCount = orderedModuleList.Count;
+            */
             
             // RENDER MODULES
             _centersArray
@@ -138,29 +149,32 @@ namespace Common.Renderer
 
         private void FillCommonData()
         {
-            for (var i = 0; i < modulesCount; i++)
+            if (transformAccessArray.length > 0)
             {
-                _centersArray[i] = orderedModuleList[i].capsuleCollider.center;
-                _heightsArray[i] = orderedModuleList[i].capsuleCollider.height;
-                _radiiArray[i]   = orderedModuleList[i].capsuleCollider.radius;
+                for (var i = 0; i < modulesCount; i++)
+                {
+                    _centersArray[i] = orderedModuleList[i].capsuleCollider.center;
+                    _heightsArray[i] = orderedModuleList[i].capsuleCollider.height;
+                    _radiiArray[i] = orderedModuleList[i].capsuleCollider.radius;
+                }
+
+                var job = new FillMatricesAndPositionsDataJob()
+                {
+                    centers = _centersArray,
+                    heights = _heightsArray,
+                    radii = _radiiArray,
+                    matrices = _matricesArray,
+
+                    wildfireAreaWorldToLocal = _wildfireAreaWorldToLocal,
+                    modulesWildfireAreaPosition = modulePositionsArray,
+                };
+                var handle = job.Schedule(transformAccessArray);
+                handle.Complete();
+
+                _modulePositionsBuffer.SetData(modulePositionsArray);
+                computeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
+                computeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
             }
-            
-            var job = new FillMatricesAndPositionsDataJob()
-            {
-                centers  = _centersArray,
-                heights  = _heightsArray,
-                radii    = _radiiArray,
-                matrices = _matricesArray,
-            
-                wildfireAreaWorldToLocal    = _wildfireAreaWorldToLocal,
-                modulesWildfireAreaPosition = modulePositionsArray,
-            };
-            var handle = job.Schedule(transformAccessArray);
-            handle.Complete();
-            
-            _modulePositionsBuffer.SetData(modulePositionsArray);
-            computeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
-            computeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
         }
         
         private void RenderModules()

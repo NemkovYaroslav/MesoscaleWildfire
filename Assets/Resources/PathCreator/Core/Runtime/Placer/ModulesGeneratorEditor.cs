@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Presets;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Runtime.Placer
@@ -15,6 +16,9 @@ namespace Resources.PathCreator.Core.Runtime.Placer
             {
                 _modulesGenerator.woodDensity = newWoodDensity;
             }
+
+            _modulesGenerator.visualEffectPreset 
+                = (Preset)EditorGUILayout.ObjectField("Preset", _modulesGenerator.visualEffectPreset, typeof(Preset), false);
             
             EditorGUILayout.Separator();
             
