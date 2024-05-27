@@ -1,10 +1,8 @@
 using System;
 using Common.Renderer;
 using Unity.Collections;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
-using UnityEngine.Jobs;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
@@ -281,6 +279,7 @@ namespace Common.Wildfire
         {
             if (request.done)
             {
+                Profiler.BeginSample("AsyncReadData");
                 if (_colorTemperatureTexture)
                 {
                     // transfer data from fluid solver to modules
@@ -294,6 +293,7 @@ namespace Common.Wildfire
                         AsyncGPUReadbackCallback
                     );
                 }
+                Profiler.EndSample();
             }
         }
         
@@ -303,32 +303,27 @@ namespace Common.Wildfire
         {
             // ITERATE THROUGH MODULES
             
+            // SIMULATE WIND BEHAVIOUR
+            computeShader.SetVector(ShaderWindDirection, wind.direction);
+            computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
+            computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
+            ShaderDispatch(_kernelSimulateWind);
+            
             for (var i = _moduleRenderer.orderedModuleList.Count - 1; i >= 0; i--)
             {
                 var module = _moduleRenderer.orderedModuleList[i];
                 
-                // SIMULATE WIND BEHAVIOUR
-                computeShader.SetVector(ShaderWindDirection, wind.direction);
-                computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
-                computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
-                ShaderDispatch(_kernelSimulateWind);
                 
-                /*
+                ///*
                 // SIMULATE TREE DYNAMICS
-                for (var i = modules.Length - 1; i >= 0; i--)
-                {
-                    var module = modules[i];
-
-                    const float airDensity = 1.2f;
-
-                    var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
-                    var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
-                    module.rigidBody.AddForce(windForce, ForceMode.Force);
-                }
-                */
+                const float airDensity = 1.2f;
+                var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
+                var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
+                module.rigidBody.AddForce(windForce, ForceMode.Force);
+                //*/
                 
                 
-                /*
+                ///*
                 // SIMULATE DIFFUSION IN TREE HIERARCHY
                 var connectedModule = module.neighbourModule;
                 if (connectedModule)
@@ -346,7 +341,8 @@ namespace Common.Wildfire
                         module.temperature += transferredTemperature;
                     }
                 }
-                */
+                //*/
+                
                 
                 var transferAmbientTemperature = 0.0f;
                 
@@ -357,34 +353,61 @@ namespace Common.Wildfire
                     var lostMass = module.CalculateLostMass();
                     if (!Mathf.Approximately(lostMass, 0))
                     {
+                        if (!module.isBurned)
+                        {
+                            module.isBurned = true;
+                        }
+                        
                         var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
                         transferAmbientTemperature = releaseTemperature;
                         module.RecalculateCharacteristics(lostMass);
                     }
                 }
+                else
+                {
+                    Destroy(module.fixedJoint);
+                }
                 
-                /*
+                ///*
                 // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
                 var ambientTemperature = _modulesAmbientTemperatureArray[i];
                 if (ambientTemperature > module.temperature)
                 {
                     var temperatureDifference = ambientTemperature - module.temperature;
-                    var transferredTemperature = airToModuleTransferFactor * temperatureDifference;
+                    //var transferredTemperature = airToModuleTransferFactor * temperatureDifference;
 
-                    module.temperature += transferredTemperature;
-                    transferAmbientTemperature -= transferredTemperature;
+                    module.temperature         += temperatureDifference * moduleToAirTransferFactor;
+                    transferAmbientTemperature -= temperatureDifference * airToModuleTransferFactor;
                 }
                 if (module.temperature > ambientTemperature)
                 {
                     var temperatureDifference = module.temperature - ambientTemperature;
-                    var transferredTemperature = moduleToAirTransferFactor * temperatureDifference;
+                    //var transferredTemperature = moduleToAirTransferFactor * temperatureDifference;
 
-                    transferAmbientTemperature += transferredTemperature;
-                    module.temperature -= transferredTemperature;
+                    transferAmbientTemperature += temperatureDifference * airToModuleTransferFactor;
+                    module.temperature         -= temperatureDifference * moduleToAirTransferFactor;
                 }
-                */
+                //*/
                 
                 _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
+                
+                ///*
+                // check for visual effects
+                if (module.temperature > 0.25f)
+                {
+                    if (!module.cachedVisualEffect.enabled)
+                    {
+                        module.cachedVisualEffect.enabled = true;
+                    }
+                }
+                else
+                {
+                    if (module.cachedVisualEffect.enabled)
+                    {
+                        module.cachedVisualEffect.enabled = false;
+                    }
+                }
+                //*/
             }
         }
         
@@ -440,7 +463,7 @@ namespace Common.Wildfire
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
             
-            /*
+            ///*
             if (Input.GetMouseButton(0))
             {
                 computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
@@ -455,10 +478,10 @@ namespace Common.Wildfire
                     1
                 );
             }
-            */
+            //*/
             
             // MAIN SIMULATION LOOP
-            Profiler.BeginSample("MyWildfire");
+            Profiler.BeginSample("Wildfire");
             ProcessMainSimulationLoop();
             TransferDataFromModulesToGrid();
             SimulateFluid();

@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 8145183166588431984}
   - component: {fileID: 7176054178757858475}
   - component: {fileID: 7557647134267311684}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2711089669969210434
 Transform:
@@ -83,7 +83,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7176054178757858475
 FixedJoint:
@@ -97,7 +97,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &7557647134267311684
@@ -120,7 +120,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &175931967878317080
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,12 +134,12 @@ GameObject:
   - component: {fileID: 220421561753058488}
   - component: {fileID: 2027806912623766884}
   - component: {fileID: 6282625050296839440}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5737075542683431398
 Transform:
@@ -204,7 +204,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &2027806912623766884
 FixedJoint:
@@ -218,7 +218,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6282625050296839440
@@ -241,7 +241,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &252530164927937256
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,12 +255,12 @@ GameObject:
   - component: {fileID: 1725467833769526783}
   - component: {fileID: 8391079461220879921}
   - component: {fileID: 8065410545566938583}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8166177950207756363
 Transform:
@@ -325,7 +325,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &8391079461220879921
 FixedJoint:
@@ -339,7 +339,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8065410545566938583
@@ -362,7 +362,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &847257299018464954
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,12 +376,12 @@ GameObject:
   - component: {fileID: 4300015518552622715}
   - component: {fileID: 7776200397206925913}
   - component: {fileID: 8610135010360312934}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,3125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5229901939708284925
 Transform:
@@ -446,7 +446,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7776200397206925913
 FixedJoint:
@@ -460,7 +460,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8610135010360312934
@@ -483,7 +483,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1530538008182801029
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,12 +497,12 @@ GameObject:
   - component: {fileID: 7021730489179057916}
   - component: {fileID: 3760107381608337344}
   - component: {fileID: 3315047302032775431}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6556978613153575724
 Transform:
@@ -567,7 +567,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &3760107381608337344
 FixedJoint:
@@ -581,7 +581,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &3315047302032775431
@@ -604,7 +604,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1591363119510056446
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,12 +618,12 @@ GameObject:
   - component: {fileID: 223214485375181966}
   - component: {fileID: 6609705668190077357}
   - component: {fileID: 6749239042817307657}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6910882448385267004
 Transform:
@@ -688,7 +688,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6609705668190077357
 FixedJoint:
@@ -702,7 +702,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6749239042817307657
@@ -725,7 +725,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1674439123136624450
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,12 +739,12 @@ GameObject:
   - component: {fileID: 2574752722411482361}
   - component: {fileID: 6844330587997798959}
   - component: {fileID: 6300132320329303879}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3839482296805217925
 Transform:
@@ -809,7 +809,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6844330587997798959
 FixedJoint:
@@ -823,7 +823,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6300132320329303879
@@ -846,7 +846,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1803034121442045293
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,12 +860,12 @@ GameObject:
   - component: {fileID: 4806126615209968573}
   - component: {fileID: 508915389306709569}
   - component: {fileID: 8964580779883252578}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,1875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6690954916092528642
 Transform:
@@ -930,7 +930,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &508915389306709569
 FixedJoint:
@@ -944,7 +944,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8964580779883252578
@@ -967,7 +967,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1935146882179974394
 GameObject:
   m_ObjectHideFlags: 0
@@ -981,12 +981,12 @@ GameObject:
   - component: {fileID: 9190626518187627796}
   - component: {fileID: 533970156597585122}
   - component: {fileID: 7084485171557379985}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3398486085274419306
 Transform:
@@ -1051,7 +1051,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &533970156597585122
 FixedJoint:
@@ -1065,7 +1065,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &7084485171557379985
@@ -1088,7 +1088,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2014492638685007527
 GameObject:
   m_ObjectHideFlags: 0
@@ -1102,12 +1102,12 @@ GameObject:
   - component: {fileID: 1154496044515970652}
   - component: {fileID: 8555711406772153422}
   - component: {fileID: 9011810309618845034}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5639173604171810128
 Transform:
@@ -1172,7 +1172,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &8555711406772153422
 FixedJoint:
@@ -1186,7 +1186,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &9011810309618845034
@@ -1209,7 +1209,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2165836836543388458
 GameObject:
   m_ObjectHideFlags: 0
@@ -1223,12 +1223,12 @@ GameObject:
   - component: {fileID: 1789208547188487272}
   - component: {fileID: 1797916056835319494}
   - component: {fileID: 258529821372706798}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1583756500916600668
 Transform:
@@ -1293,7 +1293,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &1797916056835319494
 FixedJoint:
@@ -1307,7 +1307,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &258529821372706798
@@ -1330,7 +1330,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2378484932653147183
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,12 +1344,12 @@ GameObject:
   - component: {fileID: 887232771060312124}
   - component: {fileID: 9014579655731436838}
   - component: {fileID: 1127356556593796688}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4188872912994046541
 Transform:
@@ -1414,7 +1414,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &9014579655731436838
 FixedJoint:
@@ -1428,7 +1428,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &1127356556593796688
@@ -1451,7 +1451,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2443574749789516648
 GameObject:
   m_ObjectHideFlags: 0
@@ -1465,12 +1465,12 @@ GameObject:
   - component: {fileID: 449787759054098815}
   - component: {fileID: 7968251408589447456}
   - component: {fileID: 2923460496927423825}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8692328490774948415
 Transform:
@@ -1535,7 +1535,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7968251408589447456
 FixedJoint:
@@ -1549,7 +1549,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &2923460496927423825
@@ -1572,7 +1572,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2585679897770690745
 GameObject:
   m_ObjectHideFlags: 0
@@ -1586,12 +1586,12 @@ GameObject:
   - component: {fileID: 6955845723197837470}
   - component: {fileID: 6761745475452202092}
   - component: {fileID: 7260341931300008675}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3241308299514439644
 Transform:
@@ -1656,7 +1656,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6761745475452202092
 FixedJoint:
@@ -1670,7 +1670,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &7260341931300008675
@@ -1693,7 +1693,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2821340512376813039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1707,12 +1707,12 @@ GameObject:
   - component: {fileID: 1677921959818875023}
   - component: {fileID: 6684679460933533542}
   - component: {fileID: 6680221618199140762}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,0625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5473154325993695813
 Transform:
@@ -1777,7 +1777,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6684679460933533542
 FixedJoint:
@@ -1791,7 +1791,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6680221618199140762
@@ -1814,7 +1814,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2917819121292361648
 GameObject:
   m_ObjectHideFlags: 0
@@ -1828,12 +1828,12 @@ GameObject:
   - component: {fileID: 4871003247095502272}
   - component: {fileID: 7009201026133172636}
   - component: {fileID: 6941568101673203318}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,8125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &9217376088208794722
 Transform:
@@ -1898,7 +1898,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7009201026133172636
 FixedJoint:
@@ -1912,7 +1912,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6941568101673203318
@@ -1935,7 +1935,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &3244346251569114425
 GameObject:
   m_ObjectHideFlags: 0
@@ -1949,12 +1949,12 @@ GameObject:
   - component: {fileID: 2458691243278771413}
   - component: {fileID: 519902748297988975}
   - component: {fileID: 6700642937868888070}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2718044569234289388
 Transform:
@@ -2019,7 +2019,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &519902748297988975
 FixedJoint:
@@ -2033,7 +2033,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6700642937868888070
@@ -2056,7 +2056,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &3291136771535583590
 GameObject:
   m_ObjectHideFlags: 0
@@ -2070,12 +2070,12 @@ GameObject:
   - component: {fileID: 7031320402858980358}
   - component: {fileID: 7007927523599904358}
   - component: {fileID: 4334780914620584513}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6129128110638583413
 Transform:
@@ -2140,7 +2140,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7007927523599904358
 FixedJoint:
@@ -2154,7 +2154,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &4334780914620584513
@@ -2177,7 +2177,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &3885102815032376768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2191,12 +2191,12 @@ GameObject:
   - component: {fileID: 970771280259802621}
   - component: {fileID: 2800102224371086868}
   - component: {fileID: 8764740861344430372}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,9375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2676772602897299797
 Transform:
@@ -2261,7 +2261,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &2800102224371086868
 FixedJoint:
@@ -2275,7 +2275,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8764740861344430372
@@ -2298,7 +2298,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4289411330828016874
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,12 +2312,12 @@ GameObject:
   - component: {fileID: 5483490351344165838}
   - component: {fileID: 5825334972496616949}
   - component: {fileID: 2550785792692902232}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,6875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5014817967102520787
 Transform:
@@ -2382,7 +2382,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &5825334972496616949
 FixedJoint:
@@ -2396,7 +2396,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &2550785792692902232
@@ -2419,7 +2419,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4381197336035397388
 GameObject:
   m_ObjectHideFlags: 0
@@ -2433,12 +2433,12 @@ GameObject:
   - component: {fileID: 4197458237567467267}
   - component: {fileID: 6366940614388188359}
   - component: {fileID: 7067654102193140819}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5967429398108140295
 Transform:
@@ -2503,7 +2503,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6366940614388188359
 FixedJoint:
@@ -2517,7 +2517,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &7067654102193140819
@@ -2540,7 +2540,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4487373552446784997
 GameObject:
   m_ObjectHideFlags: 0
@@ -2554,12 +2554,12 @@ GameObject:
   - component: {fileID: 1274043059338241045}
   - component: {fileID: 6189309456584520882}
   - component: {fileID: 8041589767749434979}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3123269673589586603
 Transform:
@@ -2624,7 +2624,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6189309456584520882
 FixedJoint:
@@ -2638,7 +2638,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8041589767749434979
@@ -2661,7 +2661,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4655410251031143924
 GameObject:
   m_ObjectHideFlags: 0
@@ -2675,12 +2675,12 @@ GameObject:
   - component: {fileID: 2777615142267725760}
   - component: {fileID: 764100902636069744}
   - component: {fileID: 4356590997947951879}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4262673939891485491
 Transform:
@@ -2745,7 +2745,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &764100902636069744
 FixedJoint:
@@ -2759,7 +2759,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &4356590997947951879
@@ -2782,7 +2782,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4970043229025691988
 GameObject:
   m_ObjectHideFlags: 0
@@ -2796,12 +2796,12 @@ GameObject:
   - component: {fileID: 85833314955981957}
   - component: {fileID: 6176188938952470736}
   - component: {fileID: 9026515645894532950}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2258869849827363416
 Transform:
@@ -2866,7 +2866,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6176188938952470736
 FixedJoint:
@@ -2880,7 +2880,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &9026515645894532950
@@ -2903,7 +2903,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5326602964715633475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2917,12 +2917,12 @@ GameObject:
   - component: {fileID: 7961093954315233479}
   - component: {fileID: 6538388389320363870}
   - component: {fileID: 1284161758386159293}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4434162331056668267
 Transform:
@@ -2987,7 +2987,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &6538388389320363870
 FixedJoint:
@@ -3001,7 +3001,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &1284161758386159293
@@ -3024,7 +3024,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5573973581301853977
 GameObject:
   m_ObjectHideFlags: 0
@@ -3038,12 +3038,12 @@ GameObject:
   - component: {fileID: 7441134258178058556}
   - component: {fileID: 3633987401467635878}
   - component: {fileID: 8141086557127937213}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5317747828530966397
 Transform:
@@ -3108,7 +3108,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &3633987401467635878
 FixedJoint:
@@ -3122,7 +3122,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8141086557127937213
@@ -3145,7 +3145,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5680060030554560003
 GameObject:
   m_ObjectHideFlags: 0
@@ -3159,12 +3159,12 @@ GameObject:
   - component: {fileID: 1546800357278963289}
   - component: {fileID: 7278556542740726558}
   - component: {fileID: 1748894014838956312}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2391306910823150968
 Transform:
@@ -3229,7 +3229,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7278556542740726558
 FixedJoint:
@@ -3243,7 +3243,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &1748894014838956312
@@ -3266,7 +3266,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5855149400415546433
 GameObject:
   m_ObjectHideFlags: 0
@@ -3280,12 +3280,12 @@ GameObject:
   - component: {fileID: 7074407101959564673}
   - component: {fileID: 387147803335379868}
   - component: {fileID: 3889756134004257603}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3462502059114144050
 Transform:
@@ -3350,7 +3350,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &387147803335379868
 FixedJoint:
@@ -3364,7 +3364,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &3889756134004257603
@@ -3387,7 +3387,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5981947641742006464
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,12 +3401,12 @@ GameObject:
   - component: {fileID: 4091130707399557009}
   - component: {fileID: 1234112868799311178}
   - component: {fileID: 1847128186323810142}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2192972182224469439
 Transform:
@@ -3471,7 +3471,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &1234112868799311178
 FixedJoint:
@@ -3485,7 +3485,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &1847128186323810142
@@ -3508,7 +3508,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6001143054918181679
 GameObject:
   m_ObjectHideFlags: 0
@@ -3522,12 +3522,12 @@ GameObject:
   - component: {fileID: 6643674080943637930}
   - component: {fileID: 8369152211990851381}
   - component: {fileID: 2163722453554426020}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &447117570887016524
 Transform:
@@ -3592,7 +3592,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &8369152211990851381
 FixedJoint:
@@ -3606,7 +3606,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &2163722453554426020
@@ -3629,7 +3629,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6274550679482931672
 GameObject:
   m_ObjectHideFlags: 0
@@ -3643,12 +3643,12 @@ GameObject:
   - component: {fileID: 835657863707932104}
   - component: {fileID: 2974824872493209145}
   - component: {fileID: 2049961964902524728}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5396885981564663674
 Transform:
@@ -3713,7 +3713,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &2974824872493209145
 FixedJoint:
@@ -3727,7 +3727,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &2049961964902524728
@@ -3750,7 +3750,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6328496690594858459
 GameObject:
   m_ObjectHideFlags: 0
@@ -3764,12 +3764,12 @@ GameObject:
   - component: {fileID: 2138249522719584391}
   - component: {fileID: 3220317063619591196}
   - component: {fileID: 5246065552177354757}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2160566221005291289
 Transform:
@@ -3834,7 +3834,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &3220317063619591196
 FixedJoint:
@@ -3848,7 +3848,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &5246065552177354757
@@ -3871,7 +3871,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6348377789787359528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3885,12 +3885,12 @@ GameObject:
   - component: {fileID: 1364040005087582338}
   - component: {fileID: 769657143361575310}
   - component: {fileID: 8520079802841944061}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4603829897862155562
 Transform:
@@ -3955,7 +3955,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &769657143361575310
 FixedJoint:
@@ -3969,7 +3969,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8520079802841944061
@@ -3992,7 +3992,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6394586785581201975
 GameObject:
   m_ObjectHideFlags: 0
@@ -4006,12 +4006,12 @@ GameObject:
   - component: {fileID: 2600309652367978736}
   - component: {fileID: 167545280712840246}
   - component: {fileID: 1842916242134898556}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2125802339400658943
 Transform:
@@ -4076,7 +4076,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &167545280712840246
 FixedJoint:
@@ -4090,7 +4090,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &1842916242134898556
@@ -4113,7 +4113,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6616849068437615438
 GameObject:
   m_ObjectHideFlags: 0
@@ -4127,12 +4127,12 @@ GameObject:
   - component: {fileID: 4825245281887168234}
   - component: {fileID: 8946510827007324356}
   - component: {fileID: 4128921839044933052}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &9131153135697179611
 Transform:
@@ -4197,7 +4197,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &8946510827007324356
 FixedJoint:
@@ -4211,7 +4211,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &4128921839044933052
@@ -4234,7 +4234,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6737946388057618252
 GameObject:
   m_ObjectHideFlags: 0
@@ -4245,12 +4245,12 @@ GameObject:
   m_Component:
   - component: {fileID: 8131696861470924538}
   - component: {fileID: 1406756934865600081}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TestTreeKinematicNoEffects
   m_TagString: Tree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8131696861470924538
 Transform:
@@ -4351,12 +4351,12 @@ GameObject:
   - component: {fileID: 496042129553802145}
   - component: {fileID: 1060077593939709059}
   - component: {fileID: 1228330805936493079}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7463690851684290514
 Transform:
@@ -4421,7 +4421,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &1060077593939709059
 FixedJoint:
@@ -4435,7 +4435,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &1228330805936493079
@@ -4458,7 +4458,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7358829422307416938
 GameObject:
   m_ObjectHideFlags: 0
@@ -4472,12 +4472,12 @@ GameObject:
   - component: {fileID: 1064663900485927376}
   - component: {fileID: 4294591016338903898}
   - component: {fileID: 3250627391082787793}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7719534631747747395
 Transform:
@@ -4542,7 +4542,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &4294591016338903898
 FixedJoint:
@@ -4556,7 +4556,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &3250627391082787793
@@ -4579,7 +4579,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7466812099629092945
 GameObject:
   m_ObjectHideFlags: 0
@@ -4593,12 +4593,12 @@ GameObject:
   - component: {fileID: 7580453982154159453}
   - component: {fileID: 7813856329796551517}
   - component: {fileID: 6863669446104184022}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5324734255471393016
 Transform:
@@ -4663,7 +4663,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7813856329796551517
 FixedJoint:
@@ -4677,7 +4677,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6863669446104184022
@@ -4700,7 +4700,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7665349628549650035
 GameObject:
   m_ObjectHideFlags: 0
@@ -4714,12 +4714,12 @@ GameObject:
   - component: {fileID: 5835846405590549596}
   - component: {fileID: 7789399290955349224}
   - component: {fileID: 3417369481446542138}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3720424294461907730
 Transform:
@@ -4784,7 +4784,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7789399290955349224
 FixedJoint:
@@ -4798,7 +4798,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &3417369481446542138
@@ -4821,7 +4821,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8039729996848415604
 GameObject:
   m_ObjectHideFlags: 0
@@ -4835,12 +4835,12 @@ GameObject:
   - component: {fileID: 6575914417474990838}
   - component: {fileID: 815854337279697984}
   - component: {fileID: 3690018839090700487}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,4375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7607884702094438130
 Transform:
@@ -4905,7 +4905,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &815854337279697984
 FixedJoint:
@@ -4919,7 +4919,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &3690018839090700487
@@ -4942,7 +4942,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8078396419321158556
 GameObject:
   m_ObjectHideFlags: 0
@@ -4956,12 +4956,12 @@ GameObject:
   - component: {fileID: 3515095577943883108}
   - component: {fileID: 7052846865218677365}
   - component: {fileID: 5271933828161450174}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &265669510933775709
 Transform:
@@ -5026,7 +5026,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7052846865218677365
 FixedJoint:
@@ -5040,7 +5040,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &5271933828161450174
@@ -5063,7 +5063,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8560615970314671918
 GameObject:
   m_ObjectHideFlags: 0
@@ -5077,12 +5077,12 @@ GameObject:
   - component: {fileID: 5250188085581603055}
   - component: {fileID: 7340095885005623820}
   - component: {fileID: 5203629832264618802}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2607679801505721869
 Transform:
@@ -5147,7 +5147,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &7340095885005623820
 FixedJoint:
@@ -5161,7 +5161,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &5203629832264618802
@@ -5184,7 +5184,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8912718276095986619
 GameObject:
   m_ObjectHideFlags: 0
@@ -5198,12 +5198,12 @@ GameObject:
   - component: {fileID: 8997680580302987610}
   - component: {fileID: 5527975663545508963}
   - component: {fileID: 6163027697545391058}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6107133205298634487
 Transform:
@@ -5268,7 +5268,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &5527975663545508963
 FixedJoint:
@@ -5282,7 +5282,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &6163027697545391058
@@ -5305,7 +5305,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &9093727289942402536
 GameObject:
   m_ObjectHideFlags: 0
@@ -5319,12 +5319,12 @@ GameObject:
   - component: {fileID: 6205386696350289747}
   - component: {fileID: 3592931927513984896}
   - component: {fileID: 8086124624404703362}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4522823936842782063
 Transform:
@@ -5389,7 +5389,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!138 &3592931927513984896
 FixedJoint:
@@ -5403,7 +5403,7 @@ FixedJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 0.75
 --- !u!114 &8086124624404703362
@@ -5426,4 +5426,4 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0

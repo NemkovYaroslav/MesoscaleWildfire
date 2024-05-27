@@ -29,12 +29,15 @@ Shader "Unlit/TreeRenderShader"
             {
                 float4 position : SV_POSITION;
                 float2 uv       : TEXCOORD0;
+                float2 flag      : TEXCOORD1;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
             
             StructuredBuffer<float4x4> matrices;
+
+            StructuredBuffer<bool> burned_trees;
 
             frag_input vert (const vert_input v, const uint instance_id : SV_InstanceID)
             {
@@ -44,6 +47,8 @@ Shader "Unlit/TreeRenderShader"
                 
                 o.position = UnityObjectToClipPos(position);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+
+                o.flag.x = burned_trees[instance_id];
                 
                 return o;
             }
@@ -51,6 +56,10 @@ Shader "Unlit/TreeRenderShader"
             fixed4 frag (frag_input i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
+                if (i.flag.x)
+                {
+                    col = float4(0,0,0,0);
+                }
                 return col;
             }
             

@@ -22,12 +22,10 @@ namespace Resources.PathCreator.Core.Runtime.Placer
         
         public Module neighbourModule;
 
-        private ModuleRenderer _moduleRenderer;
-
         public VisualEffect cachedVisualEffect;
-        
-        public bool isTrunk;
 
+        public bool isBurned;
+        
         private void Awake()
         {
             transForm       = GetComponent<Transform>();
@@ -43,13 +41,16 @@ namespace Resources.PathCreator.Core.Runtime.Placer
                     neighbourModule = module;
                 }
             }
-
-            _moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
             
             stopCombustionMass = rigidBody.mass * 0.1f;
 
-            //cachedVisualEffect = GetComponent<VisualEffect>();
-            //cachedVisualEffect.enabled = true;
+            ///*
+            cachedVisualEffect = GetComponent<VisualEffect>();
+            cachedVisualEffect.enabled = false;
+            cachedVisualEffect.SetVector3("direction", new Vector3(0.01f, 0.0f, 0.0f));
+            cachedVisualEffect.SetFloat("cone radius", capsuleCollider.radius);
+            cachedVisualEffect.SetFloat("cone height", capsuleCollider.height);
+            //*/
         }
         
         public float CalculateLostMass()

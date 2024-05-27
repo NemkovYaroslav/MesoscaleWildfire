@@ -15,12 +15,12 @@ GameObject:
   - component: {fileID: 2979537453792438350}
   - component: {fileID: 2695764483870889393}
   - component: {fileID: 651495927043639855}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,9375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6240644953206791356
 Transform:
@@ -120,17 +120,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.629865
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.01875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -209,7 +209,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &123637826315992920
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,12 +225,12 @@ GameObject:
   - component: {fileID: 8873909679650897376}
   - component: {fileID: 3061881711763260131}
   - component: {fileID: 8442657540976093685}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5524990218605157835
 Transform:
@@ -330,17 +330,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.3018145
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.021875001
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -419,7 +419,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &293745786473490693
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,12 +435,12 @@ GameObject:
   - component: {fileID: 2205863546116666910}
   - component: {fileID: 7043056286793263566}
   - component: {fileID: 8316293575809635335}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,3125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &9157558455808829456
 Transform:
@@ -540,17 +540,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.63007706
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.14375001
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -629,7 +629,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &423578507056071299
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,12 +645,12 @@ GameObject:
   - component: {fileID: 6850276682147351034}
   - component: {fileID: 2609399905765433690}
   - component: {fileID: 5459043739351624896}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,6875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &9186317082453302759
 Transform:
@@ -750,17 +750,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.62940407
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.06875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -839,7 +839,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &460861167612010933
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,12 +855,12 @@ GameObject:
   - component: {fileID: 5403375361495917772}
   - component: {fileID: 1103635542008925799}
   - component: {fileID: 3857745153302060350}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5877777917779310975
 Transform:
@@ -960,17 +960,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.45742857
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.05625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -1049,7 +1049,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &476841579515633693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1065,12 +1065,12 @@ GameObject:
   - component: {fileID: 2996504841305898507}
   - component: {fileID: 7753139360294768543}
   - component: {fileID: 2027686767704475958}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5007336372966357369
 Transform:
@@ -1170,17 +1170,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6296891
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.08125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -1259,7 +1259,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &496936253130048916
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,12 +1275,12 @@ GameObject:
   - component: {fileID: 4353697367677050046}
   - component: {fileID: 6670501702979024261}
   - component: {fileID: 1782005106607230966}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8328487245891837976
 Transform:
@@ -1380,17 +1380,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.62981105
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.05625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -1469,7 +1469,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &897651585553559307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1485,12 +1485,12 @@ GameObject:
   - component: {fileID: 2315074445261778262}
   - component: {fileID: 4101469821409683178}
   - component: {fileID: 6071648460803588312}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,4375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8766081815734324095
 Transform:
@@ -1590,17 +1590,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.62771314
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.118750006
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -1679,7 +1679,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &918057757738194268
 GameObject:
   m_ObjectHideFlags: 0
@@ -1695,12 +1695,12 @@ GameObject:
   - component: {fileID: 8713906198948993140}
   - component: {fileID: 5636309035536301648}
   - component: {fileID: 1985513013847208173}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4718255209357109564
 Transform:
@@ -1800,17 +1800,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.31844574
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.009375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -1889,7 +1889,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1068890398923128055
 GameObject:
   m_ObjectHideFlags: 0
@@ -1905,12 +1905,12 @@ GameObject:
   - component: {fileID: 8863664698726262193}
   - component: {fileID: 5040480744062638903}
   - component: {fileID: 2082342474116062066}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,0625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2914403836488778999
 Transform:
@@ -2010,17 +2010,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6298884
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.19375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -2099,7 +2099,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1104276208316758065
 GameObject:
   m_ObjectHideFlags: 0
@@ -2115,12 +2115,12 @@ GameObject:
   - component: {fileID: 8932270233599861657}
   - component: {fileID: 2798040747950633630}
   - component: {fileID: 390048094352182963}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6728463651161392640
 Transform:
@@ -2220,17 +2220,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.45969254
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.08125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -2309,7 +2309,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1216030225221648961
 GameObject:
   m_ObjectHideFlags: 0
@@ -2325,12 +2325,12 @@ GameObject:
   - component: {fileID: 8581962623245724308}
   - component: {fileID: 1651357464586667493}
   - component: {fileID: 6685828228603362654}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8374710168766297363
 Transform:
@@ -2430,17 +2430,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.45237538
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.043750003
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -2519,7 +2519,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1266919191107292323
 GameObject:
   m_ObjectHideFlags: 0
@@ -2535,12 +2535,12 @@ GameObject:
   - component: {fileID: 883736180506892109}
   - component: {fileID: 1495808543679908721}
   - component: {fileID: 1373970889651507822}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8494586619551963362
 Transform:
@@ -2640,17 +2640,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.45844764
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.01875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -2729,7 +2729,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1396696162295754662
 GameObject:
   m_ObjectHideFlags: 0
@@ -2745,12 +2745,12 @@ GameObject:
   - component: {fileID: 8911584924645291977}
   - component: {fileID: 59011189936465963}
   - component: {fileID: 5521434809596624598}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7976541775769688766
 Transform:
@@ -2850,17 +2850,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.45707858
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.03125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -2939,7 +2939,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1524523496340769293
 GameObject:
   m_ObjectHideFlags: 0
@@ -2955,12 +2955,12 @@ GameObject:
   - component: {fileID: 1091988459597481230}
   - component: {fileID: 7793573605303989060}
   - component: {fileID: 5816426057226071426}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3710422004935380274
 Transform:
@@ -3060,17 +3060,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4415548
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.003125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -3149,7 +3149,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &1964869914989042877
 GameObject:
   m_ObjectHideFlags: 0
@@ -3165,12 +3165,12 @@ GameObject:
   - component: {fileID: 3187279358642564138}
   - component: {fileID: 4925524119690326173}
   - component: {fileID: 7630109357637323618}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &893438396583526480
 Transform:
@@ -3270,17 +3270,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.40774658
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.046875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -3359,7 +3359,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2076107810610287462
 GameObject:
   m_ObjectHideFlags: 0
@@ -3375,12 +3375,12 @@ GameObject:
   - component: {fileID: 7411482940955096792}
   - component: {fileID: 3892519129145891419}
   - component: {fileID: 8633351763868656551}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5748319503416392981
 Transform:
@@ -3480,17 +3480,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4618292
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.00625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -3569,7 +3569,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2178478470866665483
 GameObject:
   m_ObjectHideFlags: 0
@@ -3585,12 +3585,12 @@ GameObject:
   - component: {fileID: 4869309513948797804}
   - component: {fileID: 6737994249209733959}
   - component: {fileID: 2564260989316163757}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,8125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8209310298863030578
 Transform:
@@ -3690,17 +3690,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6282815
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.043750003
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -3779,7 +3779,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2269795169181715990
 GameObject:
   m_ObjectHideFlags: 0
@@ -3795,12 +3795,12 @@ GameObject:
   - component: {fileID: 1430417296617544754}
   - component: {fileID: 5369187623448807001}
   - component: {fileID: 1870247756498140268}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &860080205687548981
 Transform:
@@ -3900,17 +3900,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6299658
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.13125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -3989,7 +3989,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2331050520644950234
 GameObject:
   m_ObjectHideFlags: 0
@@ -4005,12 +4005,12 @@ GameObject:
   - component: {fileID: 4031219657927832194}
   - component: {fileID: 6509483147614185370}
   - component: {fileID: 2666182039828676720}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4098992622830764345
 Transform:
@@ -4110,17 +4110,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6293174
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.09375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -4199,7 +4199,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2569201746752461955
 GameObject:
   m_ObjectHideFlags: 0
@@ -4215,12 +4215,12 @@ GameObject:
   - component: {fileID: 1123999658357434289}
   - component: {fileID: 6447634253774686391}
   - component: {fileID: 2252645162082471713}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7283187101781028166
 Transform:
@@ -4320,17 +4320,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.45469797
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.09375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -4409,7 +4409,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2671898304626464188
 GameObject:
   m_ObjectHideFlags: 0
@@ -4425,12 +4425,12 @@ GameObject:
   - component: {fileID: 5333144944706856587}
   - component: {fileID: 2705662839826786488}
   - component: {fileID: 5913525524457897109}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7538493878537785581
 Transform:
@@ -4530,17 +4530,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.35165846
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.009375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -4619,7 +4619,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &2862884826546120400
 GameObject:
   m_ObjectHideFlags: 0
@@ -4635,12 +4635,12 @@ GameObject:
   - component: {fileID: 200752014358228089}
   - component: {fileID: 5031565385946529435}
   - component: {fileID: 3371818184678722690}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2135766770618628045
 Transform:
@@ -4740,17 +4740,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4424557
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.034375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -4829,7 +4829,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &3420138624206125026
 GameObject:
   m_ObjectHideFlags: 0
@@ -4845,12 +4845,12 @@ GameObject:
   - component: {fileID: 3416755092800820864}
   - component: {fileID: 6962277676214249087}
   - component: {fileID: 6879079022725266132}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7289612368354611714
 Transform:
@@ -4950,17 +4950,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.3151656
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.015625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -5039,7 +5039,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &3562278680407057419
 GameObject:
   m_ObjectHideFlags: 0
@@ -5055,12 +5055,12 @@ GameObject:
   - component: {fileID: 1446642617627411458}
   - component: {fileID: 1990145053495356478}
   - component: {fileID: 5585220613922722472}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4814896356620167093
 Transform:
@@ -5160,17 +5160,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4422777
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.009375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -5249,7 +5249,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &3768452555762449320
 GameObject:
   m_ObjectHideFlags: 0
@@ -5265,12 +5265,12 @@ GameObject:
   - component: {fileID: 9106104823493047835}
   - component: {fileID: 1405394159088115259}
   - component: {fileID: 2346832036765701034}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,625
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8958492896815464074
 Transform:
@@ -5370,17 +5370,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4428082
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.021875001
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -5459,7 +5459,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4040798876732229745
 GameObject:
   m_ObjectHideFlags: 0
@@ -5475,12 +5475,12 @@ GameObject:
   - component: {fileID: 6367335488767863644}
   - component: {fileID: 7919954531322399975}
   - component: {fileID: 1033339602485512121}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1709243754079938333
 Transform:
@@ -5580,17 +5580,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.3503517
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.021875001
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -5669,7 +5669,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &4489408073002811375
 GameObject:
   m_ObjectHideFlags: 0
@@ -5685,12 +5685,12 @@ GameObject:
   - component: {fileID: 5954353321866879838}
   - component: {fileID: 660724231327637913}
   - component: {fileID: 5494630078790681140}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8024828731123029300
 Transform:
@@ -5790,17 +5790,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.44235927
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.015625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -5879,7 +5879,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5160951219456498720
 GameObject:
   m_ObjectHideFlags: 0
@@ -5895,12 +5895,12 @@ GameObject:
   - component: {fileID: 4435702443457208246}
   - component: {fileID: 2434103348901533850}
   - component: {fileID: 4190266610608463189}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3667200165098160439
 Transform:
@@ -6000,17 +6000,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4075762
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.065625004
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -6089,7 +6089,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5332032592059214855
 GameObject:
   m_ObjectHideFlags: 0
@@ -6105,12 +6105,12 @@ GameObject:
   - component: {fileID: 4476322917587356029}
   - component: {fileID: 8402544614051644796}
   - component: {fileID: 1697285850032827409}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2800762467292770972
 Transform:
@@ -6210,17 +6210,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.62993896
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.10625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -6299,7 +6299,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5533013158706964575
 GameObject:
   m_ObjectHideFlags: 0
@@ -6315,12 +6315,12 @@ GameObject:
   - component: {fileID: 3530454333202522215}
   - component: {fileID: 1688817481856823809}
   - component: {fileID: 1566244641165046971}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4334535279847830926
 Transform:
@@ -6420,17 +6420,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6290891
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.15625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -6509,7 +6509,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5542645990531871873
 GameObject:
   m_ObjectHideFlags: 0
@@ -6525,12 +6525,12 @@ GameObject:
   - component: {fileID: 1244017892165158144}
   - component: {fileID: 4182751367352604455}
   - component: {fileID: 1587053779440556741}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6750697356146309230
 Transform:
@@ -6630,17 +6630,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.40458342
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.009375
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -6719,7 +6719,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &5790775228705033020
 GameObject:
   m_ObjectHideFlags: 0
@@ -6735,12 +6735,12 @@ GameObject:
   - component: {fileID: 3579840874001693484}
   - component: {fileID: 8271419918601442162}
   - component: {fileID: 6055243496680196182}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8283643684406104557
 Transform:
@@ -6840,17 +6840,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.63009024
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.18125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -6929,7 +6929,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6439849721041133256
 GameObject:
   m_ObjectHideFlags: 0
@@ -6945,12 +6945,12 @@ GameObject:
   - component: {fileID: 3947691742903654689}
   - component: {fileID: 1168278781474308766}
   - component: {fileID: 6265975924967323337}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5747890941060899106
 Transform:
@@ -7050,17 +7050,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.35180196
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.003125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -7139,7 +7139,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6836635113344548009
 GameObject:
   m_ObjectHideFlags: 0
@@ -7155,12 +7155,12 @@ GameObject:
   - component: {fileID: 7602183554764256242}
   - component: {fileID: 6322578302131105724}
   - component: {fileID: 5294622669906737210}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,375
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1524821847548337892
 Transform:
@@ -7260,17 +7260,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4619737
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.06875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -7349,7 +7349,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &6936078185924515433
 GameObject:
   m_ObjectHideFlags: 0
@@ -7365,12 +7365,12 @@ GameObject:
   - component: {fileID: 5410738105121010183}
   - component: {fileID: 1486961418418167804}
   - component: {fileID: 6809501987488631911}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &51491565838941574
 Transform:
@@ -7470,17 +7470,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4427346
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.028125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -7559,7 +7559,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7056141504072566775
 GameObject:
   m_ObjectHideFlags: 0
@@ -7570,12 +7570,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2332631383147061370}
   - component: {fileID: 6529145051464619791}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TestTreeKinematic
   m_TagString: Tree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2332631383147061370
 Transform:
@@ -7678,12 +7678,12 @@ GameObject:
   - component: {fileID: 6875145920144369525}
   - component: {fileID: 9087782900084354216}
   - component: {fileID: 1692939122950627196}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,5
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5972357774969112042
 Transform:
@@ -7783,17 +7783,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.35105783
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.015625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -7872,7 +7872,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7437345081463783480
 GameObject:
   m_ObjectHideFlags: 0
@@ -7888,12 +7888,12 @@ GameObject:
   - component: {fileID: 3583200750385164242}
   - component: {fileID: 7734074291543572704}
   - component: {fileID: 4324686658388547511}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4130419747372259927
 Transform:
@@ -7993,17 +7993,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.62932223
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.00625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -8082,7 +8082,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7894383013817449094
 GameObject:
   m_ObjectHideFlags: 0
@@ -8098,12 +8098,12 @@ GameObject:
   - component: {fileID: 8958152766426862963}
   - component: {fileID: 2269279830978520831}
   - component: {fileID: 6903650135618048639}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,1875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5418021131679186955
 Transform:
@@ -8203,17 +8203,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6299874
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.16875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -8292,7 +8292,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &7964079326563596619
 GameObject:
   m_ObjectHideFlags: 0
@@ -8308,12 +8308,12 @@ GameObject:
   - component: {fileID: 6389216617093696301}
   - component: {fileID: 2845577126540801923}
   - component: {fileID: 8083523047749919145}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,125
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3758725567661315063
 Transform:
@@ -8413,17 +8413,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.43658552
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.046875
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -8502,7 +8502,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8037390883676751233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8518,12 +8518,12 @@ GameObject:
   - component: {fileID: 1869079749872551026}
   - component: {fileID: 7971773553247460809}
   - component: {fileID: 7796245852369844651}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,875
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3255961570466474820
 Transform:
@@ -8623,17 +8623,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.6299896
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.03125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -8712,7 +8712,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8089203100261257105
 GameObject:
   m_ObjectHideFlags: 0
@@ -8728,12 +8728,12 @@ GameObject:
   - component: {fileID: 9077051391514522932}
   - component: {fileID: 577301720219649456}
   - component: {fileID: 2738098047661684148}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,75
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1070021766931296706
 Transform:
@@ -8833,17 +8833,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.40719065
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.028125001
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -8922,7 +8922,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8140554984981146193
 GameObject:
   m_ObjectHideFlags: 0
@@ -8938,12 +8938,12 @@ GameObject:
   - component: {fileID: 3318956588108505096}
   - component: {fileID: 3289162232995048329}
   - component: {fileID: 2232848165369982564}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 1
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3351634693190973595
 Transform:
@@ -9043,17 +9043,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.2883201
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.003125
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -9132,7 +9132,7 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0
 --- !u!1 &8740780644767252970
 GameObject:
   m_ObjectHideFlags: 0
@@ -9148,12 +9148,12 @@ GameObject:
   - component: {fileID: 6435951388541087735}
   - component: {fileID: 8452959159026440435}
   - component: {fileID: 1700877418589044179}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: 0,25
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &959429685483614301
 Transform:
@@ -9253,17 +9253,17 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.44131723
+      - m_Value: 0
         m_Name: cone height
         m_Overridden: 1
-      - m_Value: 0.040625
+      - m_Value: 0
         m_Name: cone radius
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 0.01, y: 0, z: 0}
+      - m_Value: {x: 0.01, y: 0, z: 0.01}
         m_Name: direction
         m_Overridden: 1
     m_Vector4f:
@@ -9342,4 +9342,4 @@ MonoBehaviour:
   fixedJoint: {fileID: 0}
   neighbourModule: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
-  isTrunk: 0
+  isBurned: 0

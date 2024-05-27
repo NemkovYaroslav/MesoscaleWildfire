@@ -3,6 +3,7 @@ using Resources.PathCreator.Core.Runtime.Placer;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
+using UnityEngine.Profiling;
 
 namespace Common.Renderer
 {
@@ -29,8 +30,12 @@ namespace Common.Renderer
         private NativeArray<float>     _heightsArray;
         private NativeArray<float>     _radiiArray;
         private NativeArray<Matrix4x4> _matricesArray;
-        private ComputeBuffer _matricesBuffer;
+        private ComputeBuffer          _matricesBuffer;
         
+        
+        // BURNED TREE
+        private NativeArray<int> _burnedTreeArray;
+        private ComputeBuffer     _burnedTreeBuffer;
         
         // LOCAL WILDFIRE AREA MODULE POSITIONS
         private Matrix4x4 _wildfireAreaWorldToLocal;
@@ -43,6 +48,7 @@ namespace Common.Renderer
         private int _kernelWriteData;
         //private int _kernelSimulateFire;
         private static readonly int ModulePositions = Shader.PropertyToID("module_positions");
+        private static readonly int BurnedTrees = Shader.PropertyToID("burned_trees");
 
         private void Start()
         {
@@ -144,6 +150,19 @@ namespace Common.Renderer
                     sizeof(float) * 4
                 );
             
+            // BURNED TREES
+            _burnedTreeArray
+                = new NativeArray<int>(
+                    modulesCount,
+                    Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory
+                );
+            _burnedTreeBuffer 
+                = new ComputeBuffer(
+                    modulesCount, 
+                    sizeof(int)
+                );
+            
             _wildfireAreaWorldToLocal = wildfireAreaTransform.worldToLocalMatrix;
         }
 
@@ -155,7 +174,12 @@ namespace Common.Renderer
                 {
                     _centersArray[i] = orderedModuleList[i].capsuleCollider.center;
                     _heightsArray[i] = orderedModuleList[i].capsuleCollider.height;
-                    _radiiArray[i] = orderedModuleList[i].capsuleCollider.radius;
+                    _radiiArray[i]   = orderedModuleList[i].capsuleCollider.radius;
+                    
+                    // check is tree is burned
+                    _burnedTreeArray[i] = orderedModuleList[i].isBurned ? 1 : 0;
+
+                    //Debug.Log(_burnedTreeArray[i]);
                 }
 
                 var job = new FillMatricesAndPositionsDataJob()
@@ -181,14 +205,19 @@ namespace Common.Renderer
         {
             _matricesBuffer.SetData(_matricesArray);
             _renderParams.matProps.SetBuffer(Matrices, _matricesBuffer);
+            
+            _burnedTreeBuffer.SetData(_burnedTreeArray);
+            _renderParams.matProps.SetBuffer(BurnedTrees, _burnedTreeBuffer);
+            
             Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
         }
 
         private void Update()
         {
+            Profiler.BeginSample("FillMatricesAndRender");
             FillCommonData();
-            
             RenderModules();
+            Profiler.EndSample();
         }
                 
         private void CleanupComputeBuffer()

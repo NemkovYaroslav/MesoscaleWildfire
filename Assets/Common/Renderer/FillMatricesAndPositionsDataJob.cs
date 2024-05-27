@@ -5,14 +5,15 @@ using UnityEngine.Jobs;
 
 namespace Common.Renderer
 {
+    [BurstCompile]
     public struct FillMatricesAndPositionsDataJob : IJobParallelForTransform
     {
-        [ReadOnly] public NativeArray<Vector3> centers;
-        [ReadOnly] public NativeArray<float> heights;
-        [ReadOnly] public NativeArray<float> radii;
+        [ReadOnly]  public NativeArray<Vector3>   centers;
+        [ReadOnly]  public NativeArray<float>     heights;
+        [ReadOnly]  public NativeArray<float>     radii;
         [WriteOnly] public NativeArray<Matrix4x4> matrices;
 
-        [ReadOnly] public Matrix4x4 wildfireAreaWorldToLocal;
+        [ReadOnly]  public Matrix4x4            wildfireAreaWorldToLocal;
         [WriteOnly] public NativeArray<Vector4> modulesWildfireAreaPosition;
         
         public void Execute(int index, TransformAccess transform)
