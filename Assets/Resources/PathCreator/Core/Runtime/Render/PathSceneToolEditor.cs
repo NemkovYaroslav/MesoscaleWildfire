@@ -6,16 +6,10 @@ namespace Resources.PathCreator.Core.Runtime.Render
     [CustomEditor(typeof(PathSceneTool), true)]
     public sealed class PathSceneToolEditor : Editor
     {
-        #region Fields
-
         private PathSceneTool _pathTool;
+        
         private bool _isSubscribed;
-
-        #endregion
-
-
-        #region External Methods
-
+        
         public override void OnInspectorGUI()
         {
             using (var check = new EditorGUI.ChangeCheckScope())
@@ -29,20 +23,6 @@ namespace Resources.PathCreator.Core.Runtime.Render
                         TryFindPathCreator();
                         Subscribe();
                     }
-
-                    if (_pathTool.isAutoUpdated)
-                    {
-                        TriggerUpdate();
-                    }
-                }
-            }
-
-            if (GUILayout.Button("Manual Update"))
-            {
-                if (TryFindPathCreator())
-                {
-                    TriggerUpdate();
-                    SceneView.RepaintAll();
                 }
             }
         }
@@ -54,13 +34,10 @@ namespace Resources.PathCreator.Core.Runtime.Render
                 _pathTool.TriggerUpdate();
             }
         }
-
+        
         private void OnPathModified()
         {
-            if (_pathTool.isAutoUpdated)
-            {
-                TriggerUpdate();
-            }
+            TriggerUpdate();
         }
 
         private void OnEnable()
@@ -89,6 +66,7 @@ namespace Resources.PathCreator.Core.Runtime.Render
             if (_pathTool.pathCreator != null)
             {
                 _isSubscribed = true;
+                
                 _pathTool.pathCreator.OnPathUpdated -= OnPathModified;
                 _pathTool.pathCreator.OnPathUpdated += OnPathModified;
             }
@@ -96,21 +74,14 @@ namespace Resources.PathCreator.Core.Runtime.Render
 
         private bool TryFindPathCreator()
         {
-            // Try find a path creator in the scene, if one is not already assigned
             if (_pathTool.pathCreator == null)
             {
                 if (_pathTool.GetComponent<Objects.PathCreator>() != null)
                 {
                     _pathTool.pathCreator = _pathTool.GetComponent<Objects.PathCreator>();
                 }
-                else if (FindObjectOfType<Objects.PathCreator>())
-                {
-                    _pathTool.pathCreator = FindObjectOfType<Objects.PathCreator>();
-                }
             }
             return _pathTool.pathCreator != null;
         }
-
-        #endregion
     }
 }

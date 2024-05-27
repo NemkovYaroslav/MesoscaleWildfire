@@ -1,5 +1,4 @@
-﻿using Resources.PathCreator.Core.Runtime.Objects;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Resources.PathCreator.Core.Editor.Helper

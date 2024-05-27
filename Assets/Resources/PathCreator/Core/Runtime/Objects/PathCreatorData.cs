@@ -47,17 +47,16 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         public bool areVertexPathDisplayOptionsShown;
         public bool areVertexPathOptionsShown = true;
         public bool areNormalsShown;
-        public bool areNormalsHelpInfoShown;
         public int tabIndex;
 
         #endregion
         
         
-        public void Initialize(bool defaultIs2D) 
+        public void Initialize() 
         {
             if (bezierPath == null)
             {
-                CreateBezier(Vector3.zero, defaultIs2D);
+                CreateBezier(Vector3.zero);
             }
             
             isVertexPathUpToDated = false;
@@ -68,12 +67,12 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             bezierPath.OnModified += BezierPathEdited;
         }
 
-        public void ResetBezierPath(Vector3 centre, bool defaultIs2D = false) 
+        public void ResetBezierPath(Vector3 centre) 
         {
-            CreateBezier(centre, defaultIs2D);
+            CreateBezier(centre);
         }
 
-        private void CreateBezier(Vector3 centre, bool defaultIs2D = false) 
+        private void CreateBezier(Vector3 centre) 
         {
             if (bezierPath != null) 
             {

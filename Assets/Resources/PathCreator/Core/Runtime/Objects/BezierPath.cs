@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Resources.PathCreator.Core.Runtime.Utility;
 using UnityEngine;
 
@@ -9,9 +8,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 	/// A bezier path is a path made by stitching together any number of (cubic) bezier curves.
 	/// A single cubic bezier curve is defined by 4 points: anchor1, control1, control2, anchor2
 	/// The curve moves between the 2 anchors, and the shape of the curve is affected by the positions of the 2 control points
-
-	/// When two curves are stitched together, they share an anchor point (end anchor of curve 1 = start anchor of curve 2).
-	/// So while one curve alone consists of 4 points, two curves are defined by 7 unique points.
 
 	/// Apart from storing the points, this class also provides methods for working with the path.
 	/// For example, adding, inserting, and deleting points.
@@ -42,10 +38,9 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 		#region Fields
 
 		[SerializeField, HideInInspector] private List<Vector3> points;
-		[SerializeField, HideInInspector] private ControlMode controlMode;
+		[SerializeField, HideInInspector] private ControlMode controlMode = ControlMode.Mirrored;
 		[SerializeField, HideInInspector] private float autoControlLength = 0.3f;
 		[SerializeField, HideInInspector] private bool areBoundsUpToDated;
-		[SerializeField, HideInInspector] private Bounds bounds;
 
 		// Normals settings
 		[SerializeField, HideInInspector] private List<float> perAnchorNormalsAngle;
@@ -60,78 +55,22 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         public BezierPath() : this(Vector3.zero) { }
 
         /// <summary> Creates a two-anchor path centred around the given centre point </summary>
-        /// <param name="center"> Center point </param>
-        /// <param name="isClosed"> Should the end point connect back to the start point? </param>
-        /// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-        public BezierPath(Vector3 center, bool isClosed = false)
+        /// <param name = "center"> Center point </param>
+        public BezierPath(Vector3 center)
 		{
-			var dir = Vector3.up;
-			const int width = 2;
+			const int height = 2;
 			const float controlHeight = 0.5f;
-			const float controlWidth = 1.0f;
 			
 			points = new List<Vector3> 
 			{
-				center + Vector3.left * width,
-				center + Vector3.left * controlWidth + dir * controlHeight,
-				center + Vector3.right * controlWidth - dir * controlHeight,
-				center + Vector3.right * width
+				center,
+				center + Vector3.up * controlHeight + Vector3.right * controlHeight,
+				center + Vector3.up * (height - controlHeight) + Vector3.left * controlHeight,
+				center + Vector3.up * height
 			};
 
 			perAnchorNormalsAngle = new List<float>() { 0, 0 };
 		}
-
-		/// <summary> Creates a path from the supplied 3D points </summary>
-		/// <param name="points"> List or array of points to create the path from. </param>
-		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
-		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Vector3> points, bool isClosed = false)
-		{
-			var pointsArray = points.ToArray();
-
-			if (pointsArray.Length < 2)
-			{
-				Debug.LogError("Path requires at least 2 anchor points.");
-			}
-			else
-			{
-				controlMode = ControlMode.Automatic;
-				this.points = new List<Vector3> { pointsArray[0], Vector3.zero, Vector3.zero, pointsArray[1] };
-				perAnchorNormalsAngle = new List<float>(new float[] { 0, 0 });
-
-				for (var i = 2; i < pointsArray.Length; i++)
-				{
-					AddSegmentToEnd(pointsArray[i]);
-					perAnchorNormalsAngle.Add(0);
-				}
-			}
-		}
-
-		/// <summary> Creates a path from the positions of the supplied 2D points </summary>
-		/// <param name="transforms"> List or array of transforms to create the path from. </param>
-		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
-		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Vector2> transforms, bool isClosed = false) :
-			this(transforms.Select(p => new Vector3(p.x, p.y)), isClosed) 
-		{ }
-
-		/// <summary> Creates a path from the positions of the supplied transforms </summary>
-		/// <param name="transforms"> List or array of transforms to create the path from. </param>
-		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
-		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Transform> transforms, bool isClosed = false) :
-			this(transforms.Select(t => t.position), isClosed) 
-		{ }
-
-		/*
-		/// <summary> Creates a path from the supplied 2D points </summary>
-		/// <param name="points"> List or array of 2d points to create the path from. </param>
-		/// <param name="isClosed"> Should the end point connect back to the start point? </param>
-		/// <param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-		public BezierPath(IEnumerable<Vector2> points, PathSpace space = PathSpace.XYZ, bool isClosed = false) :
-			this(points.Select(p => new Vector3(p.x, p.y)), isClosed, space) 
-		{ }
-		*/
 
 		#endregion
 
@@ -514,19 +453,6 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 			NotifyPathModified();
 		}
 
-		/// Bounding box containing the path
-		public Bounds PathBounds
-		{
-			get
-			{
-				if (!areBoundsUpToDated)
-				{
-					UpdateBounds();
-				}
-				return bounds;
-			}
-		}
-
 		#endregion
 
 		
@@ -557,7 +483,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
 			}
 
 			areBoundsUpToDated = true;
-			bounds = new Bounds((minMax.Min + minMax.Max) / 2, minMax.Max - minMax.Min);
+			new Bounds((minMax.Min + minMax.Max) / 2, minMax.Max - minMax.Min);
 		}
 
 		/// Determines good positions (for a smooth path) for the control points affected by a moved/inserted anchor point

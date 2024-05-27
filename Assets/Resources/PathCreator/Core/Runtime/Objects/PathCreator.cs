@@ -28,7 +28,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             {
                 if (!isInitialized)
                 {
-                    InitializeEditorData(false);
+                    InitializeEditorData();
                 }
                 
                 return editorData.GetVertexPath(transform);
@@ -42,20 +42,10 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             {
                 if (!isInitialized)
                 {
-                    InitializeEditorData(false);
+                    InitializeEditorData();
                 }
                 
                 return editorData.BezierPath;
-            }
-            
-            set 
-            {
-                if (!isInitialized)
-                {
-                    InitializeEditorData(false);
-                }
-                
-                editorData.BezierPath = value;
             }
         }
         
@@ -65,7 +55,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
         #region Internal methods
 
         /// Used by the path editor to initialise some data
-        public void InitializeEditorData (bool in2DMode) 
+        public void InitializeEditorData () 
         {
             if (editorData == null)
             {
@@ -75,7 +65,7 @@ namespace Resources.PathCreator.Core.Runtime.Objects
             editorData.OnBezierOrVertexPathModified -= TriggerPathUpdate;
             editorData.OnBezierOrVertexPathModified += TriggerPathUpdate;
 
-            editorData.Initialize(in2DMode);
+            editorData.Initialize();
             isInitialized = true;
         }
 
