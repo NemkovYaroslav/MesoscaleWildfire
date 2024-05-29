@@ -8,6 +8,6 @@
 -  набор скриптов C# для генерации экземпляров деревьев;
 -  набор скриптов C# и набор шейдеров HLSL для реализации распространения огня.
 
-![Wildfire result screenshot](Docs/WildfireResultExample.png)
+![Wildfire result screenshot](Docs/Forest.png)
 
 ## Генерация экземпляров деревьев
