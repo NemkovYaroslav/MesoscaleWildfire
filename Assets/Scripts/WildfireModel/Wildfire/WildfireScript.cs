@@ -372,13 +372,7 @@ namespace WildfireModel.Wildfire
                     if (!module.isTrunk)
                     {
                         module.gameObj.layer = 7;
-                        
                         Destroy(module.fixedJoint);
-                    }
-                    
-                    if (module.cachedVisualEffect.enabled)
-                    {
-                        module.cachedVisualEffect.enabled = false;
                     }
                 }
                 
@@ -412,6 +406,13 @@ namespace WildfireModel.Wildfire
                     if (!module.cachedVisualEffect.enabled)
                     {
                         module.cachedVisualEffect.enabled = true;
+                    }
+                }
+                else
+                {
+                    if (module.cachedVisualEffect.enabled)
+                    {
+                        module.cachedVisualEffect.enabled = false;
                     }
                 }
                 //*/
