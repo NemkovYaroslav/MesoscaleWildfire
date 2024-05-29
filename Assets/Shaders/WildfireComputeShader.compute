@@ -16,8 +16,8 @@
 
 RWTexture3D<float4> color_temperature_texture;
 RWTexture3D<float3> velocity_texture;
-RWTexture3D<float> divergence_texture;
-RWTexture3D<float> pressure_texture;
+RWTexture3D<float>  divergence_texture;
+RWTexture3D<float>  pressure_texture;
 
 float3 texture_resolution;
 
@@ -28,10 +28,7 @@ float diffusion_intensity;
 float viscosity_intensity;
 float delta_time;
 
-float3 wind_direction;
-float  wind_intensity;
-
-float fire_lifting_power;
+RWStructuredBuffer<float3> module_positions;
 
 Texture3D texture_for_sample_ambient_temperature;
 SamplerState linear_clamp_sampler;
@@ -39,7 +36,9 @@ SamplerState linear_clamp_sampler;
 RWStructuredBuffer<float> get_data;
 RWStructuredBuffer<float> set_data;
 
-RWStructuredBuffer<float3> module_positions;
+float3 wind_direction;
+float  wind_intensity;
+float fire_lifting_power;
 
 #define TOP_OFFSET    int3( 0, 1, 0)
 #define BOTTOM_OFFSET int3( 0,-1, 0)
@@ -75,7 +74,7 @@ void kernel_init (uint3 id : SV_DispatchThreadID)
 }
 
 [numthreads(1,1,1)]
-void kernel_user_input (uint3 id : SV_DispatchThreadID)
+void kernel_user_input ()
 {
     float3 uv = torch_position;
     uv += 0.5f;
@@ -162,8 +161,10 @@ void kernel_diffusion_velocity (uint3 id : SV_DispatchThreadID)
         const float3 back_velocity_value   = velocity_texture[back_pixel_id]   * back_obstacle;
 
         const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
-    
-        const float k = delta_time * viscosity_intensity * resolution; ///////////////////////////////////
+        const float k = delta_time * viscosity_intensity * resolution;
+
+        //const float k = delta_time * viscosity_intensity;
+        
         const float3 velocity =
         (
             velocity_value
@@ -436,8 +437,8 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
         if (grid_velocity.x > 0 || grid_velocity.y > 0 || grid_velocity.z > 0)
         {
             const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
-            
             const float3 displacement = delta_time * resolution * grid_velocity;
+            
             float3 previous_uv = float3(pixel_id) - displacement;
 
             
@@ -564,7 +565,10 @@ void kernel_diffusion_temperature (uint3 id : SV_DispatchThreadID)
         const float4 back_temperature_value   = color_temperature_texture[back_pixel_id]   * back_obstacle; 
 
         const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
-        const float k = delta_time * diffusion_intensity * resolution; //////////////////////////////////////////
+        const float k = delta_time * diffusion_intensity * resolution;
+        
+        //const float k = delta_time * diffusion_intensity;
+        
         const float4 temperature =
         (
             temperature_value

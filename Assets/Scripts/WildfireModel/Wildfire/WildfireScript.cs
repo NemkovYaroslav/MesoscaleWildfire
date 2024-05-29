@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 using UnityEngine.VFX;
 using WildfireModel.Renderer;
 
@@ -31,8 +32,8 @@ namespace WildfireModel.Wildfire
         [Header("Factors Settings")]
         [SerializeField] private float moduleDiffusionFactor     = 0.001f;
         [SerializeField] private float releaseTemperatureFactor  = 75000.0f;
-        [SerializeField] private float airToModuleTransferFactor = 0.01f;
-        [SerializeField] private float moduleToAirTransferFactor = 0.001f;
+        [FormerlySerializedAs("airToModuleTransferFactor")] [SerializeField] private float airTransferFactor = 0.01f;
+        [FormerlySerializedAs("moduleToAirTransferFactor")] [SerializeField] private float moduleTransferFactor = 0.001f;
         
         
         // COMMON VARIABLES
@@ -368,7 +369,17 @@ namespace WildfireModel.Wildfire
                 }
                 else
                 {
-                    Destroy(module.fixedJoint);
+                    if (!module.isTrunk)
+                    {
+                        module.gameObj.layer = 7;
+                        
+                        Destroy(module.fixedJoint);
+                    }
+                    
+                    if (module.cachedVisualEffect.enabled)
+                    {
+                        module.cachedVisualEffect.enabled = false;
+                    }
                 }
                 
                 ///*
@@ -379,16 +390,16 @@ namespace WildfireModel.Wildfire
                     var temperatureDifference = ambientTemperature - module.temperature;
                     //var transferredTemperature = airToModuleTransferFactor * temperatureDifference;
 
-                    module.temperature         += temperatureDifference * moduleToAirTransferFactor;
-                    transferAmbientTemperature -= temperatureDifference * airToModuleTransferFactor;
+                    module.temperature         += temperatureDifference * moduleTransferFactor;
+                    transferAmbientTemperature -= temperatureDifference * airTransferFactor;
                 }
                 if (module.temperature > ambientTemperature)
                 {
                     var temperatureDifference = module.temperature - ambientTemperature;
                     //var transferredTemperature = moduleToAirTransferFactor * temperatureDifference;
 
-                    transferAmbientTemperature += temperatureDifference * airToModuleTransferFactor;
-                    module.temperature         -= temperatureDifference * moduleToAirTransferFactor;
+                    transferAmbientTemperature += temperatureDifference * airTransferFactor;
+                    module.temperature         -= temperatureDifference * moduleTransferFactor;
                 }
                 //*/
                 
@@ -401,13 +412,6 @@ namespace WildfireModel.Wildfire
                     if (!module.cachedVisualEffect.enabled)
                     {
                         module.cachedVisualEffect.enabled = true;
-                    }
-                }
-                else
-                {
-                    if (module.cachedVisualEffect.enabled)
-                    {
-                        module.cachedVisualEffect.enabled = false;
                     }
                 }
                 //*/

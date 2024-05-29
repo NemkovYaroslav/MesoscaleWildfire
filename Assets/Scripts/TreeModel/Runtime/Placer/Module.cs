@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.VFX;
 
 namespace TreeModel.Runtime.Placer
@@ -16,12 +17,15 @@ namespace TreeModel.Runtime.Placer
         public Rigidbody rigidBody;
         public CapsuleCollider capsuleCollider;
         public FixedJoint fixedJoint;
+        public GameObject gameObj;
         
         public Module neighbourModule;
 
         public VisualEffect cachedVisualEffect;
 
         public bool isBurned;
+
+        public bool isTrunk;
         
         private void Awake()
         {
@@ -29,6 +33,7 @@ namespace TreeModel.Runtime.Placer
             rigidBody       = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
             fixedJoint      = GetComponent<FixedJoint>();
+            gameObj         = gameObject;
 
             // get neighbour from joint
             if (fixedJoint)
