@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
+using UnityEngine.VFX;
 using WildfireModel.Renderer;
 
 namespace WildfireModel.Wildfire
@@ -37,6 +38,7 @@ namespace WildfireModel.Wildfire
         // COMMON VARIABLES
         private ModuleRenderer _moduleRenderer;
         private GameObject _torch;
+        private VisualEffect _torchVisualEffect;
         
         
         // BUFFER FOR GET/SET DATA FROM/TO SHADER
@@ -94,8 +96,8 @@ namespace WildfireModel.Wildfire
         
         
         // WIND VARIABLES
-        private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
-        private static readonly int ShaderWindIntensity = Shader.PropertyToID("wind_intensity");
+        private static readonly int ShaderWindDirection    = Shader.PropertyToID("wind_direction");
+        private static readonly int ShaderWindIntensity    = Shader.PropertyToID("wind_intensity");
         private static readonly int ShaderFireLiftingPower = Shader.PropertyToID("fire_lifting_power");
         
         
@@ -181,8 +183,9 @@ namespace WildfireModel.Wildfire
             computeShader.SetTexture(_kernelSimulateWind, ShaderVelocityTexture, _velocityTexture);
             
             // INITIALIZE COMMON VARIABLES
-            _torch          = GameObject.FindWithTag("Torch");
-            _moduleRenderer = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
+            _torch             = GameObject.FindWithTag("Torch");
+            _torchVisualEffect = _torch.GetComponentInChildren<VisualEffect>();
+            _moduleRenderer    = GameObject.FindWithTag("ModulesRenderer").GetComponent<ModuleRenderer>();
             
             
             // SET VARIABLES FOR FLUID SOLVER
@@ -468,6 +471,11 @@ namespace WildfireModel.Wildfire
             {
                 computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
                 
+                if (!_torchVisualEffect.enabled)
+                {
+                    _torchVisualEffect.enabled = true;
+                }
+                
                 var torchPosition = transform.InverseTransformPoint(_torch.transform.position);
                 computeShader.SetVector(ShaderTorchPosition, torchPosition);
                 
@@ -477,6 +485,13 @@ namespace WildfireModel.Wildfire
                     1,
                     1
                 );
+            }
+            else
+            {
+                if (_torchVisualEffect.enabled)
+                {
+                    _torchVisualEffect.enabled = false;
+                }
             }
             //*/
             

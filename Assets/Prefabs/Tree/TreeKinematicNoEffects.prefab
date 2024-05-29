@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  temperature: 0.25
+  temperature: 0
   stopCombustionMass: 0
   transForm: {fileID: 0}
   rigidBody: {fileID: 0}
