@@ -188,6 +188,7 @@ namespace TreeModel.Runtime.Placer
                         var currentPrototype = child.GetChild(i).gameObject;
                         var visualEffect = currentPrototype.AddComponent<VisualEffect>();
                         visualEffectPreset.ApplyTo(visualEffect);
+                        visualEffect.enabled = false;
 
                         var capsuleCollider = currentPrototype.GetComponent<CapsuleCollider>();
                         

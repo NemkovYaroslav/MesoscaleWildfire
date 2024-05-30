@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 2421021166627598509}
   - component: {fileID: 1930905492634047191}
   m_Layer: 0
-  m_Name: Osina
+  m_Name: AspenGraph
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

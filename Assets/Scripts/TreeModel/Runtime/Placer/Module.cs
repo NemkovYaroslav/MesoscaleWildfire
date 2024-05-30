@@ -48,7 +48,6 @@ namespace TreeModel.Runtime.Placer
 
             ///*
             cachedVisualEffect = GetComponent<VisualEffect>();
-            cachedVisualEffect.enabled = false;
             cachedVisualEffect.SetVector3("direction", new Vector3(0.01f, 0.0f, 0.0f));
             cachedVisualEffect.SetFloat("cone radius", capsuleCollider.radius);
             cachedVisualEffect.SetFloat("cone height", capsuleCollider.height);
