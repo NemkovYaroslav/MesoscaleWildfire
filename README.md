@@ -67,7 +67,7 @@
 -  Positive Position - положительная диагональная позиция заполнения
 -  Negative Position - отрицательная диагональная позиция заполнения
 
- ![Wildfire result screenshot](Docs/ForestFiller.png)
+ ![Wildfire result screenshot](Docs/ForestFiller.PNG)
 
 Для того, чтобы отобразить модули экземпляров деревьев нужно братиться к компоненту **Module Renderer**.
 
@@ -75,7 +75,24 @@
 -  Render Material - материал для отображения модулей через Instanced Rendering
 -  Render Mesh - примитив для отображения модулей (предполагается цилиндр)
 
+ ![Wildfire result screenshot](Docs/ModuleRenderer.PNG)
+
 Для того, чтобы управлять процессом распространения пожара нужно обратиться к компоненту **Widlfire**.
 
 У данного компонента есть следующие настройки:
--  Compute Shader - вычислительный шейдер, в котором 
+-  Compute Shader - вычислительный шейдер, содержащий жидкостный решатель
+-  Texture Resolution - разрешение сетки
+-  Render Material - материал для отображения сетки через Ray Marching
+-  Diffusion Intensity - коэффициент диффузии поля температуры
+-  Viscosity Intensity - коэффициент вязкости поля скорости
+-  Solver Interations - параметр, определяющий величину итераций жидкостного решателя
+-  Wind Intensity/Direction - скорость и направление ветра
+-  Module Diffusion Factor - коэффициент внутренней диффузии модулей
+-  Release Temperature Factor - коэффициент выделяемого при сгорании древесины тепла
+-  Air Transfer Factor - коэффициент теплопередачи воздуха
+-  Module Transfer Factor - коэффициент теплопередачи модуля
+
+ ![Wildfire result screenshot](Docs/Wildfire.PNG)
+
+ ## Дополнительно
+ Автор: Немков Ярослав Алексеевич <br> Полный текст работы можно найти [на GitHub](Docs/MarkerDungeonGeneration.pdf) </br>
