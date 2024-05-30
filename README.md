@@ -94,5 +94,7 @@
 
  ![Wildfire result screenshot](Docs/Wildfire.PNG)
 
+ ВАЖНО: для нагрева окружения используйте факел (Torch) и удерживайте ЛКМ
+
  ## Дополнительно
  Автор: Немков Ярослав Алексеевич <br> Полный текст работы можно найти [на GitHub](Docs/MesoscaleWildfire.pdf) </br>
