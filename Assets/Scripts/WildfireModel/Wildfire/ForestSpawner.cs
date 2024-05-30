@@ -8,9 +8,9 @@ namespace WildfireModel.Wildfire
         [Header("Spawn Settings")]
         public GameObject resourcePrefab;
         public float distanceBetweenChecks;
-        public Vector2 positivePosition;
-        public Vector2 negativePosition;
-
+        public Vector3 positivePosition;
+        public Vector3 negativePosition;
+        
         private void Awake()
         {
             SpawnResources();
@@ -20,7 +20,7 @@ namespace WildfireModel.Wildfire
         {
             for (var x = negativePosition.x; x < positivePosition.x; x += distanceBetweenChecks)
             {
-                for (var z = negativePosition.y; z < positivePosition.y; z += distanceBetweenChecks)
+                for (var z = negativePosition.z; z < positivePosition.z; z += distanceBetweenChecks)
                 {
                     Instantiate(resourcePrefab, new Vector3(x, -6.5f, z), Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0)));
                 }

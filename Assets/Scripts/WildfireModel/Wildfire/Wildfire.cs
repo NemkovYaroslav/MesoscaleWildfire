@@ -10,7 +10,7 @@ using WildfireModel.Renderer;
 
 namespace WildfireModel.Wildfire
 {
-    public class WildfireScript : MonoBehaviour
+    public class Wildfire : MonoBehaviour
     {
         [Header("Common Settings")]
         [SerializeField] private ComputeShader computeShader;
@@ -27,7 +27,7 @@ namespace WildfireModel.Wildfire
         [SerializeField] private Wind wind;
         
         [Header("Fire Simulation Settings")]
-        [SerializeField] private float fireLiftingPower = 0.005f;
+        [HideInInspector] [SerializeField] private float fireLiftingPower = 0.005f;
         
         [Header("Factors Settings")]
         [SerializeField] private float moduleDiffusionFactor     = 0.001f;

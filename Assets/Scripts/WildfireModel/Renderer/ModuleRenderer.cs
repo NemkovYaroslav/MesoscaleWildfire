@@ -18,8 +18,8 @@ namespace WildfireModel.Renderer
         
         
         // TREE HIERARCHY VARIABLES
-        public List<Module> orderedModuleList;
-        public int modulesCount;
+        [HideInInspector] public List<Module> orderedModuleList;
+        [HideInInspector] public int modulesCount;
         
         // TRANSFORMS ARRAY (for jobs)
         public TransformAccessArray transformAccessArray;
