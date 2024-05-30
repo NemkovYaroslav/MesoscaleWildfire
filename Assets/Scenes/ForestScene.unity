@@ -185,11 +185,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0d352ee19b70441a08d71aad2b7941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resourcePrefab: {fileID: 7056141504072566775, guid: 04188af67d62b5b4597cfc5e1ead59b4,
-    type: 3}
-  distanceBetweenChecks: 4
-  positivePosition: {x: 20, y: 20}
-  negativePosition: {x: -16, y: -16}
+  treePrefab: {fileID: 0}
+  distanceBetweenTrees: 0
+  positivePosition: {x: 0, y: 0, z: 0}
+  negativePosition: {x: 0, y: 0, z: 0}
 --- !u!1 &651253774
 GameObject:
   m_ObjectHideFlags: 0
