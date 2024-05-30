@@ -95,4 +95,4 @@
  ![Wildfire result screenshot](Docs/Wildfire.PNG)
 
  ## Дополнительно
- Автор: Немков Ярослав Алексеевич <br> Полный текст работы можно найти [на GitHub](Docs/MarkerDungeonGeneration.pdf) </br>
+ Автор: Немков Ярослав Алексеевич <br> Полный текст работы можно найти [на GitHub](Docs/MesoscaleWildfire.pdf) </br>
