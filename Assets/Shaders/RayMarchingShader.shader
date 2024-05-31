@@ -1,4 +1,4 @@
-Shader "Unlit/VolumeShader"
+Shader "Unlit/RayMarchingShader"
 {
     Properties
     {

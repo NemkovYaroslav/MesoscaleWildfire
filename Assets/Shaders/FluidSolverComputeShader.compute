@@ -23,7 +23,6 @@ float3 texture_resolution;
 
 float3 torch_position;
 
-float torch_intensity;
 float diffusion_intensity;
 float viscosity_intensity;
 float delta_time;
@@ -38,7 +37,6 @@ RWStructuredBuffer<float> set_data;
 
 float3 wind_direction;
 float  wind_intensity;
-float fire_lifting_power;
 
 #define TOP_OFFSET    int3( 0, 1, 0)
 #define BOTTOM_OFFSET int3( 0,-1, 0)
@@ -88,7 +86,7 @@ void kernel_user_input ()
         float4 temperature = color_temperature_texture[position];
 
         temperature.rgb = float3(1,0,0);
-        temperature.a = clamp(temperature.a + torch_intensity, 0 , 1);
+        temperature.a = 1.0f;
     
         color_temperature_texture[position] = temperature;
     }
@@ -585,13 +583,12 @@ void kernel_diffusion_temperature (uint3 id : SV_DispatchThreadID)
 void kernel_simulate_wind (uint3 id : SV_DispatchThreadID)
 {
     const int3 pixel_id = id.xyz;
-
-    //float3 velocity = velocity_texture[pixel_id];
-    //velocity = clamp(velocity + wind_direction * wind_intensity, -wind_intensity, wind_intensity);
+    
     float3 velocity = wind_direction * wind_intensity;
-    if (velocity.y < fire_lifting_power)
+    // add fire lifting force
+    if (velocity.y < 0.001f)
     {
-        velocity.y = fire_lifting_power;
+        velocity.y = 0.001f;
     } 
     velocity_texture[pixel_id] = velocity;
 }

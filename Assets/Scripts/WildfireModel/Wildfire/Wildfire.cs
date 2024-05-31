@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
-using UnityEngine.Serialization;
 using UnityEngine.VFX;
 using WildfireModel.Renderer;
 
@@ -22,9 +21,10 @@ namespace WildfireModel.Wildfire
         [SerializeField] private float diffusionIntensity;
         [SerializeField] private float viscosityIntensity;
         [SerializeField] private int   solverIterations;
-        
+
         [Header("Wind Simulation Settings")]
-        [SerializeField] private Wind wind;
+        [SerializeField] private Vector3 windDirection;
+        [SerializeField] private float   windIntensity;
         
         [Header("Fire Simulation Settings")]
         [HideInInspector] [SerializeField] private float fireLiftingPower = 0.005f;
@@ -32,8 +32,8 @@ namespace WildfireModel.Wildfire
         [Header("Factors Settings")]
         [SerializeField] private float moduleDiffusionFactor     = 0.001f;
         [SerializeField] private float releaseTemperatureFactor  = 75000.0f;
-        [FormerlySerializedAs("airToModuleTransferFactor")] [SerializeField] private float airTransferFactor = 0.01f;
-        [FormerlySerializedAs("moduleToAirTransferFactor")] [SerializeField] private float moduleTransferFactor = 0.001f;
+        [SerializeField] private float airTransferFactor = 0.01f;
+        [SerializeField] private float moduleTransferFactor = 0.001f;
         
         
         // COMMON VARIABLES
@@ -305,29 +305,26 @@ namespace WildfireModel.Wildfire
         // simulate combustion process
         private void ProcessMainSimulationLoop()
         {
-            // ITERATE THROUGH MODULES
-            
             // SIMULATE WIND BEHAVIOUR
-            computeShader.SetVector(ShaderWindDirection, wind.direction);
-            computeShader.SetFloat(ShaderWindIntensity, wind.intensity / 1000.0f);
+            computeShader.SetVector(ShaderWindDirection, windDirection);
+            computeShader.SetFloat(ShaderWindIntensity, windIntensity / 1000.0f);
             computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
             ShaderDispatch(_kernelSimulateWind);
             
+            
+            // ITERATE THROUGH MODULES
             for (var i = _moduleRenderer.orderedModuleList.Count - 1; i >= 0; i--)
             {
                 var module = _moduleRenderer.orderedModuleList[i];
                 
                 
-                ///*
                 // SIMULATE TREE DYNAMICS
                 const float airDensity = 1.2f;
                 var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
-                var windForce = wind.direction * (0.5f * airDensity * Mathf.Pow(wind.intensity, 2) * surfaceArea);
+                var windForce = windDirection * (0.5f * airDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
                 module.rigidBody.AddForce(windForce, ForceMode.Force);
-                //*/
+               
                 
-                
-                ///*
                 // SIMULATE DIFFUSION IN TREE HIERARCHY
                 var connectedModule = module.neighbourModule;
                 if (connectedModule)
@@ -345,7 +342,6 @@ namespace WildfireModel.Wildfire
                         module.temperature += transferredTemperature;
                     }
                 }
-                //*/
                 
                 
                 var transferAmbientTemperature = 0.0f;
@@ -357,26 +353,13 @@ namespace WildfireModel.Wildfire
                     var lostMass = module.CalculateLostMass();
                     if (!Mathf.Approximately(lostMass, 0))
                     {
-                        if (!module.isBurned)
-                        {
-                            module.isBurned = true;
-                        }
-                        
                         var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
                         transferAmbientTemperature = releaseTemperature;
                         module.RecalculateCharacteristics(lostMass);
                     }
                 }
-                else
-                {
-                    if (!module.isTrunk)
-                    {
-                        module.gameObj.layer = 7;
-                        Destroy(module.fixedJoint);
-                    }
-                }
                 
-                ///*
+                
                 // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
                 var ambientTemperature = _modulesAmbientTemperatureArray[i];
                 if (ambientTemperature > module.temperature)
@@ -395,11 +378,19 @@ namespace WildfireModel.Wildfire
                     transferAmbientTemperature += temperatureDifference * airTransferFactor;
                     module.temperature         -= temperatureDifference * moduleTransferFactor;
                 }
-                //*/
                 
                 _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
                 
-                ///*
+                
+                if (module.temperature > 0.15f)
+                {
+                    if (!module.isIsolatedByCoal)
+                    {
+                        module.isIsolatedByCoal = true;
+                    }
+                }
+                
+                
                 // check for visual effects
                 if (module.temperature > 0.25f)
                 {
@@ -415,7 +406,6 @@ namespace WildfireModel.Wildfire
                         module.cachedVisualEffect.enabled = false;
                     }
                 }
-                //*/
             }
         }
         
@@ -471,7 +461,6 @@ namespace WildfireModel.Wildfire
             computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
             computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
             
-            ///*
             if (Input.GetMouseButton(0))
             {
                 computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
@@ -498,7 +487,6 @@ namespace WildfireModel.Wildfire
                     _torchVisualEffect.enabled = false;
                 }
             }
-            //*/
             
             // MAIN SIMULATION LOOP
             Profiler.BeginSample("Wildfire");

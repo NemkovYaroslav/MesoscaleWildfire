@@ -17,15 +17,12 @@ namespace TreeModel.Runtime.Placer
         public Rigidbody rigidBody;
         public CapsuleCollider capsuleCollider;
         public FixedJoint fixedJoint;
-        public GameObject gameObj;
         
         public Module neighbourModule;
 
         public VisualEffect cachedVisualEffect;
 
-        public bool isBurned;
-
-        public bool isTrunk;
+        public bool isIsolatedByCoal;
         
         private void Awake()
         {
@@ -33,7 +30,6 @@ namespace TreeModel.Runtime.Placer
             rigidBody       = GetComponent<Rigidbody>();
             capsuleCollider = GetComponent<CapsuleCollider>();
             fixedJoint      = GetComponent<FixedJoint>();
-            gameObj         = gameObject;
 
             // get neighbour from joint
             if (fixedJoint)
@@ -45,13 +41,11 @@ namespace TreeModel.Runtime.Placer
             }
             
             stopCombustionMass = rigidBody.mass * 0.1f;
-
-            ///*
+            
             cachedVisualEffect = GetComponent<VisualEffect>();
             cachedVisualEffect.SetVector3("direction", new Vector3(0.01f, 0.0f, 0.0f));
             cachedVisualEffect.SetFloat("cone radius", capsuleCollider.radius);
             cachedVisualEffect.SetFloat("cone height", capsuleCollider.height);
-            //*/
         }
         
         public float CalculateLostMass()

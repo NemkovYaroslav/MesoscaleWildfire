@@ -4,14 +4,17 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
+using WildfireModel.Wildfire;
 
 namespace WildfireModel.Renderer
 {
     public class ModuleRenderer : MonoBehaviour
     {
         [SerializeField] private ComputeShader computeShader;
-        [SerializeField] private Material renderMaterial;
-        [SerializeField] private Mesh renderMesh;
+
+        [Header("Module Render Settings")]
+        [SerializeField] private Material moduleRenderMaterial;
+        [SerializeField] private Mesh     moduleRenderMesh;
         
         private RenderParams _renderParams;
         private static readonly int Matrices = Shader.PropertyToID("matrices");
@@ -20,6 +23,7 @@ namespace WildfireModel.Renderer
         // TREE HIERARCHY VARIABLES
         [HideInInspector] public List<Module> orderedModuleList;
         [HideInInspector] public int modulesCount;
+        
         
         // TRANSFORMS ARRAY (for jobs)
         public TransformAccessArray transformAccessArray;
@@ -34,8 +38,9 @@ namespace WildfireModel.Renderer
         
         
         // BURNED TREE
-        private NativeArray<int> _burnedTreeArray;
-        private ComputeBuffer     _burnedTreeBuffer;
+        private NativeArray<float> _isolatedTreeArray;
+        private ComputeBuffer      _isolatedTreeBuffer;
+        
         
         // LOCAL WILDFIRE AREA MODULE POSITIONS
         private Matrix4x4 _wildfireAreaWorldToLocal;
@@ -46,9 +51,8 @@ namespace WildfireModel.Renderer
         private ComputeBuffer _modulePositionsBuffer;
         private int _kernelReadData;
         private int _kernelWriteData;
-        //private int _kernelSimulateFire;
         private static readonly int ModulePositions = Shader.PropertyToID("module_positions");
-        private static readonly int BurnedTrees = Shader.PropertyToID("burned_trees");
+        private static readonly int IsolatedTrees = Shader.PropertyToID("isolated_trees");
 
         private void Start()
         {
@@ -57,7 +61,6 @@ namespace WildfireModel.Renderer
             _kernelReadData     = computeShader.FindKernel("kernel_read_data");
             _kernelWriteData    = computeShader.FindKernel("kernel_write_data");
             
-            ///*
             // TREE HIERARCHY
             var trees = GameObject.FindGameObjectsWithTag("Tree");
             orderedModuleList = new List<Module>();
@@ -71,17 +74,6 @@ namespace WildfireModel.Renderer
                 }
             }
             modulesCount = orderedModuleList.Count;
-            //*/
-
-            /*
-            orderedModuleList = new List<Module>();
-            var modules = GameObject.FindGameObjectsWithTag("Module");
-            foreach (var module in modules)
-            {
-                orderedModuleList.Add(module.GetComponent<Module>());
-            }
-            modulesCount = orderedModuleList.Count;
-            */
             
             // RENDER MODULES
             _centersArray
@@ -121,7 +113,7 @@ namespace WildfireModel.Renderer
             var wildfireAreaTransform      = wildfireArea.transform;
             var wildfireAreaPosition = wildfireAreaTransform.position;
             var wildfireAreaScale    = wildfireAreaTransform.lossyScale;
-            _renderParams = new RenderParams(renderMaterial)
+            _renderParams = new RenderParams(moduleRenderMaterial)
             {
                 worldBounds = new Bounds(wildfireAreaPosition, wildfireAreaScale),
                 matProps = new MaterialPropertyBlock()
@@ -150,17 +142,18 @@ namespace WildfireModel.Renderer
                     sizeof(float) * 4
                 );
             
+            
             // BURNED TREES
-            _burnedTreeArray
-                = new NativeArray<int>(
+            _isolatedTreeArray
+                = new NativeArray<float>(
                     modulesCount,
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
-            _burnedTreeBuffer 
+            _isolatedTreeBuffer 
                 = new ComputeBuffer(
                     modulesCount, 
-                    sizeof(int)
+                    sizeof(float)
                 );
             
             _wildfireAreaWorldToLocal = wildfireAreaTransform.worldToLocalMatrix;
@@ -176,10 +169,8 @@ namespace WildfireModel.Renderer
                     _heightsArray[i] = orderedModuleList[i].capsuleCollider.height;
                     _radiiArray[i]   = orderedModuleList[i].capsuleCollider.radius;
                     
-                    // check is tree is burned
-                    _burnedTreeArray[i] = orderedModuleList[i].isBurned ? 1 : 0;
-
-                    //Debug.Log(_burnedTreeArray[i]);
+                    // check if tree is burned
+                    _isolatedTreeArray[i] = orderedModuleList[i].isIsolatedByCoal ? 1.0f : 0.0f;
                 }
 
                 var job = new FillMatricesAndPositionsDataJob()
@@ -206,10 +197,10 @@ namespace WildfireModel.Renderer
             _matricesBuffer.SetData(_matricesArray);
             _renderParams.matProps.SetBuffer(Matrices, _matricesBuffer);
             
-            _burnedTreeBuffer.SetData(_burnedTreeArray);
-            _renderParams.matProps.SetBuffer(BurnedTrees, _burnedTreeBuffer);
+            _isolatedTreeBuffer.SetData(_isolatedTreeArray);
+            _renderParams.matProps.SetBuffer(IsolatedTrees, _isolatedTreeBuffer);
             
-            Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
+            Graphics.RenderMeshPrimitives(_renderParams, moduleRenderMesh, 0, modulesCount);
         }
 
         private void Update()
@@ -233,6 +224,12 @@ namespace WildfireModel.Renderer
                 _modulePositionsBuffer.Release();
             }
             _modulePositionsBuffer = null;
+            
+            if (_isolatedTreeBuffer != null)
+            {
+                _isolatedTreeBuffer.Release();
+            }
+            _isolatedTreeBuffer = null; 
         }
         
         private void OnDestroy()
@@ -245,6 +242,8 @@ namespace WildfireModel.Renderer
             _heightsArray.Dispose();
             _radiiArray.Dispose();
             _matricesArray.Dispose();
+
+            _isolatedTreeArray.Dispose();
 
             modulePositionsArray.Dispose();
         }
