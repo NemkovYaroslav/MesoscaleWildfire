@@ -1,7 +1,6 @@
 ﻿using UnityEditor.Presets;
 using UnityEngine;
 using UnityEngine.VFX;
-using WildfireModel.Wildfire;
 
 namespace TreeModel.Runtime.Placer
 {
@@ -233,7 +232,8 @@ namespace TreeModel.Runtime.Placer
                 else
                 {
                     // add new module component
-                    modulePrototypeData.gameObject.AddComponent<Module>();
+                    var module = modulePrototypeData.gameObject.AddComponent<Module>();
+                    module.woodDensity = woodDensity;
                     
                     // destroy excess component
                     DestroyImmediate(modulePrototypeData);

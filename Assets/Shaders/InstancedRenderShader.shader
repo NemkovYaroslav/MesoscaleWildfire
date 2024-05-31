@@ -1,4 +1,4 @@
-Shader "Unlit/InstancedRenderingShader"
+Shader "Unlit/InstancedRenderShader"
 {
     Properties
     {
@@ -35,7 +35,7 @@ Shader "Unlit/InstancedRenderingShader"
             
             StructuredBuffer<float4x4> matrices;
 
-            StructuredBuffer<float> isolated_trees;
+            StructuredBuffer<float> burning_trees;
 
             frag_input vert(const vert_input v, const uint instance_id : SV_InstanceID)
             {
@@ -45,7 +45,7 @@ Shader "Unlit/InstancedRenderingShader"
                 
                 o.position = UnityObjectToClipPos(position);
                 o.uv       = TRANSFORM_TEX(v.uv, _MainTex);
-                o.status.x = isolated_trees[instance_id];
+                o.status.x = burning_trees[instance_id];
                 
                 return o;
             }

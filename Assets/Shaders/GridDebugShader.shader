@@ -1,4 +1,4 @@
-Shader "Unlit/RayMarchingShader"
+Shader "Unlit/GridDebugShader"
 {
     Properties
     {

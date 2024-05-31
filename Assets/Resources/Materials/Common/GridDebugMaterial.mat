@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RayMarchingMaterial
+  m_Name: GridDebugMaterial
   m_Shader: {fileID: 4800000, guid: 177575aae6f1d7449a343028ae50b296, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

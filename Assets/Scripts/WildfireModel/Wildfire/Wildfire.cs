@@ -11,35 +11,37 @@ namespace WildfireModel.Wildfire
 {
     public class Wildfire : MonoBehaviour
     {
-        [Header("Common Settings")]
-        [SerializeField] private ComputeShader computeShader;
-        [SerializeField] private Vector3 textureResolution;
-        [SerializeField] private Material renderMaterial;
+        // constants
+        private const float AirDensity = 1.2f;
         
-        [Header("Solver Settings")]
-        [SerializeField] private float torchIntensity;
-        [SerializeField] private float diffusionIntensity;
-        [SerializeField] private float viscosityIntensity;
-        [SerializeField] private int   solverIterations;
-
-        [Header("Wind Simulation Settings")]
-        [SerializeField] private Vector3 windDirection;
-        [SerializeField] private float   windIntensity;
+        [Header("Fluid Solver Settings")]
+        [SerializeField] private ComputeShader gridComputeShader;
+        public ComputeShader GridComputeShader => gridComputeShader;
+        [SerializeField] private Vector3       gridResolution;
+        [SerializeField] private Material      gridRenderMaterial;
         
-        [Header("Fire Simulation Settings")]
-        [HideInInspector] [SerializeField] private float fireLiftingPower = 0.005f;
+        [Header("Fluid Solver Factor Settings")]
+        [SerializeField] private float diffusionFactor  = 0.001f;
+        [SerializeField] private float viscosityFactor  = 0.001f;
+        [SerializeField] private int   solverIterations = 15;
         
-        [Header("Factors Settings")]
-        [SerializeField] private float moduleDiffusionFactor     = 0.001f;
-        [SerializeField] private float releaseTemperatureFactor  = 75000.0f;
-        [SerializeField] private float airTransferFactor = 0.01f;
-        [SerializeField] private float moduleTransferFactor = 0.001f;
+        [Header("Wildfire Factor Settings")]
+        [SerializeField] private float moduleDiffusionFactor    = 0.0001f;
+        [SerializeField] private float releaseTemperatureFactor = 25000.0f;
+        [SerializeField] private float airTransferFactor        = 0.001f;
+        [SerializeField] private float moduleTransferFactor     = 0.01f;
+        
+        [Header("Wind Settings")]
+        [SerializeField] private Vector3 windDirection = Vector3.right;
+        public Vector3 WindDirection => windDirection;
+        [SerializeField] [Range(0.0f, 15.0f)] private float   windIntensity = 5.0f;
+        public float WindIntensity => windIntensity / 1000.0f;
         
         
         // COMMON VARIABLES
         private ModuleRenderer _moduleRenderer;
-        private GameObject _torch;
-        private VisualEffect _torchVisualEffect;
+        private GameObject     _torch;
+        private VisualEffect   _torchVisualEffect;
         
         
         // BUFFER FOR GET/SET DATA FROM/TO SHADER
@@ -73,7 +75,6 @@ namespace WildfireModel.Wildfire
         // FLUID SOLVER VARIABLES NAMING
         private static readonly int WildfireAreaTexture                  = Shader.PropertyToID("_MainTex");
         private static readonly int ShaderTextureResolution              = Shader.PropertyToID("texture_resolution");
-        private static readonly int ShaderTorchIntensity                 = Shader.PropertyToID("torch_intensity");
         private static readonly int ShaderDiffusionIntensity             = Shader.PropertyToID("diffusion_intensity");
         private static readonly int ShaderViscosityIntensity             = Shader.PropertyToID("viscosity_intensity");
         private static readonly int ShaderDeltaTime                      = Shader.PropertyToID("delta_time");
@@ -97,18 +98,17 @@ namespace WildfireModel.Wildfire
         
         
         // WIND VARIABLES
-        private static readonly int ShaderWindDirection    = Shader.PropertyToID("wind_direction");
-        private static readonly int ShaderWindIntensity    = Shader.PropertyToID("wind_intensity");
-        private static readonly int ShaderFireLiftingPower = Shader.PropertyToID("fire_lifting_power");
+        private static readonly int ShaderWindDirection = Shader.PropertyToID("wind_direction");
+        private static readonly int ShaderWindIntensity = Shader.PropertyToID("wind_intensity");
         
         
         // create render texture in 3D format
         private RenderTexture CreateRenderTexture3D(GraphicsFormat format)
         {
             var dataTexture 
-                = new RenderTexture((int)textureResolution.x, (int)textureResolution.y, format, 0)
+                = new RenderTexture((int)gridResolution.x, (int)gridResolution.y, format, 0)
                 {
-                    volumeDepth       = (int)textureResolution.z,
+                    volumeDepth       = (int)gridResolution.z,
                     dimension         = TextureDimension.Tex3D,
                     filterMode        = FilterMode.Point,
                     wrapMode          = TextureWrapMode.Clamp,
@@ -123,11 +123,11 @@ namespace WildfireModel.Wildfire
         // dispatch method for grid operations
         private void ShaderDispatch(int kernel)
         {
-            computeShader.Dispatch(
+            gridComputeShader.Dispatch(
                 kernel,
-                (int)textureResolution.x / 8,
-                (int)textureResolution.y / 8,
-                (int)textureResolution.z / 8
+                (int)gridResolution.x / 8,
+                (int)gridResolution.y / 8,
+                (int)gridResolution.z / 8
             );
         }
 
@@ -142,46 +142,47 @@ namespace WildfireModel.Wildfire
             
             
             // SET TEXTURE FOR TEMPERATURE RENDERING (RAY MARCHING DEBUG)
-            renderMaterial.SetTexture(WildfireAreaTexture, _colorTemperatureTexture);
+            gridRenderMaterial.SetTexture(WildfireAreaTexture, _colorTemperatureTexture);
             
             
             // FILL MAIN STEPS OF FLUID SOLVER
-            _kernelInit                 = computeShader.FindKernel("kernel_init");
-            _kernelUserInput            = computeShader.FindKernel("kernel_user_input");
-            _kernelReadData             = computeShader.FindKernel("kernel_read_data");
-            _kernelWriteData            = computeShader.FindKernel("kernel_write_data");
-            _kernelDiffusionVelocity    = computeShader.FindKernel("kernel_diffusion_velocity");
-            _kernelDivergence           = computeShader.FindKernel("kernel_divergence");
-            _kernelPressure             = computeShader.FindKernel("kernel_pressure");
-            _kernelSubtractGradient     = computeShader.FindKernel("kernel_subtract_gradient");
-            _kernelAdvectionVelocity    = computeShader.FindKernel("kernel_advection_velocity");
-            _kernelAdvectionTemperature = computeShader.FindKernel("kernel_advection_temperature");
-            _kernelDiffusionTemperature = computeShader.FindKernel("kernel_diffusion_temperature");
-            _kernelSimulateWind         = computeShader.FindKernel("kernel_simulate_wind");
+            _kernelInit                 = gridComputeShader.FindKernel("kernel_init");
+            _kernelUserInput            = gridComputeShader.FindKernel("kernel_user_input");
+            _kernelReadData             = gridComputeShader.FindKernel("kernel_read_data");
+            _kernelWriteData            = gridComputeShader.FindKernel("kernel_write_data");
+            _kernelDiffusionVelocity    = gridComputeShader.FindKernel("kernel_diffusion_velocity");
+            _kernelDivergence           = gridComputeShader.FindKernel("kernel_divergence");
+            _kernelPressure             = gridComputeShader.FindKernel("kernel_pressure");
+            _kernelSubtractGradient     = gridComputeShader.FindKernel("kernel_subtract_gradient");
+            _kernelAdvectionVelocity    = gridComputeShader.FindKernel("kernel_advection_velocity");
+            _kernelAdvectionTemperature = gridComputeShader.FindKernel("kernel_advection_temperature");
+            _kernelDiffusionTemperature = gridComputeShader.FindKernel("kernel_diffusion_temperature");
+            _kernelSimulateWind         = gridComputeShader.FindKernel("kernel_simulate_wind");
             
             
             // SET MAIN TEXTURES TO FLUID SOLVER
-            computeShader.SetTexture(_kernelInit, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelInit, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelInit, ShaderDivergenceTexture, _divergenceTexture);
-            computeShader.SetTexture(_kernelInit, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelUserInput, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelWriteData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelReadData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelDiffusionVelocity, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelDivergence, ShaderDivergenceTexture, _divergenceTexture);
-            computeShader.SetTexture(_kernelDivergence, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelDivergence, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelPressure, ShaderDivergenceTexture, _divergenceTexture);
-            computeShader.SetTexture(_kernelPressure, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelPressure, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelSubtractGradient, ShaderPressureTexture, _pressureTexture);
-            computeShader.SetTexture(_kernelSubtractGradient, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelAdvectionVelocity, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
-            computeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelDiffusionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
-            computeShader.SetTexture(_kernelSimulateWind, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelInit, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            gridComputeShader.SetTexture(_kernelInit, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelInit, ShaderDivergenceTexture, _divergenceTexture);
+            gridComputeShader.SetTexture(_kernelInit, ShaderPressureTexture, _pressureTexture);
+            gridComputeShader.SetTexture(_kernelUserInput, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            gridComputeShader.SetTexture(_kernelWriteData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            gridComputeShader.SetTexture(_kernelReadData, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            gridComputeShader.SetTexture(_kernelDiffusionVelocity, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelDivergence, ShaderDivergenceTexture, _divergenceTexture);
+            gridComputeShader.SetTexture(_kernelDivergence, ShaderPressureTexture, _pressureTexture);
+            gridComputeShader.SetTexture(_kernelDivergence, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelPressure, ShaderDivergenceTexture, _divergenceTexture);
+            gridComputeShader.SetTexture(_kernelPressure, ShaderPressureTexture, _pressureTexture);
+            gridComputeShader.SetTexture(_kernelPressure, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelSubtractGradient, ShaderPressureTexture, _pressureTexture);
+            gridComputeShader.SetTexture(_kernelSubtractGradient, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelAdvectionVelocity, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelAdvectionTemperature, ShaderVelocityTexture, _velocityTexture);
+            gridComputeShader.SetTexture(_kernelAdvectionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            gridComputeShader.SetTexture(_kernelDiffusionTemperature, ShaderColorTemperatureTexture, _colorTemperatureTexture);
+            gridComputeShader.SetTexture(_kernelSimulateWind, ShaderVelocityTexture, _velocityTexture);
+            
             
             // INITIALIZE COMMON VARIABLES
             _torch             = GameObject.FindWithTag("Torch");
@@ -190,14 +191,14 @@ namespace WildfireModel.Wildfire
             
             
             // SET VARIABLES FOR FLUID SOLVER
-            computeShader.SetVector(ShaderTextureResolution, textureResolution);
-            computeShader.SetInt(ModulesNumber, _moduleRenderer.modulesCount);
+            gridComputeShader.SetVector(ShaderTextureResolution, gridResolution);
+            gridComputeShader.SetInt(ModulesNumber, _moduleRenderer.modulesCount);
             
             
             // ARRAY FOR ASYNC GET DATA FROM FLUID SOLVER
             _transferredAmbientTemperatureDataArray
                 = new NativeArray<Vector4>(
-                    (int)textureResolution.x * (int)textureResolution.y * (int)textureResolution.z,
+                    (int)gridResolution.x * (int)gridResolution.y * (int)gridResolution.z,
                     Allocator.Persistent
                 );
             
@@ -254,13 +255,13 @@ namespace WildfireModel.Wildfire
                 // need for more accurate reading data (use texture sampler)
                 _textureForSampleAmbientTemperature.SetPixelData(_transferredAmbientTemperatureDataArray, 0);
                 _textureForSampleAmbientTemperature.Apply(updateMipmaps: false, makeNoLongerReadable: false);
-                computeShader.SetTexture(_kernelReadData, TextureForSampleAmbientTemperature, _textureForSampleAmbientTemperature);
+                gridComputeShader.SetTexture(_kernelReadData, TextureForSampleAmbientTemperature, _textureForSampleAmbientTemperature);
             
                 // set read buffer
-                computeShader.SetBuffer(_kernelReadData, GetDataBuffer, _getDataBuffer);
+                gridComputeShader.SetBuffer(_kernelReadData, GetDataBuffer, _getDataBuffer);
                 
                 // read data from grid
-                computeShader.Dispatch(
+                gridComputeShader.Dispatch(
                     _kernelReadData,
                     _moduleRenderer.modulesCount / 8,
                     1,
@@ -306,9 +307,8 @@ namespace WildfireModel.Wildfire
         private void ProcessMainSimulationLoop()
         {
             // SIMULATE WIND BEHAVIOUR
-            computeShader.SetVector(ShaderWindDirection, windDirection);
-            computeShader.SetFloat(ShaderWindIntensity, windIntensity / 1000.0f);
-            computeShader.SetFloat(ShaderFireLiftingPower, fireLiftingPower / 1000.0f);
+            gridComputeShader.SetVector(ShaderWindDirection, windDirection);
+            gridComputeShader.SetFloat(ShaderWindIntensity, windIntensity / 1000.0f);
             ShaderDispatch(_kernelSimulateWind);
             
             
@@ -319,14 +319,13 @@ namespace WildfireModel.Wildfire
                 
                 
                 // SIMULATE TREE DYNAMICS
-                const float airDensity = 1.2f;
-                var surfaceArea = 2.0f * Mathf.PI * module.capsuleCollider.radius * module.capsuleCollider.height;
-                var windForce = windDirection * (0.5f * airDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
-                module.rigidBody.AddForce(windForce, ForceMode.Force);
+                var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
+                var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
+                module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
                
                 
                 // SIMULATE DIFFUSION IN TREE HIERARCHY
-                var connectedModule = module.neighbourModule;
+                var connectedModule = module.cachedNeighbourModule;
                 if (connectedModule)
                 {
                     var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
@@ -348,55 +347,28 @@ namespace WildfireModel.Wildfire
                 
                 
                 // SIMULATE COMBUSTION
-                if (module.rigidBody.mass > module.stopCombustionMass)
+                var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
+                if (massDifference > 0.0f && module.temperature > 0.15f)
                 {
+                    if (!module.isIsolatedByCoal)
+                    {
+                        module.isIsolatedByCoal = true;
+                    }
+                    
                     var lostMass = module.CalculateLostMass();
                     if (!Mathf.Approximately(lostMass, 0))
                     {
                         var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
                         transferAmbientTemperature = releaseTemperature;
                         module.RecalculateCharacteristics(lostMass);
-                    }
-                }
-                
-                
-                // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
-                var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                if (ambientTemperature > module.temperature)
-                {
-                    var temperatureDifference = ambientTemperature - module.temperature;
-                    //var transferredTemperature = airToModuleTransferFactor * temperatureDifference;
-
-                    module.temperature         += temperatureDifference * moduleTransferFactor;
-                    transferAmbientTemperature -= temperatureDifference * airTransferFactor;
-                }
-                if (module.temperature > ambientTemperature)
-                {
-                    var temperatureDifference = module.temperature - ambientTemperature;
-                    //var transferredTemperature = moduleToAirTransferFactor * temperatureDifference;
-
-                    transferAmbientTemperature += temperatureDifference * airTransferFactor;
-                    module.temperature         -= temperatureDifference * moduleTransferFactor;
-                }
-                
-                _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
-                
-                
-                if (module.temperature > 0.15f)
-                {
-                    if (!module.isIsolatedByCoal)
-                    {
-                        module.isIsolatedByCoal = true;
-                    }
-                }
-                
-                
-                // check for visual effects
-                if (module.temperature > 0.25f)
-                {
-                    if (!module.cachedVisualEffect.enabled)
-                    {
-                        module.cachedVisualEffect.enabled = true;
+                        
+                        if (module.temperature > 0.25f)
+                        {
+                            if (!module.cachedVisualEffect.enabled)
+                            {
+                                module.cachedVisualEffect.enabled = true;
+                            }
+                        }
                     }
                 }
                 else
@@ -406,6 +378,23 @@ namespace WildfireModel.Wildfire
                         module.cachedVisualEffect.enabled = false;
                     }
                 }
+                
+                
+                // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
+                var ambientTemperature = _modulesAmbientTemperatureArray[i];
+                var temperatureDifference = Mathf.Abs(ambientTemperature - module.temperature);
+                if (ambientTemperature > module.temperature)
+                {
+                    module.temperature         += temperatureDifference * moduleTransferFactor;
+                    transferAmbientTemperature -= temperatureDifference * airTransferFactor;
+                }
+                if (module.temperature > ambientTemperature)
+                {
+                    transferAmbientTemperature += temperatureDifference * airTransferFactor;
+                    module.temperature         -= temperatureDifference * moduleTransferFactor;
+                }
+                
+                _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
             }
         }
         
@@ -413,9 +402,9 @@ namespace WildfireModel.Wildfire
         private void TransferDataFromModulesToGrid()
         {
             _setDataBuffer.SetData(_modulesUpdatedAmbientTemperatureArray);
-            computeShader.SetBuffer(_kernelWriteData, SetDataBuffer, _setDataBuffer);
+            gridComputeShader.SetBuffer(_kernelWriteData, SetDataBuffer, _setDataBuffer);
             
-            computeShader.Dispatch(
+            gridComputeShader.Dispatch(
                 _kernelWriteData,
                 _moduleRenderer.modulesCount / 8,
                 1,
@@ -457,23 +446,21 @@ namespace WildfireModel.Wildfire
         
         private void FixedUpdate()
         {
-            computeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
-            computeShader.SetFloat(ShaderDiffusionIntensity, diffusionIntensity);
-            computeShader.SetFloat(ShaderViscosityIntensity, viscosityIntensity);
+            gridComputeShader.SetFloat(ShaderDeltaTime, Time.fixedDeltaTime);
+            gridComputeShader.SetFloat(ShaderDiffusionIntensity, diffusionFactor);
+            gridComputeShader.SetFloat(ShaderViscosityIntensity, viscosityFactor);
             
             if (Input.GetMouseButton(0))
             {
-                computeShader.SetFloat(ShaderTorchIntensity, torchIntensity);
-                
                 if (!_torchVisualEffect.enabled)
                 {
                     _torchVisualEffect.enabled = true;
                 }
                 
                 var torchPosition = transform.InverseTransformPoint(_torch.transform.position);
-                computeShader.SetVector(ShaderTorchPosition, torchPosition);
+                gridComputeShader.SetVector(ShaderTorchPosition, torchPosition);
                 
-                computeShader.Dispatch(
+                gridComputeShader.Dispatch(
                     _kernelUserInput,
                     1,
                     1,

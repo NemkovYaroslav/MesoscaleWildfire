@@ -1,63 +1,64 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.VFX;
+using WildfireModel.Wildfire;
 
 namespace TreeModel.Runtime.Placer
 {
     public class Module : MonoBehaviour
     {
-        private const float IgnitionTemperature = 0.15f;
-        private const float AttenuationTemperature = 0.45f;
-        private const float WoodDensity = 800.0f;
+        // constants
+        private const int WoodDensity                = 800;
+        private const float IgnitionTemperature      = 0.15f;
+        private const float AttenuationTemperature   = 0.45f;
+        private const float StopCombustionMassFactor = 0.1f;
+        private const float CharIsolatedFactor       = 0.01f;
         
+        private Wildfire _wildfire;
+        
+        [HideInInspector] public Transform       cachedTransform;
+        [HideInInspector] public Rigidbody       cachedRigidbody;
+        [HideInInspector] public CapsuleCollider cachedCapsuleCollider;
+        [HideInInspector] public FixedJoint      cachedFixedJoint;
+        [HideInInspector] public VisualEffect    cachedVisualEffect;
+        [HideInInspector] public Module          cachedNeighbourModule;
+        
+        [HideInInspector] public float woodDensity;
         public float temperature;
-        public float stopCombustionMass;
-
-        public Transform transForm;
-        public Rigidbody rigidBody;
-        public CapsuleCollider capsuleCollider;
-        public FixedJoint fixedJoint;
         
-        public Module neighbourModule;
+        [HideInInspector] public float stopCombustionMass;
 
-        public VisualEffect cachedVisualEffect;
-
-        public bool isIsolatedByCoal;
+        [HideInInspector] public bool isIsolatedByCoal;
         
         private void Awake()
         {
-            transForm       = GetComponent<Transform>();
-            rigidBody       = GetComponent<Rigidbody>();
-            capsuleCollider = GetComponent<CapsuleCollider>();
-            fixedJoint      = GetComponent<FixedJoint>();
+            _wildfire = GameObject.FindWithTag("WildfireArea").GetComponent<Wildfire>();
+            
+            cachedTransform       = GetComponent<Transform>();
+            cachedRigidbody       = GetComponent<Rigidbody>();
+            cachedCapsuleCollider = GetComponent<CapsuleCollider>();
+            cachedFixedJoint      = GetComponent<FixedJoint>();
 
             // get neighbour from joint
-            if (fixedJoint)
+            if (cachedFixedJoint)
             {
-                if (fixedJoint.connectedBody.TryGetComponent(out Module module))
+                if (cachedFixedJoint.connectedBody.TryGetComponent(out Module module))
                 {
-                    neighbourModule = module;
+                    cachedNeighbourModule = module;
                 }
             }
             
-            stopCombustionMass = rigidBody.mass * 0.1f;
+            stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             
             cachedVisualEffect = GetComponent<VisualEffect>();
-            cachedVisualEffect.SetVector3("direction", new Vector3(0.01f, 0.0f, 0.0f));
-            cachedVisualEffect.SetFloat("cone radius", capsuleCollider.radius);
-            cachedVisualEffect.SetFloat("cone height", capsuleCollider.height);
+            cachedVisualEffect.SetVector3("direction", _wildfire.WindDirection * _wildfire.WindIntensity);
+            cachedVisualEffect.SetFloat("cone radius", cachedCapsuleCollider.radius);
+            cachedVisualEffect.SetFloat("cone height", cachedCapsuleCollider.height);
         }
         
         public float CalculateLostMass()
         {
-            var surfaceArea = 2.0f * Mathf.PI * capsuleCollider.radius * capsuleCollider.height;
-
             var reactionRate = 1.0f;
             
-            if (temperature < IgnitionTemperature)
-            {
-                reactionRate = 0.0f;
-            }
             if (temperature is > IgnitionTemperature and < AttenuationTemperature)
             {
                 var argument = (temperature - IgnitionTemperature) / (AttenuationTemperature - IgnitionTemperature);
@@ -67,21 +68,19 @@ namespace TreeModel.Runtime.Placer
             {
                 reactionRate = 1;
             }
-
-            const float thickness = 0.01f;
             
-            var lostMass = reactionRate * surfaceArea * thickness;
+            var pyrolysisFrontArea = 2.0f * Mathf.PI * cachedCapsuleCollider.radius * cachedCapsuleCollider.height;
+            
+            var lostMass = reactionRate * pyrolysisFrontArea * CharIsolatedFactor;
 
             return lostMass;
         }
 
         public void RecalculateCharacteristics(float lostMass)
         {
-            var mass = rigidBody.mass - lostMass;
-            
-            rigidBody.mass = mass;
-            
-            capsuleCollider.radius = Mathf.Sqrt(mass / (Mathf.PI * WoodDensity * capsuleCollider.height));
+            var mass = cachedRigidbody.mass - lostMass;
+            cachedRigidbody.mass = mass;
+            cachedCapsuleCollider.radius = Mathf.Sqrt(mass / (Mathf.PI * WoodDensity * cachedCapsuleCollider.height));
         }
 
         /*

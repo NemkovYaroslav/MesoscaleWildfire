@@ -86,7 +86,7 @@ void kernel_user_input ()
         float4 temperature = color_temperature_texture[position];
 
         temperature.rgb = float3(1,0,0);
-        temperature.a = 1.0f;
+        temperature.a   = 1.0f;
     
         color_temperature_texture[position] = temperature;
     }
