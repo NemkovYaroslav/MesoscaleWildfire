@@ -232,8 +232,7 @@ namespace TreeModel.Runtime.Placer
                 else
                 {
                     // add new module component
-                    var module = modulePrototypeData.gameObject.AddComponent<Module>();
-                    module.woodDensity = woodDensity;
+                    modulePrototypeData.gameObject.AddComponent<Module>();
                     
                     // destroy excess component
                     DestroyImmediate(modulePrototypeData);

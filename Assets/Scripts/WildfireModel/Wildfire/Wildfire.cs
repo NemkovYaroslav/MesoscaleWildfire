@@ -325,21 +325,12 @@ namespace WildfireModel.Wildfire
                
                 
                 // SIMULATE DIFFUSION IN TREE HIERARCHY
-                var connectedModule = module.cachedNeighbourModule;
+                var connectedModule = module.cachedPreviousModule;
                 if (connectedModule)
                 {
                     var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
-                    var transferredTemperature = moduleDiffusionFactor * middleTemperature;
-                    if (module.temperature > connectedModule.temperature)
-                    {
-                        module.temperature -= transferredTemperature;
-                        connectedModule.temperature += transferredTemperature;
-                    }
-                    if (module.temperature < connectedModule.temperature)
-                    {
-                        connectedModule.temperature -= transferredTemperature;
-                        module.temperature += transferredTemperature;
-                    }
+                    module.temperature          += moduleDiffusionFactor * (middleTemperature - module.temperature)          * Time.fixedDeltaTime;
+                    connectedModule.temperature += moduleDiffusionFactor * (middleTemperature - connectedModule.temperature) * Time.fixedDeltaTime;
                 }
                 
                 
@@ -347,51 +338,61 @@ namespace WildfireModel.Wildfire
                 
                 
                 // SIMULATE COMBUSTION
-                var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
-                if (massDifference > 0.0f && module.temperature > 0.15f)
+
+                if (module.temperature > 0.15f)
                 {
                     if (!module.isIsolatedByCoal)
                     {
                         module.isIsolatedByCoal = true;
                     }
                     
-                    var lostMass = module.CalculateLostMass();
-                    if (!Mathf.Approximately(lostMass, 0))
+                    var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
+                    if (massDifference > 0.0f)
                     {
-                        var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
-                        transferAmbientTemperature = releaseTemperature;
-                        module.RecalculateCharacteristics(lostMass);
-                        
-                        if (module.temperature > 0.25f)
+                        var lostMass = module.CalculateLostMass();
+                        if (!Mathf.Approximately(lostMass, 0))
                         {
-                            if (!module.cachedVisualEffect.enabled)
-                            {
-                                module.cachedVisualEffect.enabled = true;
-                            }
+                            var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
+                            transferAmbientTemperature = releaseTemperature;
+                            module.RecalculateCharacteristics(lostMass);
                         }
                     }
-                }
-                else
-                {
-                    if (module.cachedVisualEffect.enabled)
+                    
+                    if (module.temperature > 0.25f)
                     {
-                        module.cachedVisualEffect.enabled = false;
+                        if (!module.cachedVisualEffect.enabled)
+                        {
+                            module.cachedVisualEffect.enabled = true;
+                        }
+                    }
+                    else
+                    {
+                        if (module.cachedVisualEffect.enabled)
+                        {
+                            module.cachedVisualEffect.enabled = false;
+                        }
                     }
                 }
                 
                 
                 // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
                 var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                var temperatureDifference = Mathf.Abs(ambientTemperature - module.temperature);
                 if (ambientTemperature > module.temperature)
                 {
-                    module.temperature         += temperatureDifference * moduleTransferFactor;
-                    transferAmbientTemperature -= temperatureDifference * airTransferFactor;
+                    var temperatureDifference = ambientTemperature - module.temperature;
+                    var transferTemperature   = moduleTransferFactor * temperatureDifference * Time.fixedDeltaTime;
+                    module.temperature           += transferTemperature;
+                    transferAmbientTemperature   -= transferTemperature;
                 }
-                if (module.temperature > ambientTemperature)
+                else
                 {
-                    transferAmbientTemperature += temperatureDifference * airTransferFactor;
-                    module.temperature         -= temperatureDifference * moduleTransferFactor;
+                    if (module.temperature > ambientTemperature)
+                    {
+                        var temperatureDifference = module.temperature - ambientTemperature;
+                        var transferTemperature   = airTransferFactor * temperatureDifference * Time.fixedDeltaTime;
+                        transferAmbientTemperature   += transferTemperature;
+                        module.temperature           -= transferTemperature;
+                    }
                 }
                 
                 _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.VFX;
 using WildfireModel.Wildfire;
 
@@ -20,14 +21,16 @@ namespace TreeModel.Runtime.Placer
         [HideInInspector] public CapsuleCollider cachedCapsuleCollider;
         [HideInInspector] public FixedJoint      cachedFixedJoint;
         [HideInInspector] public VisualEffect    cachedVisualEffect;
-        [HideInInspector] public Module          cachedNeighbourModule;
         
-        [HideInInspector] public float woodDensity;
+        [HideInInspector] public Module cachedPreviousModule;
+        
         public float temperature;
         
-        [HideInInspector] public float stopCombustionMass;
+        public float stopCombustionMass;
 
         [HideInInspector] public bool isIsolatedByCoal;
+
+        public bool isBurned;
         
         private void Awake()
         {
@@ -43,7 +46,7 @@ namespace TreeModel.Runtime.Placer
             {
                 if (cachedFixedJoint.connectedBody.TryGetComponent(out Module module))
                 {
-                    cachedNeighbourModule = module;
+                    cachedPreviousModule = module;
                 }
             }
             
@@ -82,14 +85,5 @@ namespace TreeModel.Runtime.Placer
             cachedRigidbody.mass = mass;
             cachedCapsuleCollider.radius = Mathf.Sqrt(mass / (Mathf.PI * WoodDensity * cachedCapsuleCollider.height));
         }
-
-        /*
-        private void OnDestroy()
-        {
-            var index = _moduleRenderer.orderedModuleList.IndexOf(this);
-            _moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
-            _moduleRenderer.orderedModuleList.RemoveAt(index);
-        }
-        */
     }
 }

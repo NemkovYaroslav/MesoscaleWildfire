@@ -160,8 +160,6 @@ void kernel_diffusion_velocity (uint3 id : SV_DispatchThreadID)
 
         const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
         const float k = delta_time * viscosity_intensity * resolution;
-
-        //const float k = delta_time * viscosity_intensity;
         
         const float3 velocity =
         (
@@ -415,7 +413,7 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
                                         + velocity_011 * inf_011
                                             + velocity_111 * inf_111;
 
-            //velocity *= 0.25f;
+            //velocity *= 0.01f;
 
             velocity_texture[pixel_id] = velocity;
         }
@@ -525,7 +523,7 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                             + temperature_111 * inf_111;
 
             //temperature.rgb *= 0.985f;
-            //temperature.a   *= 0.999f;
+            //temperature.a   *= 0.9999f;
             
             color_temperature_texture[pixel_id] = temperature;
         }
@@ -563,7 +561,7 @@ void kernel_diffusion_temperature (uint3 id : SV_DispatchThreadID)
         const float4 back_temperature_value   = color_temperature_texture[back_pixel_id]   * back_obstacle; 
 
         const float resolution = (texture_resolution.x + texture_resolution.y + texture_resolution.z) / 3.0f;
-        const float k = delta_time * diffusion_intensity * resolution;
+        const float k = delta_time * diffusion_intensity;
         
         //const float k = delta_time * diffusion_intensity;
         

@@ -153,7 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68ae1ef85fb335a468f18f6bdd8e3dbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  computeShader: {fileID: 7200000, guid: f8fe29e634da52542b531bb35ed5779b, type: 3}
   renderMaterial: {fileID: 2100000, guid: a2814a50e78c4ba4884ab481c8be705b, type: 2}
   renderMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   orderedModuleList: []
@@ -185,10 +184,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0d352ee19b70441a08d71aad2b7941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  treePrefab: {fileID: 0}
-  distanceBetweenTrees: 0
-  positivePosition: {x: 0, y: 0, z: 0}
-  negativePosition: {x: 0, y: 0, z: 0}
+  treePrefab: {fileID: 7056141504072566775, guid: 04188af67d62b5b4597cfc5e1ead59b4,
+    type: 3}
+  distanceBetweenTrees: 4
+  positivePosition: {x: 20, y: 0, z: 20}
+  negativePosition: {x: -16, y: 0, z: -16}
 --- !u!1 &651253774
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,7 +427,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -6.5, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 4}
+  m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -583,17 +583,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedTransform: {fileID: 0}
+  cachedRigidbody: {fileID: 0}
+  cachedCapsuleCollider: {fileID: 0}
+  cachedFixedJoint: {fileID: 0}
+  cachedVisualEffect: {fileID: 0}
+  cachedPreviousModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  transForm: {fileID: 0}
-  rigidBody: {fileID: 0}
-  capsuleCollider: {fileID: 0}
-  fixedJoint: {fileID: 0}
-  gameObj: {fileID: 0}
-  neighbourModule: {fileID: 0}
-  cachedVisualEffect: {fileID: 0}
+  isIsolatedByCoal: 0
   isBurned: 0
-  isTrunk: 0
 --- !u!136 &1355467405
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -771,21 +770,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d8d1097816792f4cbd3268a9b546ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  computeShader: {fileID: 7200000, guid: f8fe29e634da52542b531bb35ed5779b, type: 3}
-  textureResolution: {x: 80, y: 32, z: 80}
-  renderMaterial: {fileID: 2100000, guid: 0c93548952eb53547ae4a23e82f04df4, type: 2}
-  torchIntensity: 1
-  diffusionIntensity: 0.001
-  viscosityIntensity: 0.001
+  gridComputeShader: {fileID: 7200000, guid: f8fe29e634da52542b531bb35ed5779b, type: 3}
+  gridResolution: {x: 80, y: 32, z: 80}
+  gridRenderMaterial: {fileID: 2100000, guid: 0c93548952eb53547ae4a23e82f04df4, type: 2}
+  diffusionFactor: 0.01
+  viscosityFactor: 0.01
   solverIterations: 15
-  wind:
-    intensity: 5
-    direction: {x: 1, y: 0, z: 0}
-  fireLiftingPower: 1
-  moduleDiffusionFactor: 0.0001
-  releaseTemperatureFactor: 20000
-  airTransferFactor: 0.001
-  moduleTransferFactor: 0.01
+  moduleDiffusionFactor: 0.75
+  releaseTemperatureFactor: 7500
+  airTransferFactor: 0.15
+  moduleTransferFactor: 0.75
+  windDirection: {x: 0, y: 0, z: 1}
+  windIntensity: 5
 --- !u!23 &2116884307
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -793,7 +789,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116884305}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 0
