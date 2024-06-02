@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TreeModel.Runtime.Placer;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
@@ -49,6 +48,9 @@ namespace WildfireModel.Renderer
         // LOCAL WILDFIRE AREA MODULE POSITIONS
         private Matrix4x4            _wildfireAreaWorldToLocal;
         private NativeArray<Vector4> _modulePositionsArray;
+
+
+        public Dictionary<Module, int> moduleIndexDictionary;
         
         
         // MODULE POSITIONS
@@ -138,6 +140,13 @@ namespace WildfireModel.Renderer
                 }
             }
             transformAccessArray = new TransformAccessArray(moduleTransformList.ToArray());
+
+            moduleIndexDictionary = new Dictionary<Module, int>(transformAccessArray.length);
+            for (var i = 0; i < transformAccessArray.length; i++)
+            {
+                var module = transformModuleDictionary[transformAccessArray[i]];
+                moduleIndexDictionary.Add(module, i);
+            }
             
             
             // MODULES POSITIONS
@@ -173,17 +182,16 @@ namespace WildfireModel.Renderer
         {
             if (transformAccessArray.length > 0)
             {
-                for (var i = 0; i < transformAccessArray.length; i++)
+                foreach (var module in moduleIndexDictionary.Keys)
                 {
-                    var transformAccess = transformAccessArray[i];
-                    var module = transformModuleDictionary[transformAccess];
+                    var key = moduleIndexDictionary[module];
                     
-                    _centersArray[i] = module.cachedCapsuleCollider.center;
-                    _heightsArray[i] = module.cachedCapsuleCollider.height;
-                    _radiiArray[i]   = module.cachedCapsuleCollider.radius;
+                    _centersArray[key] = module.cachedCapsuleCollider.center;
+                    _heightsArray[key] = module.cachedCapsuleCollider.height;
+                    _radiiArray[key]   = module.cachedCapsuleCollider.radius;
                     
                     // check if tree is start burning
-                    _isolatedTreeArray[i] = module.isIsolatedByCoal ? 1.0f : 0.0f;
+                    _isolatedTreeArray[key] = module.isIsolatedByCoal ? 1.0f : 0.0f;
                 }
 
                 var job = new FillMatricesAndPositionsDataJob()

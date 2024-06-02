@@ -480,12 +480,22 @@ namespace WildfireModel.Wildfire
             while (_moduleToDestroyQueue.Count != 0)
             {
                 var moduleToDestroy = _moduleToDestroyQueue.Dequeue();
-                var moduleToDestroySiblingIndex = moduleToDestroy.cachedTransform.GetSiblingIndex();
-                var parentChildCount = moduleToDestroy.cachedParent.childCount;
+                
                 moduleToDestroy.cachedTransform.SetParent(null, true);
+
+                var index = _moduleRenderer.moduleIndexDictionary[moduleToDestroy];
+                
+                var lastIndex        = _moduleRenderer.transformAccessArray.length - 1;
+                var lastAccessTransform = _moduleRenderer.transformAccessArray[lastIndex];
+                var lastAccessModule    = _moduleRenderer.transformModuleDictionary[lastAccessTransform];
+                
+                _moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
+                
+                _moduleRenderer.moduleIndexDictionary.Remove(moduleToDestroy);
+                _moduleRenderer.moduleIndexDictionary.Remove(lastAccessModule);
+                _moduleRenderer.moduleIndexDictionary.Add(lastAccessModule, index);
+                
                 _moduleRenderer.transformModuleDictionary.Remove(moduleToDestroy.cachedTransform);
-                var moduleToDestroyResultIndex = moduleToDestroySiblingIndex + moduleToDestroy.treeOrderIndex * parentChildCount;
-                _moduleRenderer.transformAccessArray.RemoveAtSwapBack(moduleToDestroyResultIndex);
                 _moduleRenderer.modulesCount--;
             }
         }

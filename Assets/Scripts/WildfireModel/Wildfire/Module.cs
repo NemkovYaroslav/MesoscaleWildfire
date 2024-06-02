@@ -22,10 +22,6 @@ namespace WildfireModel.Wildfire
         
         [HideInInspector] public Module cachedPreviousModule;
         
-        
-        [HideInInspector] public Transform       cachedParent;
-        public int treeOrderIndex;
-        
         public float temperature;
         
         public float stopCombustionMass;
@@ -48,8 +44,6 @@ namespace WildfireModel.Wildfire
             {
                 cachedPreviousModule = module;
             }
-
-            cachedParent = transform.parent;
             
             stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             

@@ -589,8 +589,6 @@ MonoBehaviour:
   cachedFixedJoint: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
   cachedPreviousModule: {fileID: 0}
-  cachedParent: {fileID: 0}
-  treeOrderIndex: 0
   temperature: 0
   stopCombustionMass: 0
   isIsolatedByCoal: 0
