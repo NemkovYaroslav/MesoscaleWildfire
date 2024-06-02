@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.VFX;
-using WildfireModel.Wildfire;
 
-namespace TreeModel.Runtime.Placer
+namespace WildfireModel.Wildfire
 {
     public class Module : MonoBehaviour
     {
@@ -23,9 +21,6 @@ namespace TreeModel.Runtime.Placer
         [HideInInspector] public VisualEffect    cachedVisualEffect;
         
         [HideInInspector] public Module cachedPreviousModule;
-        [HideInInspector] public Module cachedNextModule;
-        
-        [HideInInspector] public Transform       cachedParentTransform;
         
         public float temperature;
         
@@ -49,9 +44,6 @@ namespace TreeModel.Runtime.Placer
             {
                 cachedPreviousModule = module;
             }
-            
-            cachedParentTransform = cachedTransform.parent;
-            
             
             stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             

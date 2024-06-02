@@ -230,8 +230,7 @@ namespace WildfireModel.Wildfire
             _modulesUpdatedAmbientTemperatureArray
                 = new NativeArray<float>(
                     _moduleRenderer.modulesCount, 
-                    Allocator.Persistent,
-                    NativeArrayOptions.UninitializedMemory
+                    Allocator.Persistent
                 );
             
             AsyncGPUReadbackCallback += ReadDataFromGrid;
@@ -312,95 +311,101 @@ namespace WildfireModel.Wildfire
             gridComputeShader.SetVector(ShaderWindDirection, windDirection);
             gridComputeShader.SetFloat(ShaderWindIntensity, windIntensity / 1000.0f);
             ShaderDispatch(_kernelSimulateWind);
-            
-            
-            // ITERATE THROUGH MODULES
-            for (var i = _moduleRenderer.orderedModuleList.Count - 1; i >= 0; i--)
+
+            var k = 0;
+            foreach (var treeTransform in _moduleRenderer.transformTreeList)
             {
-                var module = _moduleRenderer.orderedModuleList[i];
+                var childCount = treeTransform.childCount;
                 
-                
-                // SIMULATE TREE DYNAMICS
-                var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
-                var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
-                module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
-               
-                
-                // SIMULATE DIFFUSION IN TREE HIERARCHY
-                var connectedModule = module.cachedPreviousModule;
-                if (connectedModule)
+                for (var i = childCount - 1; i >= 0; i--)
                 {
-                    var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
-                    module.temperature          += moduleDiffusionFactor * (middleTemperature - module.temperature)          * Time.fixedDeltaTime;
-                    connectedModule.temperature += moduleDiffusionFactor * (middleTemperature - connectedModule.temperature) * Time.fixedDeltaTime;
-                }
-                
-                
-                var transferAmbientTemperature = 0.0f;
-                
-                
-                // SIMULATE COMBUSTION
-                if (module.temperature > 0.15f)
-                {
-                    if (!module.isIsolatedByCoal)
+                    var module = _moduleRenderer.transformModuleDictionary[treeTransform.GetChild(i)];
+                    
+                     // SIMULATE TREE DYNAMICS
+                    var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
+                    var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
+                    module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
+                    
+                    
+                    // SIMULATE DIFFUSION IN TREE HIERARCHY
+                    var connectedModule = module.cachedPreviousModule;
+                    if (connectedModule)
                     {
-                        module.isIsolatedByCoal = true;
+                        var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
+                        module.temperature          += moduleDiffusionFactor * (middleTemperature - module.temperature)          * Time.fixedDeltaTime;
+                        connectedModule.temperature += moduleDiffusionFactor * (middleTemperature - connectedModule.temperature) * Time.fixedDeltaTime;
                     }
                     
-                    var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
-                    if (massDifference > 0.0f)
+                    
+                    var transferAmbientTemperature = 0.0f;
+                    
+                    
+                    // SIMULATE COMBUSTION
+                    if (module.temperature > 0.15f)
                     {
-                        var lostMass = module.CalculateLostMass();
-                        if (!Mathf.Approximately(lostMass, 0))
+                        if (!module.isIsolatedByCoal)
                         {
-                            var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
-                            transferAmbientTemperature = releaseTemperature;
-                            module.RecalculateCharacteristics(lostMass);
+                            module.isIsolatedByCoal = true;
                         }
+                        
+                        var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
+                        if (massDifference > 0.0f)
+                        {
+                            var lostMass = module.CalculateLostMass();
+                            if (!Mathf.Approximately(lostMass, 0))
+                            {
+                                var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
+                                transferAmbientTemperature = releaseTemperature;
+                                module.RecalculateCharacteristics(lostMass);
+                            }
+                        }
+                        else
+                        {
+                            module.isBurned = true;
+                        }
+                        
+                        if (module.temperature > 0.25f)
+                        {
+                            if (!module.cachedVisualEffect.enabled)
+                            {
+                                module.cachedVisualEffect.enabled = true;
+                            }
+                        }
+                        else
+                        {
+                            if (module.cachedVisualEffect.enabled)
+                            {
+                                module.cachedVisualEffect.enabled = false;
+                            }
+                        }
+                    }
+                    
+                    
+                    // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
+                    var ambientTemperature = _modulesAmbientTemperatureArray[i + k * childCount];
+                    if (ambientTemperature > module.temperature)
+                    {
+                        var temperatureDifference = ambientTemperature - module.temperature;
+                        var transferTemperature   = moduleTransferFactor * temperatureDifference * Time.fixedDeltaTime;
+                        module.temperature           += transferTemperature;
+                        transferAmbientTemperature   -= transferTemperature;
                     }
                     else
                     {
-                        module.isBurned = true;
+                        if (module.temperature > ambientTemperature)
+                        {
+                            var temperatureDifference = module.temperature - ambientTemperature;
+                            var transferTemperature   = airTransferFactor * temperatureDifference * Time.fixedDeltaTime;
+                            transferAmbientTemperature   += transferTemperature;
+                            module.temperature           -= transferTemperature;
+                        }
                     }
                     
-                    if (module.temperature > 0.25f)
-                    {
-                        if (!module.cachedVisualEffect.enabled)
-                        {
-                            module.cachedVisualEffect.enabled = true;
-                        }
-                    }
-                    else
-                    {
-                        if (module.cachedVisualEffect.enabled)
-                        {
-                            module.cachedVisualEffect.enabled = false;
-                        }
-                    }
+                    
+                    _modulesUpdatedAmbientTemperatureArray[i + k * childCount] = transferAmbientTemperature;
                 }
                 
-                
-                // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
-                var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                if (ambientTemperature > module.temperature)
-                {
-                    var temperatureDifference = ambientTemperature - module.temperature;
-                    var transferTemperature   = moduleTransferFactor * temperatureDifference * Time.fixedDeltaTime;
-                    module.temperature           += transferTemperature;
-                    transferAmbientTemperature   -= transferTemperature;
-                }
-                else
-                {
-                    if (module.temperature > ambientTemperature)
-                    {
-                        var temperatureDifference = module.temperature - ambientTemperature;
-                        var transferTemperature   = airTransferFactor * temperatureDifference * Time.fixedDeltaTime;
-                        transferAmbientTemperature   += transferTemperature;
-                        module.temperature           -= transferTemperature;
-                    }
-                }
-                
-                _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
+                k++;
             }
         }
         

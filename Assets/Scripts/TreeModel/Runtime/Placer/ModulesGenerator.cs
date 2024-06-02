@@ -1,6 +1,7 @@
 ﻿using UnityEditor.Presets;
 using UnityEngine;
 using UnityEngine.VFX;
+using WildfireModel.Wildfire;
 
 namespace TreeModel.Runtime.Placer
 {

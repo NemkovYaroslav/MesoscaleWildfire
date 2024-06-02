@@ -4,6 +4,7 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
+using WildfireModel.Wildfire;
 
 namespace WildfireModel.Renderer
 {
@@ -20,8 +21,12 @@ namespace WildfireModel.Renderer
         
         
         // TREE HIERARCHY VARIABLES
-        [HideInInspector] public List<Module> orderedModuleList;
+        //[HideInInspector] public List<Module> orderedModuleList;
         [HideInInspector] public int modulesCount;
+
+
+        public Dictionary<Transform, Module> transformModuleDictionary;
+        public List<Transform> transformTreeList;
         
         
         // TRANSFORMS ARRAY (for jobs)
@@ -60,19 +65,23 @@ namespace WildfireModel.Renderer
             _kernelReadData  = _wildfire.GridComputeShader.FindKernel("kernel_read_data");
             _kernelWriteData = _wildfire.GridComputeShader.FindKernel("kernel_write_data");
             
-            // TREE HIERARCHY
+            
+            // MAIN STORAGES
+            transformModuleDictionary = new Dictionary<Transform, Module>();
+            var modules = GameObject.FindGameObjectsWithTag("Module");
+            foreach (var module in modules)
+            {
+                transformModuleDictionary.Add(module.transform, module.GetComponent<Module>());
+            }
+            modulesCount = transformModuleDictionary.Count;
+            
+            transformTreeList = new List<Transform>();
             var trees = GameObject.FindGameObjectsWithTag("Tree");
-            orderedModuleList = new List<Module>();
             foreach (var tree in trees)
             {
-                var parent = tree.transform;
-                foreach (Transform child in parent)
-                {
-                    var module = child.gameObject.GetComponent<Module>();
-                    orderedModuleList.Add(module);
-                }
+                transformTreeList.Add(tree.transform);
             }
-            modulesCount = orderedModuleList.Count;
+            
             
             // RENDER MODULES
             _centersArray
@@ -117,15 +126,18 @@ namespace WildfireModel.Renderer
                 worldBounds = new Bounds(wildfireAreaPosition, wildfireAreaScale),
                 matProps = new MaterialPropertyBlock()
             };
-
+            
             
             // JOBS SCHEDULE
-            var transforms = new Transform[modulesCount];
-            for (var i = 0; i < modulesCount; i++)
+            var moduleTransformList = new List<Transform>(modulesCount);
+            foreach (var transformTree in transformTreeList)
             {
-                transforms[i] = orderedModuleList[i].cachedTransform;
+                foreach (Transform child in transformTree)
+                {
+                    moduleTransformList.Add(child);
+                }
             }
-            _transformAccessArray = new TransformAccessArray(transforms);
+            _transformAccessArray = new TransformAccessArray(moduleTransformList.ToArray());
             
             
             // MODULES POSITIONS
@@ -140,7 +152,6 @@ namespace WildfireModel.Renderer
                     modulesCount, 
                     sizeof(float) * 4
                 );
-            
             
             // BURNED TREES
             _isolatedTreeArray
@@ -162,14 +173,17 @@ namespace WildfireModel.Renderer
         {
             if (_transformAccessArray.length > 0)
             {
-                for (var i = 0; i < modulesCount; i++)
+                var i = 0;
+                foreach (var module in transformModuleDictionary.Values)
                 {
-                    _centersArray[i] = orderedModuleList[i].cachedCapsuleCollider.center;
-                    _heightsArray[i] = orderedModuleList[i].cachedCapsuleCollider.height;
-                    _radiiArray[i]   = orderedModuleList[i].cachedCapsuleCollider.radius;
+                    _centersArray[i] = module.cachedCapsuleCollider.center;
+                    _heightsArray[i] = module.cachedCapsuleCollider.height;
+                    _radiiArray[i]   = module.cachedCapsuleCollider.radius;
                     
                     // check if tree is start burning
-                    _isolatedTreeArray[i] = orderedModuleList[i].isIsolatedByCoal ? 1.0f : 0.0f;
+                    _isolatedTreeArray[i] = module.isIsolatedByCoal ? 1.0f : 0.0f;
+
+                    i++;
                 }
 
                 var job = new FillMatricesAndPositionsDataJob()
@@ -189,6 +203,12 @@ namespace WildfireModel.Renderer
                 _wildfire.GridComputeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
                 _wildfire.GridComputeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
             }
+        }
+
+        [ContextMenu("Do Something")]
+        private void DeleteSomethingFromDictionary()
+        {
+            
         }
         
         private void RenderModules()

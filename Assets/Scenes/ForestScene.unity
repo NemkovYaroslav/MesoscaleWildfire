@@ -155,8 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderMaterial: {fileID: 2100000, guid: a2814a50e78c4ba4884ab481c8be705b, type: 2}
   renderMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
-  orderedModuleList: []
   modulesCount: 0
+  transformTreeList: []
 --- !u!4 &393746496
 Transform:
   m_ObjectHideFlags: 0
@@ -187,7 +187,7 @@ MonoBehaviour:
   treePrefab: {fileID: 7056141504072566775, guid: 04188af67d62b5b4597cfc5e1ead59b4,
     type: 3}
   distanceBetweenTrees: 4
-  positivePosition: {x: 20, y: 0, z: 20}
+  positivePosition: {x: -10, y: 0, z: -10}
   negativePosition: {x: -16, y: 0, z: -16}
 --- !u!1 &651253774
 GameObject:
@@ -276,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 651253774}
   serializedVersion: 2
   m_LocalRotation: {x: 0.27059805, y: 0.6532815, z: -0.27059805, w: 0.6532815}
-  m_LocalPosition: {x: -28, y: 18, z: 0}
+  m_LocalPosition: {x: -42.22, y: 26.43, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -589,7 +589,6 @@ MonoBehaviour:
   cachedFixedJoint: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
   cachedPreviousModule: {fileID: 0}
-  cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
   isIsolatedByCoal: 0
