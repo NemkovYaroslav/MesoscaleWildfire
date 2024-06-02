@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -17,8 +19,8 @@ namespace WildfireModel.Wildfire
         [Header("Fluid Solver Settings")]
         [SerializeField] private ComputeShader gridComputeShader;
         public ComputeShader GridComputeShader => gridComputeShader;
-        [SerializeField] private Vector3       gridResolution;
-        [SerializeField] private Material      gridRenderMaterial;
+        [SerializeField] private Vector3  gridResolution;
+        [SerializeField] private Material gridRenderMaterial;
         
         [Header("Fluid Solver Factor Settings")]
         [SerializeField] private float diffusionFactor  = 0.001f;
@@ -34,7 +36,7 @@ namespace WildfireModel.Wildfire
         [Header("Wind Settings")]
         [SerializeField] private Vector3 windDirection = Vector3.right;
         public Vector3 WindDirection => windDirection;
-        [SerializeField] [Range(0.0f, 15.0f)] private float   windIntensity = 5.0f;
+        [SerializeField] [Range(0.0f, 15.0f)] private float windIntensity = 5.0f;
         public float WindIntensity => windIntensity / 1000.0f;
         
         
@@ -338,7 +340,6 @@ namespace WildfireModel.Wildfire
                 
                 
                 // SIMULATE COMBUSTION
-
                 if (module.temperature > 0.15f)
                 {
                     if (!module.isIsolatedByCoal)
@@ -356,6 +357,10 @@ namespace WildfireModel.Wildfire
                             transferAmbientTemperature = releaseTemperature;
                             module.RecalculateCharacteristics(lostMass);
                         }
+                    }
+                    else
+                    {
+                        module.isBurned = true;
                     }
                     
                     if (module.temperature > 0.25f)

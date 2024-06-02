@@ -589,6 +589,7 @@ MonoBehaviour:
   cachedFixedJoint: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
   cachedPreviousModule: {fileID: 0}
+  cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
   isIsolatedByCoal: 0
@@ -775,7 +776,7 @@ MonoBehaviour:
   gridRenderMaterial: {fileID: 2100000, guid: 0c93548952eb53547ae4a23e82f04df4, type: 2}
   diffusionFactor: 0.01
   viscosityFactor: 0.01
-  solverIterations: 15
+  solverIterations: 25
   moduleDiffusionFactor: 0.75
   releaseTemperatureFactor: 7500
   airTransferFactor: 0.15

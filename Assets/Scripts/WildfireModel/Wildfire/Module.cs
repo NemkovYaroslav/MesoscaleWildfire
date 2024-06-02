@@ -23,6 +23,9 @@ namespace TreeModel.Runtime.Placer
         [HideInInspector] public VisualEffect    cachedVisualEffect;
         
         [HideInInspector] public Module cachedPreviousModule;
+        [HideInInspector] public Module cachedNextModule;
+        
+        [HideInInspector] public Transform       cachedParentTransform;
         
         public float temperature;
         
@@ -42,13 +45,13 @@ namespace TreeModel.Runtime.Placer
             cachedFixedJoint      = GetComponent<FixedJoint>();
 
             // get neighbour from joint
-            if (cachedFixedJoint)
+            if (cachedFixedJoint.connectedBody.TryGetComponent(out Module module))
             {
-                if (cachedFixedJoint.connectedBody.TryGetComponent(out Module module))
-                {
-                    cachedPreviousModule = module;
-                }
+                cachedPreviousModule = module;
             }
+            
+            cachedParentTransform = cachedTransform.parent;
+            
             
             stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             
