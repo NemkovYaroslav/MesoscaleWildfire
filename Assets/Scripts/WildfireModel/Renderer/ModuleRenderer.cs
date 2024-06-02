@@ -30,7 +30,7 @@ namespace WildfireModel.Renderer
         
         
         // TRANSFORMS ARRAY (for jobs)
-        private TransformAccessArray _transformAccessArray;
+        public TransformAccessArray transformAccessArray;
         
         
         // MODULE RENDER
@@ -137,7 +137,7 @@ namespace WildfireModel.Renderer
                     moduleTransformList.Add(child);
                 }
             }
-            _transformAccessArray = new TransformAccessArray(moduleTransformList.ToArray());
+            transformAccessArray = new TransformAccessArray(moduleTransformList.ToArray());
             
             
             // MODULES POSITIONS
@@ -171,19 +171,19 @@ namespace WildfireModel.Renderer
 
         private void FillCommonData()
         {
-            if (_transformAccessArray.length > 0)
+            if (transformAccessArray.length > 0)
             {
-                var i = 0;
-                foreach (var module in transformModuleDictionary.Values)
+                for (var i = 0; i < transformAccessArray.length; i++)
                 {
+                    var transformAccess = transformAccessArray[i];
+                    var module = transformModuleDictionary[transformAccess];
+                    
                     _centersArray[i] = module.cachedCapsuleCollider.center;
                     _heightsArray[i] = module.cachedCapsuleCollider.height;
                     _radiiArray[i]   = module.cachedCapsuleCollider.radius;
                     
                     // check if tree is start burning
                     _isolatedTreeArray[i] = module.isIsolatedByCoal ? 1.0f : 0.0f;
-
-                    i++;
                 }
 
                 var job = new FillMatricesAndPositionsDataJob()
@@ -196,19 +196,13 @@ namespace WildfireModel.Renderer
                     wildfireAreaWorldToLocal = _wildfireAreaWorldToLocal,
                     modulesWildfireAreaPosition = _modulePositionsArray,
                 };
-                var handle = job.Schedule(_transformAccessArray);
+                var handle = job.Schedule(transformAccessArray);
                 handle.Complete();
 
                 _modulePositionsBuffer.SetData(_modulePositionsArray);
                 _wildfire.GridComputeShader.SetBuffer(_kernelReadData, ModulePositions, _modulePositionsBuffer);
                 _wildfire.GridComputeShader.SetBuffer(_kernelWriteData, ModulePositions, _modulePositionsBuffer);
             }
-        }
-
-        [ContextMenu("Do Something")]
-        private void DeleteSomethingFromDictionary()
-        {
-            
         }
         
         private void RenderModules()
@@ -255,7 +249,7 @@ namespace WildfireModel.Renderer
         {
             CleanupComputeBuffer();
             
-            _transformAccessArray.Dispose();
+            transformAccessArray.Dispose();
             
             _centersArray.Dispose();
             _heightsArray.Dispose();

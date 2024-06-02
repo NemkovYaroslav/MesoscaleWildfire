@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -38,6 +37,9 @@ namespace WildfireModel.Wildfire
         public Vector3 WindDirection => windDirection;
         [SerializeField] [Range(0.0f, 15.0f)] private float windIntensity = 5.0f;
         public float WindIntensity => windIntensity / 1000.0f;
+
+
+        private Queue<Module> _moduleToDestroyQueue;
         
         
         // COMMON VARIABLES
@@ -244,6 +246,10 @@ namespace WildfireModel.Wildfire
             
             // INITIALIZE VARIABLES IN FLUID SOLVER
             ShaderDispatch(_kernelInit);
+
+            
+            
+            _moduleToDestroyQueue = new Queue<Module>(1000);
         }
         
         // ASYNC EVENT FOR REAL-TIME READ DATA FROM FLUID SOLVER
@@ -321,10 +327,12 @@ namespace WildfireModel.Wildfire
                 {
                     var module = _moduleRenderer.transformModuleDictionary[treeTransform.GetChild(i)];
                     
+                    /*
                      // SIMULATE TREE DYNAMICS
                     var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
                     var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
                     module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
+                    */
                     
                     
                     // SIMULATE DIFFUSION IN TREE HIERARCHY
@@ -359,11 +367,15 @@ namespace WildfireModel.Wildfire
                                 module.RecalculateCharacteristics(lostMass);
                             }
                         }
+                        /*
                         else
                         {
                             module.isBurned = true;
+                            _moduleToDestroyQueue.Enqueue(module);
                         }
+                        */
                         
+                        /*
                         if (module.temperature > 0.25f)
                         {
                             if (!module.cachedVisualEffect.enabled)
@@ -378,6 +390,7 @@ namespace WildfireModel.Wildfire
                                 module.cachedVisualEffect.enabled = false;
                             }
                         }
+                        */
                     }
                     
                     
@@ -403,6 +416,13 @@ namespace WildfireModel.Wildfire
                     
                     
                     _modulesUpdatedAmbientTemperatureArray[i + k * childCount] = transferAmbientTemperature;
+
+                    
+                    // TEST
+                    if (module.isBurned)
+                    {
+                        _moduleToDestroyQueue.Enqueue(module);
+                    }
                 }
                 
                 k++;
@@ -454,6 +474,21 @@ namespace WildfireModel.Wildfire
             // advect temperature
             ShaderDispatch(_kernelAdvectionTemperature);
         }
+
+        private void DestroyModules()
+        {
+            while (_moduleToDestroyQueue.Count != 0)
+            {
+                var moduleToDestroy = _moduleToDestroyQueue.Dequeue();
+                var moduleToDestroySiblingIndex = moduleToDestroy.cachedTransform.GetSiblingIndex();
+                var parentChildCount = moduleToDestroy.cachedParent.childCount;
+                moduleToDestroy.cachedTransform.SetParent(null, true);
+                _moduleRenderer.transformModuleDictionary.Remove(moduleToDestroy.cachedTransform);
+                var moduleToDestroyResultIndex = moduleToDestroySiblingIndex + moduleToDestroy.treeOrderIndex * parentChildCount;
+                _moduleRenderer.transformAccessArray.RemoveAtSwapBack(moduleToDestroyResultIndex);
+                _moduleRenderer.modulesCount--;
+            }
+        }
         
         private void FixedUpdate()
         {
@@ -492,6 +527,9 @@ namespace WildfireModel.Wildfire
             TransferDataFromModulesToGrid();
             SimulateFluid();
             Profiler.EndSample();
+            
+            // DESTROY MODULES
+            DestroyModules();
         }
         
         private void CleanupPosForGetData()

@@ -184,10 +184,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0d352ee19b70441a08d71aad2b7941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  treePrefab: {fileID: 7056141504072566775, guid: 04188af67d62b5b4597cfc5e1ead59b4,
+  treePrefab: {fileID: 7056141504072566775, guid: e537795c302651b4290f627bfd53ee11,
     type: 3}
   distanceBetweenTrees: 4
-  positivePosition: {x: -10, y: 0, z: -10}
+  positivePosition: {x: 20, y: 0, z: 20}
   negativePosition: {x: -16, y: 0, z: -16}
 --- !u!1 &651253774
 GameObject:
@@ -589,6 +589,8 @@ MonoBehaviour:
   cachedFixedJoint: {fileID: 0}
   cachedVisualEffect: {fileID: 0}
   cachedPreviousModule: {fileID: 0}
+  cachedParent: {fileID: 0}
+  treeOrderIndex: 0
   temperature: 0
   stopCombustionMass: 0
   isIsolatedByCoal: 0
@@ -780,8 +782,8 @@ MonoBehaviour:
   releaseTemperatureFactor: 7500
   airTransferFactor: 0.15
   moduleTransferFactor: 0.75
-  windDirection: {x: 0, y: 0, z: 1}
-  windIntensity: 5
+  windDirection: {x: 0, y: 0, z: 0}
+  windIntensity: 0
 --- !u!23 &2116884307
 MeshRenderer:
   m_ObjectHideFlags: 0
