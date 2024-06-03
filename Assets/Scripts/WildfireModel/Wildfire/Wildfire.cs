@@ -40,6 +40,7 @@ namespace WildfireModel.Wildfire
 
 
         private Queue<Module> _moduleToDestroyQueue;
+        private Stack<Module> _moduleToMarkStack;
         
         
         // COMMON VARIABLES
@@ -250,6 +251,7 @@ namespace WildfireModel.Wildfire
             
             
             _moduleToDestroyQueue = new Queue<Module>(1000);
+            _moduleToMarkStack    = new Stack<Module>(10);
         }
         
         // ASYNC EVENT FOR REAL-TIME READ DATA FROM FLUID SOLVER
@@ -327,6 +329,7 @@ namespace WildfireModel.Wildfire
                 {
                     var module = _moduleRenderer.transformModuleDictionary[treeTransform.GetChild(i)];
                     
+                    
                     /*
                      // SIMULATE TREE DYNAMICS
                     var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
@@ -367,13 +370,11 @@ namespace WildfireModel.Wildfire
                                 module.RecalculateCharacteristics(lostMass);
                             }
                         }
-                        /*
                         else
                         {
                             module.isBurned = true;
                             _moduleToDestroyQueue.Enqueue(module);
                         }
-                        */
                         
                         /*
                         if (module.temperature > 0.25f)
@@ -417,12 +418,13 @@ namespace WildfireModel.Wildfire
                     
                     _modulesUpdatedAmbientTemperatureArray[i + k * childCount] = transferAmbientTemperature;
 
-                    
+                    /*
                     // TEST
-                    if (module.isBurned)
+                    if (module.isBurned && !module.isTrunk)
                     {
                         _moduleToDestroyQueue.Enqueue(module);
                     }
+                    */
                 }
                 
                 k++;
@@ -475,28 +477,71 @@ namespace WildfireModel.Wildfire
             ShaderDispatch(_kernelAdvectionTemperature);
         }
 
-        private void DestroyModules()
+        private void DestroyModule(Module moduleToDestroy)
+        {
+            var index = _moduleRenderer.moduleIndexDictionary[moduleToDestroy];
+
+            var lastIndex        = _moduleRenderer.transformAccessArray.length - 1;
+            var lastAccessTransform = _moduleRenderer.transformAccessArray[lastIndex];
+            var lastAccessModule    = _moduleRenderer.transformModuleDictionary[lastAccessTransform];
+            
+            _moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
+            
+            _moduleRenderer.moduleIndexDictionary.Remove(moduleToDestroy);
+            _moduleRenderer.moduleIndexDictionary.Remove(lastAccessModule);
+            _moduleRenderer.moduleIndexDictionary.Add(lastAccessModule, index);
+
+            moduleToDestroy.cachedTransform.parent = null;
+
+            _moduleRenderer.transformModuleDictionary.Remove(moduleToDestroy.cachedTransform);
+
+            _moduleRenderer.modulesCount--;
+
+            Destroy(moduleToDestroy.cachedGameObject);
+        }
+
+        private void RecursiveMarkChildren(Module moduleToMark)
+        {
+            _moduleToMarkStack.Push(moduleToMark);
+
+            if (moduleToMark.cachedNextModule)
+            {
+                var nextModule = moduleToMark.cachedNextModule;
+
+                while (_moduleToMarkStack.Count > 0)
+                {
+                    var previousModule = _moduleToMarkStack.Peek();
+                    if (nextModule.cachedPreviousModule.Equals(previousModule))
+                    {
+                        if (!nextModule.isBurned)
+                        {
+                            nextModule.isBurned = true;
+                            if (!_moduleToDestroyQueue.Contains(nextModule))
+                            {
+                                _moduleToDestroyQueue.Enqueue(nextModule);
+                            }
+                        }
+                        RecursiveMarkChildren(nextModule);
+                    }
+                    else
+                    {
+                        _moduleToMarkStack.Pop();
+                    }
+                }
+            }
+            else
+            {
+                _moduleToMarkStack.Clear();
+            }
+        }
+
+        private void MarkChildrenToDestroy()
         {
             while (_moduleToDestroyQueue.Count != 0)
             {
-                var moduleToDestroy = _moduleToDestroyQueue.Dequeue();
-                
-                moduleToDestroy.cachedTransform.SetParent(null, true);
+                var module = _moduleToDestroyQueue.Dequeue();
 
-                var index = _moduleRenderer.moduleIndexDictionary[moduleToDestroy];
-                
-                var lastIndex        = _moduleRenderer.transformAccessArray.length - 1;
-                var lastAccessTransform = _moduleRenderer.transformAccessArray[lastIndex];
-                var lastAccessModule    = _moduleRenderer.transformModuleDictionary[lastAccessTransform];
-                
-                _moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
-                
-                _moduleRenderer.moduleIndexDictionary.Remove(moduleToDestroy);
-                _moduleRenderer.moduleIndexDictionary.Remove(lastAccessModule);
-                _moduleRenderer.moduleIndexDictionary.Add(lastAccessModule, index);
-                
-                _moduleRenderer.transformModuleDictionary.Remove(moduleToDestroy.cachedTransform);
-                _moduleRenderer.modulesCount--;
+                DestroyModule(module);
             }
         }
         
@@ -538,8 +583,10 @@ namespace WildfireModel.Wildfire
             SimulateFluid();
             Profiler.EndSample();
             
-            // DESTROY MODULES
-            DestroyModules();
+            // MARK AND DESTROY BRANCHES
+            Profiler.BeginSample("Branch Destruction");
+            MarkChildrenToDestroy();
+            Profiler.EndSample();
         }
         
         private void CleanupPosForGetData()

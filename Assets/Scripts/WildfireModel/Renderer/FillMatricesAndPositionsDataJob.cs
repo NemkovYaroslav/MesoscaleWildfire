@@ -5,13 +5,15 @@ using UnityEngine.Jobs;
 
 namespace WildfireModel.Renderer
 {
-    [BurstCompile]
+    [BurstCompile(CompileSynchronously = true)]
     public struct FillMatricesAndPositionsDataJob : IJobParallelForTransform
     {
         [ReadOnly]  public NativeArray<Vector3>   centers;
         [ReadOnly]  public NativeArray<float>     heights;
         [ReadOnly]  public NativeArray<float>     radii;
         [WriteOnly] public NativeArray<Matrix4x4> matrices;
+        
+        //[ReadOnly] public NativeArray<int> moduleOrderKey;
 
         [ReadOnly]  public Matrix4x4            wildfireAreaWorldToLocal;
         [WriteOnly] public NativeArray<Vector4> modulesWildfireAreaPosition;
@@ -30,6 +32,10 @@ namespace WildfireModel.Renderer
             // wildfire area local module position
             var moduleWildfireAreaLocalPosition = wildfireAreaWorldToLocal * moduleWorldPosition;
             modulesWildfireAreaPosition[index] = moduleWildfireAreaLocalPosition;
+
+            //var key = moduleOrderKey[index];
+            //var moduleWildfireAreaLocalPosition = wildfireAreaWorldToLocal * moduleWorldPosition;
+            //modulesWildfireAreaPosition[key] = moduleWildfireAreaLocalPosition;
         }
     }
 }

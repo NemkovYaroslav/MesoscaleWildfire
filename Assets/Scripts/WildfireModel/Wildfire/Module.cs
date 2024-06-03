@@ -13,18 +13,22 @@ namespace WildfireModel.Wildfire
         private const float CharIsolatedFactor       = 0.01f;
         
         private Wildfire _wildfire;
-        
+
+        [HideInInspector] public GameObject      cachedGameObject;
         [HideInInspector] public Transform       cachedTransform;
         [HideInInspector] public Rigidbody       cachedRigidbody;
         [HideInInspector] public CapsuleCollider cachedCapsuleCollider;
         [HideInInspector] public FixedJoint      cachedFixedJoint;
         [HideInInspector] public VisualEffect    cachedVisualEffect;
         
-        [HideInInspector] public Module cachedPreviousModule;
+        public Module cachedPreviousModule;
+        public Module cachedNextModule;
         
         public float temperature;
         
         public float stopCombustionMass;
+
+        public bool isTrunk;
 
         [HideInInspector] public bool isIsolatedByCoal;
 
@@ -33,7 +37,8 @@ namespace WildfireModel.Wildfire
         private void Awake()
         {
             _wildfire = GameObject.FindWithTag("WildfireArea").GetComponent<Wildfire>();
-            
+
+            cachedGameObject      = gameObject;
             cachedTransform       = GetComponent<Transform>();
             cachedRigidbody       = GetComponent<Rigidbody>();
             cachedCapsuleCollider = GetComponent<CapsuleCollider>();
@@ -44,6 +49,15 @@ namespace WildfireModel.Wildfire
             {
                 cachedPreviousModule = module;
             }
+
+
+            var childCount = cachedTransform.parent.childCount;
+            var siblingIndex = cachedTransform.GetSiblingIndex();
+            if (siblingIndex < childCount - 1)
+            {
+                cachedNextModule = cachedTransform.parent.GetChild(siblingIndex + 1).GetComponent<Module>();
+            }
+            
             
             stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             
