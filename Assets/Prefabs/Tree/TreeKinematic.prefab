@@ -201,6 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -210,7 +211,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &123637826315992920
@@ -414,6 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -423,7 +425,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &293745786473490693
@@ -627,6 +629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -840,6 +843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -1053,6 +1057,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -1062,7 +1067,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &476841579515633693
@@ -1266,6 +1271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -1479,6 +1485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -1692,6 +1699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -1905,6 +1913,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -1914,7 +1923,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &1068890398923128055
@@ -2118,6 +2127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -2331,6 +2341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -2340,7 +2351,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &1216030225221648961
@@ -2544,6 +2555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -2553,7 +2565,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &1266919191107292323
@@ -2757,6 +2769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -2766,7 +2779,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &1396696162295754662
@@ -2970,6 +2983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -2979,7 +2993,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &1524523496340769293
@@ -3183,6 +3197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -3396,6 +3411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -3405,7 +3421,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &2076107810610287462
@@ -3609,6 +3625,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -3822,6 +3839,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -4035,6 +4053,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -4248,6 +4267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -4461,6 +4481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -4674,6 +4695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -4683,7 +4705,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &2862884826546120400
@@ -4887,6 +4909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -4896,7 +4919,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &3420138624206125026
@@ -5100,6 +5123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -5109,7 +5133,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &3562278680407057419
@@ -5313,6 +5337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -5322,7 +5347,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &3768452555762449320
@@ -5526,6 +5551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -5535,7 +5561,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &4040798876732229745
@@ -5739,6 +5765,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -5952,6 +5979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -5961,7 +5989,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &5160951219456498720
@@ -6165,6 +6193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -6378,6 +6407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -6591,6 +6621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -6804,6 +6835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -7017,6 +7049,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -7230,6 +7263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -7443,6 +7477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -7452,7 +7487,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &6936078185924515433
@@ -7656,6 +7691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -7665,7 +7701,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &7056141504072566775
@@ -7972,6 +8008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -7981,7 +8018,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &7437345081463783480
@@ -8185,6 +8222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -8194,7 +8232,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &7894383013817449094
@@ -8398,6 +8436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -8611,6 +8650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -8824,6 +8864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -9037,6 +9078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -9046,7 +9088,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
 --- !u!1 &8140554984981146193
@@ -9250,6 +9292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -9463,6 +9506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10cec1294b7b4549aa45ce85da784eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cachedGameObject: {fileID: 0}
   cachedTransform: {fileID: 0}
   cachedRigidbody: {fileID: 0}
   cachedCapsuleCollider: {fileID: 0}
@@ -9472,6 +9516,6 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0

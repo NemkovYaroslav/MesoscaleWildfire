@@ -155,8 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderMaterial: {fileID: 2100000, guid: a2814a50e78c4ba4884ab481c8be705b, type: 2}
   renderMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  orderedModuleList: []
   modulesCount: 0
-  transformTreeList: []
 --- !u!4 &393746496
 Transform:
   m_ObjectHideFlags: 0
