@@ -783,8 +783,8 @@ MonoBehaviour:
   releaseTemperatureFactor: 7500
   airTransferFactor: 0.15
   moduleTransferFactor: 0.75
-  windDirection: {x: 0, y: 0, z: 0}
-  windIntensity: 0
+  windDirection: {x: 0, y: 0, z: -1}
+  windIntensity: 10
 --- !u!23 &2116884307
 MeshRenderer:
   m_ObjectHideFlags: 0

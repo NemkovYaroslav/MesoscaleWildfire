@@ -365,10 +365,12 @@ namespace WildfireModel.Wildfire
                             module.RecalculateCharacteristics(lostMass);
                         }
                     }
+                    /*
                     else
                     {
                         module.isBurned = true;
                     }
+                    */
                     
                     /*
                     if (module.temperature > 0.25f)
@@ -410,6 +412,12 @@ namespace WildfireModel.Wildfire
                 }
                 
                 _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
+                
+                // TEST
+                if (module.isBurned && !module.isTrunk)
+                {
+                    _moduleToDestroyQueue.Enqueue(module);
+                }
             }
         }
         
@@ -458,29 +466,11 @@ namespace WildfireModel.Wildfire
             // advect temperature
             ShaderDispatch(_kernelAdvectionTemperature);
         }
-
-        /*
+        
+        
         private void DestroyModule(Module moduleToDestroy)
         {
-            var index = _moduleRenderer.moduleIndexDictionary[moduleToDestroy];
-
-            var lastIndex        = _moduleRenderer.transformAccessArray.length - 1;
-            var lastAccessTransform = _moduleRenderer.transformAccessArray[lastIndex];
-            var lastAccessModule    = _moduleRenderer.transformModuleDictionary[lastAccessTransform];
             
-            _moduleRenderer.transformAccessArray.RemoveAtSwapBack(index);
-            
-            _moduleRenderer.moduleIndexDictionary.Remove(moduleToDestroy);
-            _moduleRenderer.moduleIndexDictionary.Remove(lastAccessModule);
-            _moduleRenderer.moduleIndexDictionary.Add(lastAccessModule, index);
-
-            moduleToDestroy.cachedTransform.parent = null;
-
-            _moduleRenderer.transformModuleDictionary.Remove(moduleToDestroy.cachedTransform);
-
-            _moduleRenderer.modulesCount--;
-
-            Destroy(moduleToDestroy.cachedGameObject);
         }
 
         private void RecursiveMarkChildren(Module moduleToMark)
@@ -499,10 +489,6 @@ namespace WildfireModel.Wildfire
                         if (!nextModule.isBurned)
                         {
                             nextModule.isBurned = true;
-                            if (!_moduleToDestroyQueue.Contains(nextModule))
-                            {
-                                _moduleToDestroyQueue.Enqueue(nextModule);
-                            }
                         }
                         RecursiveMarkChildren(nextModule);
                     }
@@ -523,11 +509,11 @@ namespace WildfireModel.Wildfire
             while (_moduleToDestroyQueue.Count != 0)
             {
                 var module = _moduleToDestroyQueue.Dequeue();
-
-                DestroyModule(module);
+                
+                RecursiveMarkChildren(module);
             }
         }
-        */
+        
         
         private void FixedUpdate()
         {
@@ -567,12 +553,12 @@ namespace WildfireModel.Wildfire
             SimulateFluid();
             Profiler.EndSample();
             
-            /*
+            ///*
             // MARK AND DESTROY BRANCHES
             Profiler.BeginSample("Branch Destruction");
             MarkChildrenToDestroy();
             Profiler.EndSample();
-            */
+            //*/
         }
         
         private void CleanupPosForGetData()

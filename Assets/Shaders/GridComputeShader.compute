@@ -302,7 +302,7 @@ void kernel_subtract_gradient (uint3 id : SV_DispatchThreadID)
         //const float vel_y = 0.5f * (top_pressure_value - bottom_pressure_value) * resolution;
         //const float vel_z = 0.5f * (front_pressure_value - back_pressure_value) * resolution;
 
-        const float curl_size = 0.2f;
+        const float curl_size = 0.1f;
         const float vel_x = (right_pressure_value - left_pressure_value) * curl_size;
         const float vel_y = (top_pressure_value - bottom_pressure_value) * curl_size;
         const float vel_z = (front_pressure_value - back_pressure_value) * curl_size;
