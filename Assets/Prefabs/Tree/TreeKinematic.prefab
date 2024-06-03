@@ -211,9 +211,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &123637826315992920
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,9 +426,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &293745786473490693
 GameObject:
   m_ObjectHideFlags: 0
@@ -642,6 +644,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &423578507056071299
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,6 +859,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &460861167612010933
 GameObject:
   m_ObjectHideFlags: 0
@@ -1067,9 +1071,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &476841579515633693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1284,6 +1289,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &496936253130048916
 GameObject:
   m_ObjectHideFlags: 0
@@ -1498,6 +1504,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &897651585553559307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,6 +1719,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &918057757738194268
 GameObject:
   m_ObjectHideFlags: 0
@@ -1923,9 +1931,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1068890398923128055
 GameObject:
   m_ObjectHideFlags: 0
@@ -2140,6 +2149,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1104276208316758065
 GameObject:
   m_ObjectHideFlags: 0
@@ -2351,9 +2361,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1216030225221648961
 GameObject:
   m_ObjectHideFlags: 0
@@ -2565,9 +2576,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1266919191107292323
 GameObject:
   m_ObjectHideFlags: 0
@@ -2779,9 +2791,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1396696162295754662
 GameObject:
   m_ObjectHideFlags: 0
@@ -2993,9 +3006,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1524523496340769293
 GameObject:
   m_ObjectHideFlags: 0
@@ -3210,6 +3224,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &1964869914989042877
 GameObject:
   m_ObjectHideFlags: 0
@@ -3421,9 +3436,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2076107810610287462
 GameObject:
   m_ObjectHideFlags: 0
@@ -3638,6 +3654,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2178478470866665483
 GameObject:
   m_ObjectHideFlags: 0
@@ -3852,6 +3869,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2269795169181715990
 GameObject:
   m_ObjectHideFlags: 0
@@ -4066,6 +4084,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2331050520644950234
 GameObject:
   m_ObjectHideFlags: 0
@@ -4280,6 +4299,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2569201746752461955
 GameObject:
   m_ObjectHideFlags: 0
@@ -4494,6 +4514,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2671898304626464188
 GameObject:
   m_ObjectHideFlags: 0
@@ -4705,9 +4726,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &2862884826546120400
 GameObject:
   m_ObjectHideFlags: 0
@@ -4919,9 +4941,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &3420138624206125026
 GameObject:
   m_ObjectHideFlags: 0
@@ -5133,9 +5156,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &3562278680407057419
 GameObject:
   m_ObjectHideFlags: 0
@@ -5347,9 +5371,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &3768452555762449320
 GameObject:
   m_ObjectHideFlags: 0
@@ -5561,9 +5586,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &4040798876732229745
 GameObject:
   m_ObjectHideFlags: 0
@@ -5778,6 +5804,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &4489408073002811375
 GameObject:
   m_ObjectHideFlags: 0
@@ -5989,9 +6016,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &5160951219456498720
 GameObject:
   m_ObjectHideFlags: 0
@@ -6206,6 +6234,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &5332032592059214855
 GameObject:
   m_ObjectHideFlags: 0
@@ -6420,6 +6449,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &5533013158706964575
 GameObject:
   m_ObjectHideFlags: 0
@@ -6634,6 +6664,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &5542645990531871873
 GameObject:
   m_ObjectHideFlags: 0
@@ -6848,6 +6879,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &5790775228705033020
 GameObject:
   m_ObjectHideFlags: 0
@@ -7062,6 +7094,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &6439849721041133256
 GameObject:
   m_ObjectHideFlags: 0
@@ -7276,6 +7309,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &6836635113344548009
 GameObject:
   m_ObjectHideFlags: 0
@@ -7487,9 +7521,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &6936078185924515433
 GameObject:
   m_ObjectHideFlags: 0
@@ -7701,9 +7736,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &7056141504072566775
 GameObject:
   m_ObjectHideFlags: 0
@@ -8018,9 +8054,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &7437345081463783480
 GameObject:
   m_ObjectHideFlags: 0
@@ -8235,6 +8272,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &7894383013817449094
 GameObject:
   m_ObjectHideFlags: 0
@@ -8449,6 +8487,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &7964079326563596619
 GameObject:
   m_ObjectHideFlags: 0
@@ -8663,6 +8702,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &8037390883676751233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8877,6 +8917,7 @@ MonoBehaviour:
   isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &8089203100261257105
 GameObject:
   m_ObjectHideFlags: 0
@@ -9088,9 +9129,10 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &8140554984981146193
 GameObject:
   m_ObjectHideFlags: 0
@@ -9305,6 +9347,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!1 &8740780644767252970
 GameObject:
   m_ObjectHideFlags: 0
@@ -9516,6 +9559,7 @@ MonoBehaviour:
   cachedNextModule: {fileID: 0}
   temperature: 0
   stopCombustionMass: 0
-  isTrunk: 0
+  isTrunk: 1
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0

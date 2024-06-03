@@ -33,6 +33,7 @@ namespace WildfireModel.Wildfire
         [HideInInspector] public bool isIsolatedByCoal;
 
         public bool isBurned;
+        public bool isDestroyed;
         
         private void Awake()
         {

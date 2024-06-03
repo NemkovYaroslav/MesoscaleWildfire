@@ -84,7 +84,6 @@ namespace WildfireModel.Wildfire
         private static readonly int ShaderViscosityIntensity             = Shader.PropertyToID("viscosity_intensity");
         private static readonly int ShaderDeltaTime                      = Shader.PropertyToID("delta_time");
         private static readonly int ShaderTorchPosition                  = Shader.PropertyToID("torch_position");
-        private static readonly int ModulesNumber                        = Shader.PropertyToID("modules_number");
         private static readonly int ShaderColorTemperatureTexture        = Shader.PropertyToID("color_temperature_texture");
         private static readonly int GetDataBuffer                        = Shader.PropertyToID("get_data");
         private static readonly int TextureForSampleAmbientTemperature   = Shader.PropertyToID("texture_for_sample_ambient_temperature");
@@ -197,7 +196,6 @@ namespace WildfireModel.Wildfire
             
             // SET VARIABLES FOR FLUID SOLVER
             gridComputeShader.SetVector(ShaderTextureResolution, gridResolution);
-            gridComputeShader.SetInt(ModulesNumber, _moduleRenderer.modulesCount);
             
             
             // ARRAY FOR ASYNC GET DATA FROM FLUID SOLVER
@@ -219,20 +217,20 @@ namespace WildfireModel.Wildfire
             
             
             // GET/SET TEMPERATURE FROM/TO GRID
-            _getDataBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, sizeof(float));
-            _setDataBuffer = new ComputeBuffer(_moduleRenderer.modulesCount, sizeof(float));
+            _getDataBuffer = new ComputeBuffer(_moduleRenderer.transformAccessArray.length, sizeof(float));
+            _setDataBuffer = new ComputeBuffer(_moduleRenderer.transformAccessArray.length, sizeof(float));
             
             // modules ambient temperature (get from async read)
             _modulesAmbientTemperatureArray 
                 = new NativeArray<float>(
-                    _moduleRenderer.modulesCount,
+                    _moduleRenderer.transformAccessArray.length,
                     Allocator.Persistent
                 );
             
             // modules updated ambient temperature (set in combustion process)
             _modulesUpdatedAmbientTemperatureArray
                 = new NativeArray<float>(
-                    _moduleRenderer.modulesCount, 
+                    _moduleRenderer.transformAccessArray.length, 
                     Allocator.Persistent
                 );
             
@@ -272,20 +270,30 @@ namespace WildfireModel.Wildfire
                 // read data from grid
                 gridComputeShader.Dispatch(
                     _kernelReadData,
-                    _moduleRenderer.modulesCount / 8,
+                    _moduleRenderer.transformAccessArray.length / 8,
                     1,
                     1
                 );
             
                 // copy received data
-                var receivedData = new float[_moduleRenderer.modulesCount];
+                var receivedData = new float[_moduleRenderer.transformAccessArray.length];
                 _getDataBuffer.GetData(receivedData);
                 
                 // set received data
+                //var filledIndexes = 0;
                 for (var i = 0; i < receivedData.Length; i++)
                 {
                     _modulesAmbientTemperatureArray[i] = receivedData[i];
+                    //filledIndexes++;
+
+                    //Debug.Log(filledIndexes);
                 }
+                /*
+                for (var j = filledIndexes - 1; j < _modulesAmbientTemperatureArray.Length; j++)
+                {
+                    _modulesAmbientTemperatureArray[j] = 0;
+                }
+                */
             }
         }
         
@@ -325,98 +333,91 @@ namespace WildfireModel.Wildfire
             for (var i = _moduleRenderer.orderedModuleList.Count - 1; i >= 0; i--)
             {
                 var module = _moduleRenderer.orderedModuleList[i];
-                
-                
-                // SIMULATE TREE DYNAMICS
-                var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
-                var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
-                module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
-               
-                
-                // SIMULATE DIFFUSION IN TREE HIERARCHY
-                var connectedModule = module.cachedPreviousModule;
-                if (connectedModule)
+                if (module)
                 {
-                    var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
-                    module.temperature          += moduleDiffusionFactor * (middleTemperature - module.temperature)          * Time.fixedDeltaTime;
-                    connectedModule.temperature += moduleDiffusionFactor * (middleTemperature - connectedModule.temperature) * Time.fixedDeltaTime;
-                }
-                
-                
-                var transferAmbientTemperature = 0.0f;
-                
-                
-                // SIMULATE COMBUSTION
-                if (module.temperature > 0.15f)
-                {
-                    if (!module.isIsolatedByCoal)
+                    // SIMULATE TREE DYNAMICS
+                    var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
+                    var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
+                    module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
+                   
+                    
+                    // SIMULATE DIFFUSION IN TREE HIERARCHY
+                    var connectedModule = module.cachedPreviousModule;
+                    if (connectedModule)
                     {
-                        module.isIsolatedByCoal = true;
+                        var middleTemperature = (module.temperature + connectedModule.temperature) / 2.0f;
+                        module.temperature          += moduleDiffusionFactor * (middleTemperature - module.temperature)          * Time.fixedDeltaTime;
+                        connectedModule.temperature += moduleDiffusionFactor * (middleTemperature - connectedModule.temperature) * Time.fixedDeltaTime;
                     }
                     
-                    var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
-                    if (massDifference > 0.0f)
+                    
+                    var transferAmbientTemperature = 0.0f;
+                    
+                    
+                    // SIMULATE COMBUSTION
+                    if (module.temperature > 0.15f)
                     {
-                        var lostMass = module.CalculateLostMass();
-                        if (!Mathf.Approximately(lostMass, 0))
+                        if (!module.isIsolatedByCoal)
                         {
-                            var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
-                            transferAmbientTemperature = releaseTemperature;
-                            module.RecalculateCharacteristics(lostMass);
+                            module.isIsolatedByCoal = true;
+                        }
+                        
+                        var massDifference = module.cachedRigidbody.mass - module.stopCombustionMass;
+                        if (massDifference > 0.0f)
+                        {
+                            var lostMass = module.CalculateLostMass();
+                            if (!Mathf.Approximately(lostMass, 0))
+                            {
+                                var releaseTemperature = (lostMass * releaseTemperatureFactor) / 1000.0f;
+                                transferAmbientTemperature = releaseTemperature;
+                                module.RecalculateCharacteristics(lostMass);
+                            }
+                        }
+                        else
+                        {
+                            module.isBurned = true;
+                            if (!module.isTrunk)
+                            {
+                                _moduleToDestroyQueue.Enqueue(module);
+                            }
                         }
                     }
-                    /*
+                    
+                    
+                    // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
+                    var ambientTemperature = _modulesAmbientTemperatureArray[i];
+                    if (ambientTemperature > module.temperature)
+                    {
+                        var temperatureDifference = ambientTemperature - module.temperature;
+                        var transferTemperature   = moduleTransferFactor * temperatureDifference * Time.fixedDeltaTime;
+                        module.temperature           += transferTemperature;
+                        transferAmbientTemperature   -= transferTemperature;
+                    }
                     else
                     {
-                        module.isBurned = true;
+                        if (module.temperature > ambientTemperature)
+                        {
+                            var temperatureDifference = module.temperature - ambientTemperature;
+                            var transferTemperature   = airTransferFactor * temperatureDifference * Time.fixedDeltaTime;
+                            transferAmbientTemperature   += transferTemperature;
+                            module.temperature           -= transferTemperature;
+                        }
                     }
-                    */
+                    
+                    
+                    _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
                     
                     /*
-                    if (module.temperature > 0.25f)
+                    // TEST
+                    if (module.isBurned && !module.isTrunk)
                     {
-                        if (!module.cachedVisualEffect.enabled)
-                        {
-                            module.cachedVisualEffect.enabled = true;
-                        }
-                    }
-                    else
-                    {
-                        if (module.cachedVisualEffect.enabled)
-                        {
-                            module.cachedVisualEffect.enabled = false;
-                        }
+                        _moduleToDestroyQueue.Enqueue(module);
                     }
                     */
-                }
-                
-                
-                // SIMULATE TEMPERATURE BALANCE BETWEEN MODULE AND AIR
-                var ambientTemperature = _modulesAmbientTemperatureArray[i];
-                if (ambientTemperature > module.temperature)
-                {
-                    var temperatureDifference = ambientTemperature - module.temperature;
-                    var transferTemperature   = moduleTransferFactor * temperatureDifference * Time.fixedDeltaTime;
-                    module.temperature           += transferTemperature;
-                    transferAmbientTemperature   -= transferTemperature;
                 }
                 else
                 {
-                    if (module.temperature > ambientTemperature)
-                    {
-                        var temperatureDifference = module.temperature - ambientTemperature;
-                        var transferTemperature   = airTransferFactor * temperatureDifference * Time.fixedDeltaTime;
-                        transferAmbientTemperature   += transferTemperature;
-                        module.temperature           -= transferTemperature;
-                    }
-                }
-                
-                _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
-                
-                // TEST
-                if (module.isBurned && !module.isTrunk)
-                {
-                    _moduleToDestroyQueue.Enqueue(module);
+                    _modulesUpdatedAmbientTemperatureArray[i] = 0;
                 }
             }
         }
@@ -429,7 +430,7 @@ namespace WildfireModel.Wildfire
             
             gridComputeShader.Dispatch(
                 _kernelWriteData,
-                _moduleRenderer.modulesCount / 8,
+                _moduleRenderer.transformAccessArray.length / 8,
                 1,
                 1
             );
@@ -509,8 +510,12 @@ namespace WildfireModel.Wildfire
             while (_moduleToDestroyQueue.Count != 0)
             {
                 var module = _moduleToDestroyQueue.Dequeue();
+
+                Debug.Log(module.gameObject.name);
                 
-                RecursiveMarkChildren(module);
+                Destroy(module.gameObject);
+                
+                //RecursiveMarkChildren(module);
             }
         }
         

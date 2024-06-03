@@ -21,11 +21,11 @@ namespace WildfireModel.Renderer
         
         // TREE HIERARCHY VARIABLES
         [HideInInspector] public List<Module> orderedModuleList;
-        [HideInInspector] public int modulesCount;
+        //[HideInInspector] public int modulesCount;
         
         
         // TRANSFORMS ARRAY (for jobs)
-        private TransformAccessArray _transformAccessArray;
+        public TransformAccessArray transformAccessArray;
         
         
         // MODULE RENDER
@@ -74,41 +74,50 @@ namespace WildfireModel.Renderer
                     orderedModuleList.Add(module);
                 }
             }
-            modulesCount = orderedModuleList.Count;
+            
+            // JOBS SCHEDULE
+            var transforms = new Transform[orderedModuleList.Count];
+            for (var i = 0; i < orderedModuleList.Count; i++)
+            {
+                transforms[i] = orderedModuleList[i].cachedTransform;
+            }
+            transformAccessArray = new TransformAccessArray(transforms);
+            
+            //modulesCount = orderedModuleList.Count;
             
             
             // RENDER MODULES
             _centersArray
                 = new NativeArray<Vector3>(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             
             _heightsArray
                 = new NativeArray<float>(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             
             _radiiArray
                 = new NativeArray<float>(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             
             _matricesArray
                 = new NativeArray<Matrix4x4>(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             
             _matricesBuffer 
                 = new ComputeBuffer(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     sizeof(float) * 16
                 );
             
@@ -126,52 +135,55 @@ namespace WildfireModel.Renderer
             // BURNED TREES
             _isolatedTreeArray
                 = new NativeArray<float>(
-                    modulesCount,
+                    transformAccessArray.length,
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             _isolatedTreeBuffer 
                 = new ComputeBuffer(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     sizeof(float)
                 );
-            
-            
-            // JOBS SCHEDULE
-            var transforms = new Transform[modulesCount];
-            for (var i = 0; i < modulesCount; i++)
-            {
-                transforms[i] = orderedModuleList[i].cachedTransform;
-            }
-            _transformAccessArray = new TransformAccessArray(transforms);
             
             
             // MODULES POSITIONS BUFFER
             _modulePositionsArray 
                 = new NativeArray<Vector4>(
-                    modulesCount,
+                    transformAccessArray.length,
                     Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory
                 );
             _modulePositionsBuffer 
                 = new ComputeBuffer(
-                    modulesCount, 
+                    transformAccessArray.length, 
                     sizeof(float) * 4
                 );
         }
 
         private void FillCommonData()
         {
-            if (_transformAccessArray.length > 0)
+            if (transformAccessArray.length > 0)
             {
-                for (var i = 0; i < modulesCount; i++)
+                for (var i = 0; i < transformAccessArray.length; i++)
                 {
-                    _centersArray[i] = orderedModuleList[i].cachedCapsuleCollider.center;
-                    _heightsArray[i] = orderedModuleList[i].cachedCapsuleCollider.height;
-                    _radiiArray[i]   = orderedModuleList[i].cachedCapsuleCollider.radius;
+                    if (orderedModuleList[i])
+                    {
+                        _centersArray[i] = orderedModuleList[i].cachedCapsuleCollider.center;
+                        _heightsArray[i] = orderedModuleList[i].cachedCapsuleCollider.height;
+                        _radiiArray[i]   = orderedModuleList[i].cachedCapsuleCollider.radius;
                     
-                    // check if tree is start burning
-                    _isolatedTreeArray[i] = orderedModuleList[i].isIsolatedByCoal ? 1.0f : 0.0f;
+                        // check if tree is start burning
+                        _isolatedTreeArray[i] = orderedModuleList[i].isIsolatedByCoal ? 1.0f : 0.0f;
+                    }
+                    else
+                    {
+                        _centersArray[i] = new Vector3(0,0,0);
+                        _heightsArray[i] = 0;
+                        _radiiArray[i]   = 0;
+                    
+                        // check if tree is start burning
+                        _isolatedTreeArray[i] = 0;
+                    }
                 }
 
                 var job = new FillMatricesAndPositionsDataJob()
@@ -184,7 +196,7 @@ namespace WildfireModel.Renderer
                     wildfireAreaWorldToLocal = _wildfireAreaWorldToLocal,
                     modulesWildfireAreaPosition = _modulePositionsArray,
                 };
-                var handle = job.Schedule(_transformAccessArray);
+                var handle = job.Schedule(transformAccessArray);
                 handle.Complete();
 
                 _modulePositionsBuffer.SetData(_modulePositionsArray);
@@ -201,7 +213,7 @@ namespace WildfireModel.Renderer
             _isolatedTreeBuffer.SetData(_isolatedTreeArray);
             _renderParams.matProps.SetBuffer(IsolatedTrees, _isolatedTreeBuffer);
             
-            Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, modulesCount);
+            Graphics.RenderMeshPrimitives(_renderParams, renderMesh, 0, transformAccessArray.length);
         }
 
         private void Update()
@@ -237,7 +249,7 @@ namespace WildfireModel.Renderer
         {
             CleanupComputeBuffer();
             
-            _transformAccessArray.Dispose();
+            transformAccessArray.Dispose();
             
             _centersArray.Dispose();
             _heightsArray.Dispose();

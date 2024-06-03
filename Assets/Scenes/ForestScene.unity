@@ -156,7 +156,6 @@ MonoBehaviour:
   renderMaterial: {fileID: 2100000, guid: a2814a50e78c4ba4884ab481c8be705b, type: 2}
   renderMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   orderedModuleList: []
-  modulesCount: 0
 --- !u!4 &393746496
 Transform:
   m_ObjectHideFlags: 0
@@ -596,6 +595,7 @@ MonoBehaviour:
   isTrunk: 0
   isIsolatedByCoal: 0
   isBurned: 0
+  isDestroyed: 0
 --- !u!136 &1355467405
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -783,8 +783,8 @@ MonoBehaviour:
   releaseTemperatureFactor: 7500
   airTransferFactor: 0.15
   moduleTransferFactor: 0.75
-  windDirection: {x: 0, y: 0, z: -1}
-  windIntensity: 10
+  windDirection: {x: 0, y: 0, z: 0}
+  windIntensity: 0
 --- !u!23 &2116884307
 MeshRenderer:
   m_ObjectHideFlags: 0
