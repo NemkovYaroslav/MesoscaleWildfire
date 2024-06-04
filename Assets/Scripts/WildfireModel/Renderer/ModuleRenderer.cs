@@ -51,7 +51,7 @@ namespace WildfireModel.Renderer
         private int _kernelReadData;
         private int _kernelWriteData;
         private static readonly int ModulePositions = Shader.PropertyToID("module_positions");
-        private static readonly int IsolatedTrees   = Shader.PropertyToID("burning_trees");
+        private static readonly int IsolatedTrees   = Shader.PropertyToID("isolated_trees");
 
         
         private void Start()
@@ -177,12 +177,8 @@ namespace WildfireModel.Renderer
                     }
                     else
                     {
-                        _centersArray[i] = new Vector3(0,0,0);
-                        _heightsArray[i] = 0;
-                        _radiiArray[i]   = 0;
-                    
-                        // check if tree is start burning
-                        _isolatedTreeArray[i] = 0;
+                        _heightsArray[i]      = 0;
+                        _isolatedTreeArray[i] = 0.5f;
                     }
                 }
 

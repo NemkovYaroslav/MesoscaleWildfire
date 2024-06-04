@@ -1,7 +1,7 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace WildfireModel.Wildfire
+namespace WildfireModel.Common
 {
     public class ForestFiller : MonoBehaviour
     {
@@ -15,7 +15,7 @@ namespace WildfireModel.Wildfire
         {
             SpawnResources();
         }
-
+        
         private void SpawnResources()
         {
             for (var x = negativePosition.x; x < positivePosition.x; x += distanceBetweenTrees)

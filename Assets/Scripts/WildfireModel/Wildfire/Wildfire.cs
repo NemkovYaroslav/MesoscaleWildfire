@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
@@ -280,20 +281,10 @@ namespace WildfireModel.Wildfire
                 _getDataBuffer.GetData(receivedData);
                 
                 // set received data
-                //var filledIndexes = 0;
                 for (var i = 0; i < receivedData.Length; i++)
                 {
                     _modulesAmbientTemperatureArray[i] = receivedData[i];
-                    //filledIndexes++;
-
-                    //Debug.Log(filledIndexes);
                 }
-                /*
-                for (var j = filledIndexes - 1; j < _modulesAmbientTemperatureArray.Length; j++)
-                {
-                    _modulesAmbientTemperatureArray[j] = 0;
-                }
-                */
             }
         }
         
@@ -335,11 +326,13 @@ namespace WildfireModel.Wildfire
                 var module = _moduleRenderer.orderedModuleList[i];
                 if (module)
                 {
+                    /*
                     // SIMULATE TREE DYNAMICS
                     var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
                     var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
                     module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
-                   
+                    */
+                    
                     
                     // SIMULATE DIFFUSION IN TREE HIERARCHY
                     var connectedModule = module.cachedPreviousModule;
@@ -376,7 +369,7 @@ namespace WildfireModel.Wildfire
                         else
                         {
                             module.isBurned = true;
-                            if (!module.isTrunk)
+                            if (!module.isTrunk && !module.isDestroyed)
                             {
                                 _moduleToDestroyQueue.Enqueue(module);
                             }
@@ -409,7 +402,7 @@ namespace WildfireModel.Wildfire
                     
                     /*
                     // TEST
-                    if (module.isBurned && !module.isTrunk)
+                    if (module.isBurned && !module.isTrunk && !module.isDestroyed)
                     {
                         _moduleToDestroyQueue.Enqueue(module);
                     }
@@ -467,15 +460,14 @@ namespace WildfireModel.Wildfire
             // advect temperature
             ShaderDispatch(_kernelAdvectionTemperature);
         }
-        
-        
-        private void DestroyModule(Module moduleToDestroy)
-        {
-            
-        }
 
-        private void RecursiveMarkChildren(Module moduleToMark)
+        private Module RecursiveMarkChildren(Module moduleToMark)
         {
+            moduleToMark.isDestroyed = true;
+            
+            Module stopModule = null;
+            var isStopModuleSet = false;
+            
             _moduleToMarkStack.Push(moduleToMark);
 
             if (moduleToMark.cachedNextModule)
@@ -491,18 +483,32 @@ namespace WildfireModel.Wildfire
                         {
                             nextModule.isBurned = true;
                         }
-                        RecursiveMarkChildren(nextModule);
+                        stopModule = RecursiveMarkChildren(nextModule);
+                        
+                        isStopModuleSet = true;
                     }
                     else
                     {
-                        _moduleToMarkStack.Pop();
+                        var moduleToDestroy = _moduleToMarkStack.Pop();
+                        Destroy(moduleToDestroy.cachedGameObject);
                     }
+                }
+
+                if (!isStopModuleSet)
+                {
+                    stopModule = nextModule;
                 }
             }
             else
             {
-                _moduleToMarkStack.Clear();
+                while (_moduleToMarkStack.Count > 0)
+                {
+                    var moduleToDestroy = _moduleToMarkStack.Pop();
+                    Destroy(moduleToDestroy.cachedGameObject);
+                }
             }
+
+            return stopModule;
         }
 
         private void MarkChildrenToDestroy()
@@ -510,12 +516,22 @@ namespace WildfireModel.Wildfire
             while (_moduleToDestroyQueue.Count != 0)
             {
                 var module = _moduleToDestroyQueue.Dequeue();
+                
+                var stopModule = RecursiveMarkChildren(module);
+                
+                /*
+                var stopIndex = -1;
+                if (stopModule)
+                {
+                    stopIndex = stopModule.gameObject.transform.GetSiblingIndex();
+                }
+                Debug.Log("stop module: " + stopModule + " index: " + stopIndex);
+                */
 
-                Debug.Log(module.gameObject.name);
-                
-                Destroy(module.gameObject);
-                
-                //RecursiveMarkChildren(module);
+                if (module.cachedPreviousModule.cachedNextModule.Equals(module))
+                {
+                    module.cachedPreviousModule.cachedNextModule = stopModule;
+                }
             }
         }
         
@@ -560,9 +576,9 @@ namespace WildfireModel.Wildfire
             
             ///*
             // MARK AND DESTROY BRANCHES
-            Profiler.BeginSample("Branch Destruction");
-            MarkChildrenToDestroy();
-            Profiler.EndSample();
+            //Profiler.BeginSample("Branch Destruction");
+            //MarkChildrenToDestroy();
+            //Profiler.EndSample();
             //*/
         }
         

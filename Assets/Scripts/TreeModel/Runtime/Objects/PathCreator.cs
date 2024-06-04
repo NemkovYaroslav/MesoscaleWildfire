@@ -73,7 +73,7 @@ namespace TreeModel.Runtime.Objects
 
         private void TriggerPathUpdate() 
         {
-            if (OnPathUpdated != null) 
+            if (OnPathUpdated != null)
             {
                 OnPathUpdated();
             }
@@ -92,7 +92,7 @@ namespace TreeModel.Runtime.Objects
 
             if (Path == null) return;
             
-            Path.UpdateTransform (transform);
+            Path.UpdateTransform(transform);
 
             if (_globalEditorDisplaySettings == null) 
             {

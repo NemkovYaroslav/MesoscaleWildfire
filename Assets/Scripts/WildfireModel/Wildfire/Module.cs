@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.VFX;
 
 namespace WildfireModel.Wildfire
 {
@@ -12,14 +11,14 @@ namespace WildfireModel.Wildfire
         private const float StopCombustionMassFactor = 0.1f;
         private const float CharIsolatedFactor       = 0.01f;
         
-        private Wildfire _wildfire;
+        //private Wildfire _wildfire;
 
         [HideInInspector] public GameObject      cachedGameObject;
         [HideInInspector] public Transform       cachedTransform;
         [HideInInspector] public Rigidbody       cachedRigidbody;
         [HideInInspector] public CapsuleCollider cachedCapsuleCollider;
         [HideInInspector] public FixedJoint      cachedFixedJoint;
-        [HideInInspector] public VisualEffect    cachedVisualEffect;
+        //[HideInInspector] public VisualEffect    cachedVisualEffect;
         
         public Module cachedPreviousModule;
         public Module cachedNextModule;
@@ -37,7 +36,7 @@ namespace WildfireModel.Wildfire
         
         private void Awake()
         {
-            _wildfire = GameObject.FindWithTag("WildfireArea").GetComponent<Wildfire>();
+            //_wildfire = GameObject.FindWithTag("WildfireArea").GetComponent<Wildfire>();
 
             cachedGameObject      = gameObject;
             cachedTransform       = GetComponent<Transform>();
@@ -62,10 +61,10 @@ namespace WildfireModel.Wildfire
             
             stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             
-            cachedVisualEffect = GetComponent<VisualEffect>();
-            cachedVisualEffect.SetVector3("direction", _wildfire.WindDirection * _wildfire.WindIntensity);
-            cachedVisualEffect.SetFloat("cone radius", cachedCapsuleCollider.radius);
-            cachedVisualEffect.SetFloat("cone height", cachedCapsuleCollider.height);
+            //cachedVisualEffect = GetComponent<VisualEffect>();
+            //cachedVisualEffect.SetVector3("direction", _wildfire.WindDirection * _wildfire.WindIntensity);
+            //cachedVisualEffect.SetFloat("cone radius", cachedCapsuleCollider.radius);
+            //cachedVisualEffect.SetFloat("cone height", cachedCapsuleCollider.height);
         }
         
         public float CalculateLostMass()

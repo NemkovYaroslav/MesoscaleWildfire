@@ -38,6 +38,11 @@ namespace TreeModel.Runtime.Placer
 
                         var direction = (currentPrototypePosition - previousPrototypePosition).normalized;
 
+                        if (direction.x == 0 && direction.y == 0 && direction.z == 0)
+                        {
+                            continue;
+                        }
+
                         var modulePosition = currentPrototypePosition - direction * distance / 2.0f;
                         var moduleRotation = Quaternion.LookRotation(direction) * Quaternion.LookRotation(Vector3.up);
 
