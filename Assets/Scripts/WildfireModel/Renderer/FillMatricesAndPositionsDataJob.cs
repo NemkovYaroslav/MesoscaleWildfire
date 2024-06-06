@@ -5,7 +5,7 @@ using UnityEngine.Jobs;
 
 namespace WildfireModel.Renderer
 {
-    //[BurstCompile(CompileSynchronously = true)]
+    [BurstCompile(CompileSynchronously = true)]
     public struct FillMatricesAndPositionsDataJob : IJobParallelForTransform
     {
         [ReadOnly] public NativeArray<Vector3> centers;

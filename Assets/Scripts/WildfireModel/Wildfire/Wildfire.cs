@@ -246,8 +246,6 @@ namespace WildfireModel.Wildfire
             
             // INITIALIZE VARIABLES IN FLUID SOLVER
             ShaderDispatch(_kernelInit);
-
-            
             
             _moduleToDestroyQueue = new Queue<Module>(1000);
             _moduleToMarkStack    = new Stack<Module>(10);
@@ -326,12 +324,12 @@ namespace WildfireModel.Wildfire
                 var module = _moduleRenderer.orderedModuleList[i];
                 if (module)
                 {
-                    /*
+                    ///*
                     // SIMULATE TREE DYNAMICS
                     var surfaceArea = 2.0f * Mathf.PI * module.cachedCapsuleCollider.radius * module.cachedCapsuleCollider.height;
                     var windForce = windDirection * (0.5f * AirDensity * Mathf.Pow(windIntensity, 2) * surfaceArea);
                     module.cachedRigidbody.AddForce(windForce, ForceMode.Force);
-                    */
+                    //*/
                     
                     
                     // SIMULATE DIFFUSION IN TREE HIERARCHY
@@ -374,6 +372,17 @@ namespace WildfireModel.Wildfire
                                 _moduleToDestroyQueue.Enqueue(module);
                             }
                         }
+
+                        /*
+                        if (module.temperature > 0.25f)
+                        {
+                            module.cachedVisualEffect.enabled = true;
+                        }
+                        else
+                        {
+                            module.cachedVisualEffect.enabled = false;
+                        }
+                        */
                     }
                     
                     
@@ -399,14 +408,6 @@ namespace WildfireModel.Wildfire
                     
                     
                     _modulesUpdatedAmbientTemperatureArray[i] = transferAmbientTemperature;
-                    
-                    /*
-                    // TEST
-                    if (module.isBurned && !module.isTrunk && !module.isDestroyed)
-                    {
-                        _moduleToDestroyQueue.Enqueue(module);
-                    }
-                    */
                 }
                 else
                 {
@@ -485,6 +486,8 @@ namespace WildfireModel.Wildfire
                         }
                         stopModule = RecursiveMarkChildren(nextModule);
                         
+                        Destroy(moduleToMark.cachedFixedJoint);
+                        
                         isStopModuleSet = true;
                     }
                     else
@@ -518,15 +521,6 @@ namespace WildfireModel.Wildfire
                 var module = _moduleToDestroyQueue.Dequeue();
                 
                 var stopModule = RecursiveMarkChildren(module);
-                
-                /*
-                var stopIndex = -1;
-                if (stopModule)
-                {
-                    stopIndex = stopModule.gameObject.transform.GetSiblingIndex();
-                }
-                Debug.Log("stop module: " + stopModule + " index: " + stopIndex);
-                */
 
                 if (module.cachedPreviousModule.cachedNextModule.Equals(module))
                 {
@@ -576,9 +570,9 @@ namespace WildfireModel.Wildfire
             
             ///*
             // MARK AND DESTROY BRANCHES
-            //Profiler.BeginSample("Branch Destruction");
-            //MarkChildrenToDestroy();
-            //Profiler.EndSample();
+            Profiler.BeginSample("Branch Destruction");
+            MarkChildrenToDestroy();
+            Profiler.EndSample();
             //*/
         }
         

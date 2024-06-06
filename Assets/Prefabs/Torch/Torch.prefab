@@ -120,8 +120,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 406815263832437826}
-  - component: {fileID: 1917666524096474127}
-  - component: {fileID: 6881141279168820050}
+  - component: {fileID: 5962732601852064245}
+  - component: {fileID: 3967868378707652857}
   m_Layer: 0
   m_Name: Torch
   m_TagString: Torch
@@ -146,7 +146,7 @@ Transform:
   - {fileID: 6633656439000933798}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &1917666524096474127
+--- !u!136 &5962732601852064245
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,8 +168,8 @@ CapsuleCollider:
   m_Radius: 0.1
   m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: -0.35, z: 0}
---- !u!54 &6881141279168820050
+  m_Center: {x: 0, y: -0.4, z: 0}
+--- !u!54 &3967868378707652857
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

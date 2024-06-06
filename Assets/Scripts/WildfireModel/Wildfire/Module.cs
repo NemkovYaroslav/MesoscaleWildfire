@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.VFX;
 
 namespace WildfireModel.Wildfire
 {
@@ -18,7 +19,7 @@ namespace WildfireModel.Wildfire
         [HideInInspector] public Rigidbody       cachedRigidbody;
         [HideInInspector] public CapsuleCollider cachedCapsuleCollider;
         [HideInInspector] public FixedJoint      cachedFixedJoint;
-        //[HideInInspector] public VisualEffect    cachedVisualEffect;
+        [HideInInspector] public VisualEffect    cachedVisualEffect;
         
         public Module cachedPreviousModule;
         public Module cachedNextModule;
@@ -44,6 +45,13 @@ namespace WildfireModel.Wildfire
             cachedCapsuleCollider = GetComponent<CapsuleCollider>();
             cachedFixedJoint      = GetComponent<FixedJoint>();
 
+            
+            // TEST
+            cachedRigidbody.detectCollisions = false;
+            cachedCapsuleCollider.providesContacts = false;
+            cachedCapsuleCollider.hasModifiableContacts = false;
+
+            
             // get neighbour from joint
             if (cachedFixedJoint.connectedBody.TryGetComponent(out Module module))
             {
@@ -57,7 +65,6 @@ namespace WildfireModel.Wildfire
             {
                 cachedNextModule = cachedTransform.parent.GetChild(siblingIndex + 1).GetComponent<Module>();
             }
-            
             
             stopCombustionMass = cachedRigidbody.mass * StopCombustionMassFactor;
             

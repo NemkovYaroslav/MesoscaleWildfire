@@ -413,6 +413,8 @@ void kernel_advection_velocity (uint3 id : SV_DispatchThreadID)
                                         + velocity_011 * inf_011
                                             + velocity_111 * inf_111;
 
+            //velocity *= 0.5f;
+
             velocity_texture[pixel_id] = velocity;
         }
     }
@@ -519,6 +521,8 @@ void kernel_advection_temperature (uint3 id : SV_DispatchThreadID)
                                     + temperature_101 * inf_101
                                         + temperature_011 * inf_011
                                             + temperature_111 * inf_111;
+
+            //temperature *= 0.999f;
             
             color_temperature_texture[pixel_id] = temperature;
         }
